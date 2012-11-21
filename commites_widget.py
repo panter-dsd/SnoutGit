@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtGui
+from PySide import QtCore, QtGui
 import commites_model
 
 class CommitesWidget(QtGui.QWidget):
@@ -14,6 +14,11 @@ class CommitesWidget(QtGui.QWidget):
         self._model = commites_model.CommitesModel(path, self)
         self._table.setModel(self._model)
 
+        self._table.selectionModel().currentChanged.connect(self._current_index_changed)
+
         layout = QtGui.QHBoxLayout()
         layout.addWidget(self._table)
         super(CommitesWidget, self).setLayout(layout)
+
+    def _current_index_changed(self, current, previous):
+        print("!!!")
