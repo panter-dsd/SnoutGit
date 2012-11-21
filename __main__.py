@@ -2,35 +2,27 @@ import setuptools.command
 
 __author__ = 'panter'
 
-import os
-import subprocess
 
 PATH = "/media/work/other/phradar"
 
-def get_commites_list():
-    os.chdir(PATH)
-    result = []
-    command = "git log --pretty=format:%H"
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+import sys
+from PySide import QtGui
+import commites_model
 
-    for line in process.stdout.readlines():
-        result.append(line.strip().decode("utf-8"))
-    return result
+def main():
+    """main"""
+    app = QtGui.QApplication(sys.argv)
 
-def get_commit_info(commit_id):
-    os.chdir(PATH)
-    result = []
-    command = "git show -s --pretty=\"%s\" " + commit_id
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+    dialog = QtGui.QDialog()
+    table = QtGui.QTableView(dialog)
+    model = commites_model.CommitesModel(PATH, dialog)
+    table.setModel(model)
+    layout = QtGui.QHBoxLayout()
+    layout.addWidget(table)
+    dialog.setLayout(layout)
+    dialog.show()
 
-    for line in process.stdout.readlines():
-        try:
-            result.append(line.strip().decode("utf-8"))
-        except:
-            print(line)
-    return result
+    sys.exit(app.exec_())
 
-
-COMMITS = get_commites_list()
-for commit in COMMITS:
-    print(commit, get_commit_info(commit))
+if __name__ == '__main__':
+    main()
