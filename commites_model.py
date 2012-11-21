@@ -17,7 +17,6 @@ def get_commites_list(path):
         result.append(commit.Commit(path, line.strip().decode()))
     return result
 
-
 class CommitesModel(QtCore.QAbstractItemModel):
     """CommitesModel"""
 
