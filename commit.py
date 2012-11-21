@@ -43,7 +43,7 @@ class Commit(object):
 
     def diff(self, lines_count = 3):
         os.chdir(self._path)
-        command = "git diff-tree --unified={0} {1}".format(lines_count, self._id)
+        command = "git show --pretty=fuller --unified={0} {1}".format(lines_count, self._id)
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
         result = []
