@@ -40,3 +40,16 @@ class Commit(object):
         if len(self._author) == 0:
             self._author = self._commit_info("%ae")
         return self._author
+
+    def diff(self):
+        os.chdir(self._path)
+        command = "git diff-tree -p " + self._id
+        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+
+        result = []
+        for line in process.stdout.readlines():
+            try:
+                result.append(line.decode())
+            except:
+                print(line)
+        return "".join(result)

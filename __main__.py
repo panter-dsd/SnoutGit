@@ -7,6 +7,12 @@ PATH = "/media/work/other/phradar"
 import sys
 from PySide import QtCore, QtGui
 import commites_widget
+import diff_widget
+
+@QtCore.Slot(str)
+def ttt(eee):
+    import commit
+    print(commit.Commit(PATH, eee).name())
 
 def main():
     """main"""
@@ -15,9 +21,16 @@ def main():
     window = QtGui.QMainWindow()
 
     commitesDock = QtGui.QDockWidget(window)
-    commitesDock.setWidget(commites_widget.CommitesWidget(PATH, commitesDock))
-
+    commites = commites_widget.CommitesWidget(PATH, commitesDock)
+    commitesDock.setWidget(commites)
     window.addDockWidget(QtCore.Qt.TopDockWidgetArea, commitesDock)
+
+    diffDock = QtGui.QDockWidget(window)
+    diff = diff_widget.DiffWidget(PATH, diffDock)
+    diffDock.setWidget(diff)
+    window.addDockWidget(QtCore.Qt.TopDockWidgetArea, diffDock)
+
+    commites.current_commit_changed.connect(diff.set_commit)
 
     window.resize(640, 480)
     window.show()
