@@ -34,6 +34,7 @@ class DiffWidget(QtGui.QWidget):
         DiffHighlighter(self._diff_veiw.document())
 
         self._files_list = QtGui.QListWidget(self)
+        self._files_list.itemPressed.connect(self._select_file)
 
         panel = QtGui.QWidget(self)
         panel.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
@@ -72,3 +73,8 @@ class DiffWidget(QtGui.QWidget):
         self._files_list.clear()
         for file_name in commit.Commit(self._path, self._id).changed_files():
             self._files_list.addItem(QtGui.QListWidgetItem(file_name))
+
+    def _select_file(self, item):
+        cursor = self._diff_veiw.document().find(QtCore.QRegExp("a/" + item.text()))
+        self._diff_veiw.setTextCursor(cursor)
+        self._diff_veiw.centerCursor()
