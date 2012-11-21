@@ -1,4 +1,4 @@
-__author__ = 'panter'
+__author__ = 'panter.dsd@gmail.com'
 
 from PySide import QtCore
 import commit

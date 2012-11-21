@@ -1,6 +1,4 @@
-import setuptools.command
-
-__author__ = 'panter'
+__author__ = 'panter.dsd@gmail.com'
 
 
 PATH = "/media/work/other/phradar"
@@ -21,6 +19,7 @@ def main():
     layout.addWidget(table)
     dialog.setLayout(layout)
     dialog.show()
+    dialog.resize(640, 480)
 
     sys.exit(app.exec_())
 
