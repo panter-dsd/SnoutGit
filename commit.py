@@ -53,3 +53,15 @@ class Commit(object):
             except:
                 print(line)
         return "".join(result)
+
+    def changed_files(self):
+        os.chdir(self._path)
+        command = "git show --pretty=\"format:\" --name-only {0}".format(self._id)
+        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+
+        result = []
+        for line in process.stdout.readlines():
+            line = line.strip()
+            if len(line) > 0:
+                result.append(line.decode())
+        return result
