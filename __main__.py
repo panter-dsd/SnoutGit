@@ -28,7 +28,7 @@ def main():
     diffDock = QtGui.QDockWidget(window)
     diff = diff_widget.DiffWidget(PATH, diffDock)
     diffDock.setWidget(diff)
-    window.addDockWidget(QtCore.Qt.TopDockWidgetArea, diffDock)
+    window.addDockWidget(QtCore.Qt.BottomDockWidgetArea, diffDock)
 
     commites.current_commit_changed.connect(diff.set_commit)
 
