@@ -8,7 +8,8 @@ class CommitesWidget(QtGui.QWidget):
     def __init__(self, path, parent = None):
         super(CommitesWidget, self).__init__(parent)
 
-        self._table = QtGui.QTableView(self)
+        self._table = QtGui.QTreeView(self)
+        self._table.setRootIsDecorated(False)
 
         self._model = commites_model.CommitesModel(path, self)
         self._table.setModel(self._model)

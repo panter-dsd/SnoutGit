@@ -47,9 +47,9 @@ class CommitesModel(QtCore.QAbstractItemModel):
         return 3
 
     def data(self, index, role=QtCore.Qt.DisplayRole):
-        if role == QtCore.Qt.DisplayRole:
+        if role in [QtCore.Qt.DisplayRole, QtCore.Qt.ToolTipRole]:
             if index.column() == 0:
-                return self._commits_list[index.row()].id()
+                return self._commits_list[index.row()].abbreviated_id()
             elif index.column() == 1:
                 return self._commits_list[index.row()].name()
             elif index.column() == 2:
