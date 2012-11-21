@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
 import os
 import subprocess
 
+#noinspection PyUnresolvedReferences
 class Commit(object):
     def __init__(self, path, id):
         super(Commit, self).__init__()
@@ -11,12 +13,14 @@ class Commit(object):
         self.name_ = str()
         self.author_ = str()
 
+    #noinspection PyUnresolvedReferences
     def _commit_info(self, format_id):
         os.chdir(self._path)
         command = "git show -s --pretty=\"" + format_id + "\" " + self._id
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
-        return process.stdout.readline().strip().decode("utf-8")
+        #noinspection PyUnresolvedReferences
+        return process.stdout.readline().decode().strip()
 
     def id(self):
         return self._id

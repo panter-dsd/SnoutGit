@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
 from PySide import QtCore
@@ -13,7 +14,7 @@ def get_commites_list(path):
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
     for line in process.stdout.readlines():
-        result.append(commit.Commit(path, line.strip().decode("utf-8")))
+        result.append(commit.Commit(path, line.strip().decode()))
     return result
 
 
