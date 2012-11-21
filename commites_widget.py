@@ -14,7 +14,8 @@ class CommitesWidget(QtGui.QWidget):
         self._model = commites_model.CommitesModel(path, self)
         self._table.setModel(self._model)
 
-        self._table.selectionModel().currentChanged.connect(self._current_index_changed)
+        selection_model = self._table.selectionModel()
+        selection_model.selectionChanged.connect(self._current_index_changed)
 
         layout = QtGui.QHBoxLayout()
         layout.addWidget(self._table)
