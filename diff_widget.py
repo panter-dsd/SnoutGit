@@ -31,9 +31,12 @@ class DiffWidget(QtGui.QWidget):
 
         self._diff_veiw = QtGui.QPlainTextEdit(self)
         self._diff_veiw.setWordWrapMode(QtGui.QTextOption.NoWrap)
-        diffHighlighter = DiffHighlighter(self._diff_veiw.document())
+        DiffHighlighter(self._diff_veiw.document())
+
+        self._files_list = QtGui.QListWidget(self)
 
         panel = QtGui.QWidget(self)
+        panel.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
 
         self._diff_lines_count_edit = QtGui.QSpinBox(self)
         self._diff_lines_count_edit.valueChanged.connect(self._update_diff)
@@ -49,9 +52,13 @@ class DiffWidget(QtGui.QWidget):
 
         panel.setLayout(panelLayout)
 
+        horizontal_split = QtGui.QSplitter(self)
+        horizontal_split.addWidget(self._diff_veiw)
+        horizontal_split.addWidget(self._files_list)
+
         layout = QtGui.QVBoxLayout()
         layout.addWidget(panel)
-        layout.addWidget(self._diff_veiw)
+        layout.addWidget(horizontal_split)
         super(DiffWidget, self).setLayout(layout)
 
     @QtCore.Slot(str)
@@ -61,3 +68,7 @@ class DiffWidget(QtGui.QWidget):
 
     def _update_diff(self):
         self._diff_veiw.setPlainText(commit.Commit(self._path, self._id).diff(self._diff_lines_count_edit.value()))
+
+        self._files_list.clear()
+        for file_name in commit.Commit(self._path, self._id).changed_files():
+            self._files_list.addItem(QtGui.QListWidgetItem(file_name))
