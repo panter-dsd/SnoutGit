@@ -22,6 +22,8 @@ class DiffHighlighter(QtGui.QSyntaxHighlighter):
 
 
 class DiffWidget(QtGui.QWidget):
+    _id = str()
+
     def __init__(self, path, parent = None):
         super(DiffWidget, self).__init__(parent)
 
@@ -31,10 +33,31 @@ class DiffWidget(QtGui.QWidget):
         self._diff_veiw.setWordWrapMode(QtGui.QTextOption.NoWrap)
         diffHighlighter = DiffHighlighter(self._diff_veiw.document())
 
-        layout = QtGui.QHBoxLayout()
+        panel = QtGui.QWidget(self)
+
+        self._diff_lines_count_edit = QtGui.QSpinBox(self)
+        self._diff_lines_count_edit.valueChanged.connect(self._update_diff)
+        self._diff_lines_count_edit.setValue(3)
+
+        panelLayout = QtGui.QHBoxLayout()
+        panelLayout.addWidget(QtGui.QLabel("Context strings count"))
+        panelLayout.addWidget(self._diff_lines_count_edit)
+        panelLayout.addSpacerItem(QtGui.QSpacerItem(0,
+                                                    0,
+                                                    QtGui.QSizePolicy.Expanding,
+                                                    QtGui.QSizePolicy.Preferred))
+
+        panel.setLayout(panelLayout)
+
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(panel)
         layout.addWidget(self._diff_veiw)
         super(DiffWidget, self).setLayout(layout)
 
     @QtCore.Slot(str)
     def set_commit(self, id):
-        self._diff_veiw.setPlainText(commit.Commit(self._path, id).diff())
+        self._id = id
+        self._update_diff()
+
+    def _update_diff(self):
+        self._diff_veiw.setPlainText(commit.Commit(self._path, self._id).diff(self._diff_lines_count_edit.value()))
