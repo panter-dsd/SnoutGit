@@ -5,22 +5,22 @@ __author__ = 'panter.dsd@gmail.com'
 PATH = "/media/work/other/phradar"
 
 import sys
-from PySide import QtGui
-import commites_model
+from PySide import QtCore, QtGui
+import commites_widget
 
 def main():
     """main"""
     app = QtGui.QApplication(sys.argv)
 
-    dialog = QtGui.QDialog()
-    table = QtGui.QTableView(dialog)
-    model = commites_model.CommitesModel(PATH, dialog)
-    table.setModel(model)
-    layout = QtGui.QHBoxLayout()
-    layout.addWidget(table)
-    dialog.setLayout(layout)
-    dialog.show()
-    dialog.resize(640, 480)
+    window = QtGui.QMainWindow()
+
+    commitesDock = QtGui.QDockWidget(window)
+    commitesDock.setWidget(commites_widget.CommitesWidget(PATH, commitesDock))
+
+    window.addDockWidget(QtCore.Qt.TopDockWidgetArea, commitesDock)
+
+    window.resize(640, 480)
+    window.show()
 
     sys.exit(app.exec_())
 
