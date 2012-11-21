@@ -10,8 +10,9 @@ class Commit(object):
         super(Commit, self).__init__()
         self._path = path
         self._id = id
-        self.name_ = str()
-        self.author_ = str()
+        self._name = str()
+        self._author = str()
+        self._abbreviated_id = str()
 
     #noinspection PyUnresolvedReferences
     def _commit_info(self, format_id):
@@ -25,12 +26,17 @@ class Commit(object):
     def id(self):
         return self._id
 
+    def abbreviated_id(self):
+        if len(self._abbreviated_id) == 0:
+            self._abbreviated_id = self._commit_info("%h")
+        return self._abbreviated_id
+
     def name(self):
-        if len(self.name_) == 0:
-            self.name_ = self._commit_info("%s")
-        return self.name_
+        if len(self._name) == 0:
+            self._name = self._commit_info("%s")
+        return self._name
 
     def author(self):
-        if len(self.author_) == 0:
-            self.author_ = self._commit_info("%ae")
-        return self.author_
+        if len(self._author) == 0:
+            self._author = self._commit_info("%ae")
+        return self._author
