@@ -29,7 +29,12 @@ class StatusWidget(QtGui.QWidget):
 
         self._files_view = QtGui.QTreeWidget(self)
         self._files_view.setHeaderHidden(True)
-        self._update_file_list()
+
+        self._unstaged = QtGui.QTreeWidgetItem(self._files_view)
+        self._unstaged.setText(0, "Unstaged")
+
+        self._staged = QtGui.QTreeWidgetItem(self._files_view)
+        self._staged.setText(0, "Staged")
 
         layout = QtGui.QHBoxLayout()
         layout.addWidget(self._files_view)
@@ -45,13 +50,8 @@ class StatusWidget(QtGui.QWidget):
             return
         self._last_status = current_status
 
-        self._files_view.clear()
-
-        unstaged = QtGui.QTreeWidgetItem(self._files_view)
-        unstaged.setText(0, "Unstaged")
-
-        staged = QtGui.QTreeWidgetItem(self._files_view)
-        staged.setText(0, "Staged")
+        self._staged.takeChildren()
+        self._unstaged.takeChildren()
 
         for status_line in self._last_status:
             print(status_line)
@@ -59,16 +59,11 @@ class StatusWidget(QtGui.QWidget):
             file_name = status_line[3:]
 
             if not status[0] in [' ', '?']:
-                item = QtGui.QTreeWidgetItem(staged)
+                item = QtGui.QTreeWidgetItem(self._staged)
                 item.setText(0, file_name)
 
             if not status[1] in [' ', '?']:
-                item = QtGui.QTreeWidgetItem(unstaged)
+                item = QtGui.QTreeWidgetItem(self._unstaged)
                 item.setText(0, file_name)
-
-        for index in range(self._files_view.topLevelItemCount()):
-            item = self._files_view.topLevelItem(index)
-            if item and item.childCount() == 0:
-                self._files_view.takeTopLevelItem(index)
 
         self._files_view.expandAll()
