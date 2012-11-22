@@ -18,6 +18,19 @@ def get_status(path):
             result.append(line.decode())
     return result
 
+def stage(path, file_name):
+    os.chdir(path)
+    command = "git add {0}".format(file_name)
+    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+    print(process.stdout.readlines())
+
+
+def unstage(path, file_name):
+    os.chdir(path)
+    command = "git reset {0}".format(file_name)
+    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+    print(process.stdout.readlines())
+
 class StatusWidget(QtGui.QWidget):
     _path = str()
     _last_status = []
@@ -29,6 +42,7 @@ class StatusWidget(QtGui.QWidget):
 
         self._files_view = QtGui.QTreeWidget(self)
         self._files_view.setHeaderHidden(True)
+        self._files_view.itemDoubleClicked.connect(self._change_item_status)
 
         self._unstaged = QtGui.QTreeWidgetItem(self._files_view)
         self._unstaged.setText(0, "Unstaged")
@@ -67,3 +81,9 @@ class StatusWidget(QtGui.QWidget):
                 item.setText(0, file_name)
 
         self._files_view.expandAll()
+
+    def _change_item_status(self, item):
+        if item.parent() is self._unstaged:
+            stage(self._path, item.text(0))
+        elif item.parent() is self._staged:
+            unstage(self._path, item.text(0))
