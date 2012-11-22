@@ -2,12 +2,15 @@
 __author__ = 'panter.dsd@gmail.com'
 
 
-PATH = "/media/work/other/phradar"
 
 import sys
+import os
 from PySide import QtCore, QtGui
 import commites_widget
 import diff_widget
+import status_widget
+
+PATH = os.curdir
 
 @QtCore.Slot(str)
 def ttt(eee):
@@ -31,6 +34,11 @@ def main():
     window.addDockWidget(QtCore.Qt.BottomDockWidgetArea, diffDock)
 
     commites.current_commit_changed.connect(diff.set_commit)
+
+    status_dock = QtGui.QDockWidget(window)
+    status = status_widget.StatusWidget(PATH, status_dock)
+    status_dock.setWidget(status)
+    window.addDockWidget(QtCore.Qt.BottomDockWidgetArea, status_dock)
 
     window.resize(640, 480)
     window.show()
