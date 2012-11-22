@@ -20,6 +20,7 @@ def get_status(path):
 
 class StatusWidget(QtGui.QWidget):
     _path = str()
+    _last_status = []
 
     def __init__(self, path, parent):
         super(StatusWidget, self).__init__(parent)
@@ -34,7 +35,16 @@ class StatusWidget(QtGui.QWidget):
         layout.addWidget(self._files_view)
         super(StatusWidget, self).setLayout(layout)
 
+        update_timer = QtCore.QTimer(self)
+        update_timer.timeout.connect(self._update_file_list)
+        update_timer.start(100)
+
     def _update_file_list(self):
+        current_status = get_status(self._path)
+        if self._last_status == current_status:
+            return
+        self._last_status = current_status
+
         self._files_view.clear()
 
         unstaged = QtGui.QTreeWidgetItem(self._files_view)
@@ -43,7 +53,7 @@ class StatusWidget(QtGui.QWidget):
         staged = QtGui.QTreeWidgetItem(self._files_view)
         staged.setText(0, "Staged")
 
-        for status_line in get_status(self._path):
+        for status_line in self._last_status:
             print(status_line)
             status = status_line[:2]
             file_name = status_line[3:]
@@ -58,7 +68,7 @@ class StatusWidget(QtGui.QWidget):
 
         for index in range(self._files_view.topLevelItemCount()):
             item = self._files_view.topLevelItem(index)
-            if item.childCount() == 0:
+            if item and item.childCount() == 0:
                 self._files_view.takeTopLevelItem(index)
 
         self._files_view.expandAll()
