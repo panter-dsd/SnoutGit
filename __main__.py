@@ -9,6 +9,7 @@ from PySide import QtCore, QtGui
 import commites_widget
 import diff_widget
 import status_widget
+import diff_file_widget
 
 PATH = os.curdir
 
@@ -39,6 +40,13 @@ def main():
     status = status_widget.StatusWidget(PATH, status_dock)
     status_dock.setWidget(status)
     window.addDockWidget(QtCore.Qt.BottomDockWidgetArea, status_dock)
+
+    diff_file_dock = QtGui.QDockWidget(window)
+    diff_file = diff_file_widget.DiffFileWidget(PATH)
+    diff_file_dock.setWidget(diff_file)
+    window.addDockWidget(QtCore.Qt.BottomDockWidgetArea, diff_file_dock)
+
+    status.current_file_changed.connect(diff_file.set_file)
 
     window.resize(640, 480)
     window.show()

@@ -32,6 +32,8 @@ def unstage(path, file_name):
     print(process.stdout.readlines())
 
 class StatusWidget(QtGui.QWidget):
+    current_file_changed = QtCore.Signal(str)
+
     _path = str()
     _last_status = []
 
@@ -43,6 +45,7 @@ class StatusWidget(QtGui.QWidget):
         self._files_view = QtGui.QTreeWidget(self)
         self._files_view.setHeaderHidden(True)
         self._files_view.itemDoubleClicked.connect(self._change_item_status)
+        self._files_view.currentItemChanged.connect(self._current_item_changed)
 
         self._unstaged = QtGui.QTreeWidgetItem(self._files_view)
         self._unstaged.setText(0, "Unstaged")
@@ -87,3 +90,7 @@ class StatusWidget(QtGui.QWidget):
             stage(self._path, item.text(0))
         elif item.parent() is self._staged:
             unstage(self._path, item.text(0))
+
+    def _current_item_changed(self, current, _prev):
+        if current.parent():
+            self.current_file_changed.emit(current.text(0))
