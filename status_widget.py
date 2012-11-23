@@ -68,6 +68,7 @@ class StatusWidget(QtGui.QWidget):
         current_status = get_status(self._path)
         if self._last_status == current_status:
             return
+
         self._last_status = current_status
 
         self._staged.takeChildren()
