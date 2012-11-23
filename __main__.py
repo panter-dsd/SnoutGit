@@ -39,12 +39,12 @@ def main():
     status_dock = QtGui.QDockWidget(window)
     status = status_widget.StatusWidget(PATH, status_dock)
     status_dock.setWidget(status)
-    window.addDockWidget(QtCore.Qt.BottomDockWidgetArea, status_dock)
+    window.addDockWidget(QtCore.Qt.TopDockWidgetArea, status_dock)
 
     diff_file_dock = QtGui.QDockWidget(window)
     diff_file = diff_file_widget.DiffFileWidget(PATH)
     diff_file_dock.setWidget(diff_file)
-    window.addDockWidget(QtCore.Qt.BottomDockWidgetArea, diff_file_dock)
+    window.addDockWidget(QtCore.Qt.TopDockWidgetArea, diff_file_dock)
 
     status.current_file_changed.connect(diff_file.set_file)
 
