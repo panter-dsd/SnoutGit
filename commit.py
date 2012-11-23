@@ -21,7 +21,7 @@ class Commit(object):
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
         #noinspection PyUnresolvedReferences
-        return process.stdout.readline().decode().strip()
+        return process.stdout.readline().decode().rstrip()
 
     def id(self):
         return self._id
@@ -33,7 +33,7 @@ class Commit(object):
 
     def name(self):
         if len(self._name) == 0:
-            self._name = self._commit_info("%s")
+            self._name = self._commit_info("%B").splitlines()[0]
         return self._name
 
     def author(self):
