@@ -3,22 +3,7 @@ __author__ = 'panter.dsd@gmail.com'
 
 from PySide import QtCore, QtGui
 import commit
-import re
-
-class DiffHighlighter(QtGui.QSyntaxHighlighter):
-    def __init__(self, parent = None):
-        super(DiffHighlighter, self).__init__(parent)
-
-    def highlightBlock(self, text):
-        super(DiffHighlighter, self).setFormat (0, len(text), QtCore.Qt.black)
-
-        added = re.match("^\+.*$", text)
-        if added:
-            super(DiffHighlighter, self).setFormat (added.pos, added.endpos, QtCore.Qt.green)
-
-        removed = re.match("^\-.*$", text)
-        if removed:
-            super(DiffHighlighter, self).setFormat (removed.pos, removed.endpos, QtCore.Qt.red)
+import diff_highlighter
 
 
 class DiffWidget(QtGui.QWidget):
@@ -31,7 +16,7 @@ class DiffWidget(QtGui.QWidget):
 
         self._diff_veiw = QtGui.QPlainTextEdit(self)
         self._diff_veiw.setWordWrapMode(QtGui.QTextOption.NoWrap)
-        DiffHighlighter(self._diff_veiw.document())
+        diff_highlighter.DiffHighlighter(self._diff_veiw.document())
 
         self._files_list = QtGui.QListWidget(self)
         self._files_list.itemPressed.connect(self._select_file)
