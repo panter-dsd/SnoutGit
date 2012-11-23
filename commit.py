@@ -51,7 +51,7 @@ class Commit(object):
             try:
                 result.append(line.decode())
             except:
-                print(line)
+                result.append(line.decode("CP1251"))
         return "".join(result)
 
     def changed_files(self):
