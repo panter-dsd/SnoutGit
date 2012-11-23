@@ -54,6 +54,8 @@ def main():
     commit_widget_dock.setWidget(commit)
     window.addDockWidget(QtCore.Qt.BottomDockWidgetArea, commit_widget_dock)
 
+    commit.commited.connect(commites.update_commites_list)
+
     window.resize(640, 480)
     window.show()
 
