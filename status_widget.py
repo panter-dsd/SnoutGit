@@ -62,7 +62,7 @@ class StatusWidget(QtGui.QWidget):
 
         update_timer = QtCore.QTimer(self)
         update_timer.timeout.connect(self._update_file_list)
-        update_timer.start(100)
+        update_timer.start(1000)
 
     def _update_file_list(self):
         current_status = get_status(self._path)
