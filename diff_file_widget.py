@@ -45,7 +45,7 @@ class DiffFileWidget(QtGui.QWidget):
 
     def _update_diff(self):
         os.chdir(self._path)
-        command = "git diff-tree -U5 HEAD {0}".format(self._file_name)
+        command = "git diff-index -U5 HEAD {0}".format(self._file_name)
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
         text = []
