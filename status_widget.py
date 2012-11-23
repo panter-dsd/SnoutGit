@@ -53,6 +53,9 @@ class StatusWidget(QtGui.QWidget):
         self._staged = QtGui.QTreeWidgetItem(self._files_view)
         self._staged.setText(0, "Staged")
 
+        self._untracked = QtGui.QTreeWidgetItem(self._files_view)
+        self._untracked.setText(0, "Untracked")
+
         layout = QtGui.QHBoxLayout()
         layout.addWidget(self._files_view)
         super(StatusWidget, self).setLayout(layout)
@@ -69,6 +72,7 @@ class StatusWidget(QtGui.QWidget):
 
         self._staged.takeChildren()
         self._unstaged.takeChildren()
+        self._untracked.takeChildren()
 
         for status_line in self._last_status:
             print(status_line)
@@ -83,6 +87,10 @@ class StatusWidget(QtGui.QWidget):
                 item = QtGui.QTreeWidgetItem(self._unstaged)
                 item.setText(0, file_name)
 
+            if status[0] == '?' or status[1] == '?':
+                item = QtGui.QTreeWidgetItem(self._untracked)
+                item.setText(0, file_name)
+
         self._files_view.expandAll()
 
     def _change_item_status(self, item):
@@ -90,6 +98,8 @@ class StatusWidget(QtGui.QWidget):
             stage(self._path, item.text(0))
         elif item.parent() is self._staged:
             unstage(self._path, item.text(0))
+        elif item.parent() is self._untracked:
+            stage(self._path, item.text(0))
 
     def _current_item_changed(self, current, _prev):
         if current.parent():
