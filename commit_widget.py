@@ -7,7 +7,7 @@ import subprocess
 
 def commit(path, name, description):
     os.chdir(path)
-    command = "git commit -m \"{0}\"".format(name)
+    command = "git commit -m \"{0}\"".format(name + "\n" + description)
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
     print(process.stdout.readlines())
