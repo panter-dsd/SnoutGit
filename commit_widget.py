@@ -15,7 +15,7 @@ def commit(path, name, description):
 
 
 class CommitWidget(QtGui.QWidget):
-    commited = QtCore.Signal(str)
+    commited = QtCore.Signal()
     _path = str()
 
     def __init__(self, path, parent = None):
