@@ -26,3 +26,7 @@ class CommitesWidget(QtGui.QWidget):
     def _current_index_changed(self, current, previous):
         commit_id = self._model.index(current.row(), 0).data(QtCore.Qt.DisplayRole)
         self.current_commit_changed.emit(commit_id)
+
+    @QtCore.Slot(str)
+    def update_commites_list(self):
+        self._model.update_commits_list()
