@@ -15,6 +15,7 @@ def commit(path, name, description):
 
 
 class CommitWidget(QtGui.QWidget):
+    commited = QtCore.Signal(str)
     _path = str()
 
     def __init__(self, path, parent = None):
@@ -61,5 +62,6 @@ class CommitWidget(QtGui.QWidget):
             if commit(self._path, commit_name, self._commit_description_edit.toPlainText()):
                 self._commit_name_edit.clear()
                 self._commit_description_edit.clear()
+                self.commited.emit()
         else:
             QtGui.QMessageBox.critical(self, "Error", "Commit name is empty.")
