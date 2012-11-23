@@ -10,6 +10,7 @@ import commites_widget
 import diff_widget
 import status_widget
 import diff_file_widget
+import commit_widget
 
 PATH = os.curdir
 
@@ -47,6 +48,11 @@ def main():
     window.addDockWidget(QtCore.Qt.TopDockWidgetArea, diff_file_dock)
 
     status.current_file_changed.connect(diff_file.set_file)
+
+    commit_widget_dock = QtGui.QDockWidget(window)
+    commit = commit_widget.CommitWidget(PATH)
+    commit_widget_dock.setWidget(commit)
+    window.addDockWidget(QtCore.Qt.BottomDockWidgetArea, commit_widget_dock)
 
     window.resize(640, 480)
     window.show()
