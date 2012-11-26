@@ -28,11 +28,11 @@ class ActionsWidget(QtGui.QWidget):
 
         self._path = path
 
-        push_button = QtGui.QToolButton(self)
+        push_button = QtGui.QPushButton(self)
         push_button.setText("Push")
         push_button.clicked.connect(self.push)
 
-        pull_button = QtGui.QToolButton(self)
+        pull_button = QtGui.QPushButton(self)
         pull_button.setText("Pull")
         pull_button.clicked.connect(self.pull)
 
