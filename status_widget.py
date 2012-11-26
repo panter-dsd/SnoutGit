@@ -67,9 +67,9 @@ class StatusWidget(QtGui.QWidget):
         layout.addWidget(self._files_view)
         super(StatusWidget, self).setLayout(layout)
 
-        update_timer = QtCore.QTimer(self)
-        update_timer.timeout.connect(self._update_file_list)
-        update_timer.start(1000)
+        self.update_timer = QtCore.QTimer(self)
+        self.update_timer.timeout.connect(self._update_file_list)
+        self.update_timer.start(1000)
 
     def _update_file_list(self):
         current_status = get_status(self._path)
@@ -109,6 +109,7 @@ class StatusWidget(QtGui.QWidget):
             unstage(self._path, item.text(0))
         elif item.parent() is self._untracked:
             stage(self._path, item.text(0))
+        self._update_file_list()
 
     def _current_item_changed(self, current, _prev):
         if current and current.parent():
@@ -129,21 +130,27 @@ class StatusWidget(QtGui.QWidget):
 
         self._stage_all_action = QtGui.QAction(self)
         self._stage_all_action.setText("Stage all")
+        self._stage_all_action.triggered.connect(self._stage_all)
 
         self._unstage_all_action = QtGui.QAction(self)
         self._unstage_all_action.setText("Unstage all")
+        self._unstage_all_action.triggered.connect(self._unstage_all)
 
         self._add_all_action = QtGui.QAction(self)
         self._add_all_action.setText("Add all")
+        self._add_all_action.triggered.connect(self._add_all)
 
         self._stage_selected_action = QtGui.QAction(self)
         self._stage_selected_action.setText("Stage selected")
+        self._stage_selected_action.triggered.connect(self._stage_selected)
 
         self._unstage_selected_action = QtGui.QAction(self)
         self._unstage_selected_action.setText("Unstage selected")
+        self._unstage_selected_action.triggered.connect(self._unstage_selected)
 
         self._add_selected_action = QtGui.QAction(self)
         self._add_selected_action.setText("Add selected")
+        self._add_selected_action.triggered.connect(self._add_selected)
 
         if self.is_in_item_list(self._unstaged, items):
            if self._unstaged.childCount() > 0:
@@ -176,3 +183,65 @@ class StatusWidget(QtGui.QWidget):
         if len(menu.actions()) > 0:
             menu.exec_(self.mapToGlobal(point))
 
+    def _stage_all(self):
+        files_list = []
+        for i in range(self._unstaged.childCount()):
+            files_list.append(self._unstaged.child(i).text(0))
+
+        for file_name in files_list:
+            stage(self._path, file_name)
+
+        self._update_file_list()
+
+    def _unstage_all(self):
+        files_list = []
+        for i in range(self._staged.childCount()):
+            files_list.append(self._staged.child(i).text(0))
+
+        for file_name in files_list:
+            unstage(self._path, file_name)
+
+        self._update_file_list()
+
+    def _add_all(self):
+        files_list = []
+        for i in range(self._untracked.childCount()):
+            files_list.append(self._untracked.child(i).text(0))
+
+        for file_name in files_list:
+            stage(self._path, file_name)
+
+        self._update_file_list()
+
+    def _stage_selected(self):
+        files_list = []
+        for item in self._files_view.selectedItems():
+            if item.parent() is self._unstaged:
+                files_list.append(item.text(0))
+
+        for file_name in files_list:
+            stage(self._path, file_name)
+
+        self._update_file_list()
+
+    def _unstage_selected(self):
+        files_list = []
+        for item in self._files_view.selectedItems():
+            if item.parent() is self._staged:
+                files_list.append(item.text(0))
+
+        for file_name in files_list:
+            unstage(self._path, file_name)
+
+        self._update_file_list()
+
+    def _add_selected(self):
+        files_list = []
+        for item in self._files_view.selectedItems():
+            if item.parent() is self._untracked:
+                files_list.append(item.text(0))
+
+        for file_name in files_list:
+            stage(self._path, file_name)
+
+        self._update_file_list()
