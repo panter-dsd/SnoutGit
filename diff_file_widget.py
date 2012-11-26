@@ -27,6 +27,10 @@ class DiffFileWidget(QtGui.QWidget):
         self._file_name = file_name
         self._update_diff()
 
+    @QtCore.Slot()
+    def clear(self):
+        self._diff_veiw.clear()
+
     def _update_diff(self):
         os.chdir(self._path)
         command = "git diff-index -U5 HEAD {0}".format(self._file_name)
