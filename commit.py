@@ -6,6 +6,7 @@ import subprocess
 
 #noinspection PyUnresolvedReferences
 
+DEFAULT_ABBREV = 7
 
 class Commit(object):
     def __init__(self, path, id):
@@ -14,7 +15,6 @@ class Commit(object):
         self._id = id
         self._name = str()
         self._author = str()
-        self._abbreviated_id = str()
 
     #noinspection PyUnresolvedReferences
     def _commit_info(self, format_id):
@@ -32,9 +32,7 @@ class Commit(object):
         return self._id
 
     def abbreviated_id(self):
-        if len(self._abbreviated_id) == 0:
-            self._abbreviated_id = self._commit_info("%h")[0]
-        return self._abbreviated_id
+        return self._id[:DEFAULT_ABBREV]
 
     def full_name(self):
         if len(self._name) == 0:
