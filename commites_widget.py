@@ -5,6 +5,9 @@ from PySide import QtCore, QtGui
 import commites_model
 
 
+DEFAULT_COLUMN_WIDTH = [0, 300, 0]
+
+
 class CommitesWidget(QtGui.QWidget):
     current_commit_changed = QtCore.Signal(str)
 
@@ -16,6 +19,12 @@ class CommitesWidget(QtGui.QWidget):
 
         self._model = commites_model.CommitesModel(path, self)
         self._table.setModel(self._model)
+
+        for i in range(len(DEFAULT_COLUMN_WIDTH)):
+            self._table.setColumnWidth(i, DEFAULT_COLUMN_WIDTH[i])
+
+        self._table.resizeColumnToContents(0)
+
 
         selection_model = self._table.selectionModel()
         selection_model.currentChanged.connect(self._current_index_changed)
