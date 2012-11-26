@@ -16,6 +16,9 @@ def main():
         path = sys.argv[1]
 
     app = QtGui.QApplication(sys.argv)
+    app.setApplicationName("PyGitGui")
+    app.setApplicationVersion("0.0.0.0")
+    app.setOrganizationName("PanteR")
 
     window = main_window.MainWindow(path)
     window.show()
