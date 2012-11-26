@@ -4,7 +4,6 @@ __author__ = 'panter.dsd@gmail.com'
 from PySide import QtCore, QtGui
 import subprocess
 import os
-import re
 
 
 def get_status(path):
