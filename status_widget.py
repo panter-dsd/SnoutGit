@@ -146,13 +146,16 @@ class StatusWidget(QtGui.QWidget):
         self._add_selected_action.setText("Add selected")
 
         if self.is_in_item_list(self._unstaged, items):
-            menu.addAction(self._stage_all_action)
+           if self._unstaged.childCount() > 0:
+                menu.addAction(self._stage_all_action)
 
         if self.is_in_item_list(self._staged, items):
-            menu.addAction(self._unstage_all_action)
+            if self._staged.childCount() > 0:
+                menu.addAction(self._unstage_all_action)
 
         if self.is_in_item_list(self._untracked, items):
-            menu.addAction(self._add_all_action)
+            if self._untracked.childCount() > 0:
+                menu.addAction(self._add_all_action)
 
         if len(menu.actions()) > 0:
             menu.addSeparator()
