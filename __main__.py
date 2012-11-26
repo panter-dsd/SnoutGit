@@ -11,6 +11,7 @@ import diff_widget
 import status_widget
 import diff_file_widget
 import commit_widget
+import actions_widget
 
 PATH = os.curdir
 
@@ -56,6 +57,11 @@ def main():
     window.addDockWidget(QtCore.Qt.BottomDockWidgetArea, commit_widget_dock)
 
     commit.commited.connect(commites.update_commites_list)
+
+    actions_widget_dock = QtGui.QDockWidget(window)
+    actions = actions_widget.ActionsWidget(PATH)
+    actions_widget_dock.setWidget(actions)
+    window.addDockWidget(QtCore.Qt.BottomDockWidgetArea,actions_widget_dock)
 
     window.resize(640, 480)
     window.show()
