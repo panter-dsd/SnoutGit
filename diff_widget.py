@@ -9,7 +9,7 @@ import diff_highlighter
 class DiffWidget(QtGui.QWidget):
     _id = str()
 
-    def __init__(self, path, parent = None):
+    def __init__(self, path, parent=None):
         super(DiffWidget, self).__init__(parent)
 
         self._path = path
@@ -22,7 +22,8 @@ class DiffWidget(QtGui.QWidget):
         self._files_list.itemPressed.connect(self._select_file)
 
         panel = QtGui.QWidget(self)
-        panel.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
+        panel.setSizePolicy(QtGui.QSizePolicy.Preferred,
+                            QtGui.QSizePolicy.Maximum)
 
         self._diff_lines_count_edit = QtGui.QSpinBox(self)
         self._diff_lines_count_edit.valueChanged.connect(self._update_diff)
@@ -31,10 +32,11 @@ class DiffWidget(QtGui.QWidget):
         panelLayout = QtGui.QHBoxLayout()
         panelLayout.addWidget(QtGui.QLabel("Context strings count"))
         panelLayout.addWidget(self._diff_lines_count_edit)
-        panelLayout.addSpacerItem(QtGui.QSpacerItem(0,
-                                                    0,
-                                                    QtGui.QSizePolicy.Expanding,
-                                                    QtGui.QSizePolicy.Preferred))
+        spacer = QtGui.QSpacerItem(0,
+                                   0,
+                                   QtGui.QSizePolicy.Expanding,
+                                   QtGui.QSizePolicy.Preferred)
+        panelLayout.addSpacerItem(spacer)
 
         panel.setLayout(panelLayout)
 
@@ -53,13 +55,16 @@ class DiffWidget(QtGui.QWidget):
         self._update_diff()
 
     def _update_diff(self):
-        self._diff_veiw.setPlainText(commit.Commit(self._path, self._id).diff(self._diff_lines_count_edit.value()))
+        current_commit = commit.Commit(self._path, self._id)
+        diff_text = current_commit.diff(self._diff_lines_count_edit.value())
+        self._diff_veiw.setPlainText(diff_text)
 
         self._files_list.clear()
         for file_name in commit.Commit(self._path, self._id).changed_files():
             self._files_list.addItem(QtGui.QListWidgetItem(file_name))
 
     def _select_file(self, item):
-        cursor = self._diff_veiw.document().find(QtCore.QRegExp("a/" + item.text()))
+        doc = self._diff_veiw.document()
+        cursor = doc.find(QtCore.QRegExp("a/" + item.text()))
         self._diff_veiw.setTextCursor(cursor)
         self._diff_veiw.centerCursor()

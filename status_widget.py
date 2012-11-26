@@ -6,6 +6,7 @@ import subprocess
 import os
 import re
 
+
 def get_status(path):
     os.chdir(path)
     command = "git status -u --porcelain"
@@ -17,6 +18,7 @@ def get_status(path):
         if len(line) > 0:
             result.append(line.decode())
     return result
+
 
 def stage(path, file_name):
     os.chdir(path)
@@ -30,6 +32,7 @@ def unstage(path, file_name):
     command = "git reset {0}".format(file_name)
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
     print(process.stdout.readlines())
+
 
 class StatusWidget(QtGui.QWidget):
     current_file_changed = QtCore.Signal(str)

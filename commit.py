@@ -5,6 +5,8 @@ import os
 import subprocess
 
 #noinspection PyUnresolvedReferences
+
+
 class Commit(object):
     def __init__(self, path, id):
         super(Commit, self).__init__()
@@ -41,9 +43,10 @@ class Commit(object):
             self._author = self._commit_info("%ae")
         return self._author
 
-    def diff(self, lines_count = 3):
+    def diff(self, lines_count=3):
         os.chdir(self._path)
-        command = "git show --pretty=fuller --unified={0} {1}".format(lines_count, self._id)
+        cmd_template = "git show --pretty=fuller --unified={0} {1}"
+        command = cmd_template.format(lines_count, self._id)
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
         result = []
@@ -56,7 +59,8 @@ class Commit(object):
 
     def changed_files(self):
         os.chdir(self._path)
-        command = "git show --pretty=\"format:\" --name-only {0}".format(self._id)
+        cmd_template = "git show --pretty=\"format:\" --name-only {0}"
+        command = cmd_template.format(self._id)
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
         result = []

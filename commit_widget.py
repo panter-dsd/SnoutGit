@@ -5,6 +5,7 @@ from PySide import QtCore, QtGui
 import os
 import subprocess
 
+
 def commit(path, name, description):
     os.chdir(path)
     command = "git commit -m \"{0}\"".format(name + "\n" + description)
@@ -18,7 +19,7 @@ class CommitWidget(QtGui.QWidget):
     commited = QtCore.Signal()
     _path = str()
 
-    def __init__(self, path, parent = None):
+    def __init__(self, path, parent=None):
         super(CommitWidget, self).__init__(parent)
 
         self._path = path
@@ -32,8 +33,11 @@ class CommitWidget(QtGui.QWidget):
         self._save_button = QtGui.QToolButton(self)
         self._save_button.setAutoRaise(True)
         self._save_button.setText("Save")
-        self._save_button.setIcon(super(CommitWidget, self).style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
         self._save_button.clicked.connect(self._commit)
+
+        style = super(CommitWidget, self).style()
+        icon = style.standardIcon(QtGui.QStyle.SP_DialogSaveButton)
+        self._save_button.setIcon(icon)
 
         self._commit_description_edit = QtGui.QPlainTextEdit(self)
 
@@ -60,7 +64,9 @@ class CommitWidget(QtGui.QWidget):
     def _commit(self):
         commit_name = self._commit_name_edit.text()
         if len(commit_name) > 0:
-            if commit(self._path, commit_name, self._commit_description_edit.toPlainText()):
+            if commit(self._path,
+                      commit_name,
+                      self._commit_description_edit.toPlainText()):
                 self._commit_name_edit.clear()
                 self._commit_description_edit.clear()
                 self.commited.emit()

@@ -6,10 +6,11 @@ import os
 import subprocess
 import diff_highlighter
 
+
 class DiffFileWidget(QtGui.QWidget):
     _file_name = str()
 
-    def __init__(self, path, parent = None):
+    def __init__(self, path, parent=None):
         super(DiffFileWidget, self).__init__(parent)
 
         self._path = path

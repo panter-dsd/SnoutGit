@@ -4,10 +4,11 @@ __author__ = 'panter.dsd@gmail.com'
 from PySide import QtCore, QtGui
 import commites_model
 
+
 class CommitesWidget(QtGui.QWidget):
     current_commit_changed = QtCore.Signal(str)
 
-    def __init__(self, path, parent = None):
+    def __init__(self, path, parent=None):
         super(CommitesWidget, self).__init__(parent)
 
         self._table = QtGui.QTreeView(self)
@@ -24,7 +25,8 @@ class CommitesWidget(QtGui.QWidget):
         super(CommitesWidget, self).setLayout(layout)
 
     def _current_index_changed(self, current, previous):
-        commit_id = self._model.index(current.row(), 0).data(QtCore.Qt.DisplayRole)
+        index = self._model.index(current.row(), 0)
+        commit_id = index.data(QtCore.Qt.DisplayRole)
         self.current_commit_changed.emit(commit_id)
 
     @QtCore.Slot(str)

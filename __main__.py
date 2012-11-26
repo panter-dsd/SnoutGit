@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-
-
 import sys
 import os
 from PySide import QtCore, QtGui
@@ -15,10 +13,12 @@ import actions_widget
 
 PATH = os.curdir
 
+
 @QtCore.Slot(str)
 def ttt(eee):
     import commit
     print(commit.Commit(PATH, eee).name())
+
 
 def main():
     """main"""
@@ -61,7 +61,7 @@ def main():
     actions_widget_dock = QtGui.QDockWidget(window)
     actions = actions_widget.ActionsWidget(PATH)
     actions_widget_dock.setWidget(actions)
-    window.addDockWidget(QtCore.Qt.BottomDockWidgetArea,actions_widget_dock)
+    window.addDockWidget(QtCore.Qt.BottomDockWidgetArea, actions_widget_dock)
 
     window.resize(640, 480)
     window.show()

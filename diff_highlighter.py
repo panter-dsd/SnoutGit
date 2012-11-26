@@ -4,18 +4,22 @@ __author__ = 'panter.dsd@gmail.com'
 from PySide import QtCore, QtGui
 import re
 
+
 class DiffHighlighter(QtGui.QSyntaxHighlighter):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         super(DiffHighlighter, self).__init__(parent)
 
     def highlightBlock(self, text):
-        super(DiffHighlighter, self).setFormat (0, len(text), QtCore.Qt.black)
+        super(DiffHighlighter, self).setFormat(0, len(text), QtCore.Qt.black)
 
         added = re.match("^\+.*$", text)
         if added:
-            super(DiffHighlighter, self).setFormat (added.pos, added.endpos, QtCore.Qt.green)
+            super(DiffHighlighter, self).setFormat(added.pos,
+                                                   added.endpos,
+                                                   QtCore.Qt.green)
 
         removed = re.match("^\-.*$", text)
         if removed:
-            super(DiffHighlighter, self).setFormat (removed.pos, removed.endpos, QtCore.Qt.red)
-
+            super(DiffHighlighter, self).setFormat(removed.pos,
+                                                   removed.endpos,
+                                                   QtCore.Qt.red)

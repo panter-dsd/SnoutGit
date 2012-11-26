@@ -7,6 +7,7 @@ import commit
 import os
 import subprocess
 
+
 def get_commites_list(path):
     os.chdir(path)
     result = []
@@ -16,6 +17,7 @@ def get_commites_list(path):
     for line in process.stdout.readlines():
         result.append(commit.Commit(path, line.strip().decode()))
     return result
+
 
 class CommitesModel(QtCore.QAbstractItemModel):
     """CommitesModel"""

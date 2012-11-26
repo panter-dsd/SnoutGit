@@ -5,6 +5,7 @@ from PySide import QtGui
 import subprocess
 import os
 
+
 def push(path):
     os.chdir(path)
     command = "git push"
@@ -12,6 +13,7 @@ def push(path):
 
     print(process.stdout.readlines())
     return True
+
 
 def pull(path):
     os.chdir(path)
@@ -21,9 +23,11 @@ def pull(path):
     print(process.stdout.readlines())
     return True
 
+
 class ActionsWidget(QtGui.QWidget):
     _path = str()
-    def __init__(self, path,  parent = None):
+
+    def __init__(self, path,  parent=None):
         super(ActionsWidget, self).__init__(parent)
 
         self._path = path
