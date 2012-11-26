@@ -50,6 +50,7 @@ class CommitWidget(QtGui.QWidget):
         save_action = QtGui.QAction(self)
         save_action.setText("Save")
         save_action.triggered.connect(self._commit)
+        save_action.setShortcut(QtCore.Qt.CTRL | QtCore.Qt.Key_Return)
         self._menu_button.addAction(save_action)
 
         ammend_action = QtGui.QAction(self)
