@@ -22,29 +22,36 @@ class Commit(object):
         command = "git show -s --pretty=\"" + format_id + "\" " + self._id
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
+        result = []
         #noinspection PyUnresolvedReferences
-        return process.stdout.readline().decode().rstrip()
+        for line in process.stdout.readlines():
+            result.append(line.decode().rstrip())
+        return result
 
     def id(self):
         return self._id
 
     def abbreviated_id(self):
         if len(self._abbreviated_id) == 0:
-            self._abbreviated_id = self._commit_info("%h")
+            self._abbreviated_id = self._commit_info("%h")[0]
         return self._abbreviated_id
 
-    def name(self):
+    def full_name(self):
         if len(self._name) == 0:
-            commit_info = self._commit_info("%B").splitlines()
-            if len(commit_info) == 0:
-                self._name = str()
-            else:
-                self._name = commit_info[0]
+            self._name = "\n".join(self._commit_info("%B")).rstrip()
+
         return self._name
+
+    def name(self):
+        name = self.full_name().splitlines()
+        if len(name) == 0:
+            return str()
+        else:
+            return name[0]
 
     def author(self):
         if len(self._author) == 0:
-            self._author = self._commit_info("%ae")
+            self._author = self._commit_info("%ae")[0]
         return self._author
 
     def diff(self, lines_count=3):
