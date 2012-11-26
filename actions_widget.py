@@ -27,7 +27,7 @@ def pull(path):
 class ActionsWidget(QtGui.QWidget):
     _path = str()
 
-    def __init__(self, path,  parent=None):
+    def __init__(self, path, parent=None):
         super(ActionsWidget, self).__init__(parent)
 
         self._path = path
