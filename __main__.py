@@ -48,6 +48,7 @@ def main():
     window.addDockWidget(QtCore.Qt.TopDockWidgetArea, diff_file_dock)
 
     status.current_file_changed.connect(diff_file.set_file)
+    status.status_changed.connect(diff_file.clear)
 
     commit_widget_dock = QtGui.QDockWidget(window)
     commit = commit_widget.CommitWidget(PATH)
