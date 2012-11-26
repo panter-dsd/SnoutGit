@@ -22,6 +22,8 @@ def get_commites_list(path):
 class CommitesModel(QtCore.QAbstractItemModel):
     """CommitesModel"""
 
+    _commits_list = []
+
     def __init__(self, path, parent=None):
         """__init__"""
         super(CommitesModel, self).__init__(parent)
@@ -29,7 +31,36 @@ class CommitesModel(QtCore.QAbstractItemModel):
         self.update_commits_list()
 
     def update_commits_list(self):
-        self._commits_list = get_commites_list(self._path)
+        old_commits_list = self._commits_list
+        new_commits_list = get_commites_list(self._path)
+        if old_commits_list == new_commits_list:
+            return
+
+        self._commits_list = new_commits_list
+
+        old_size = len(old_commits_list)
+        new_size = len(new_commits_list)
+
+        if old_size != new_size:
+            if old_size < new_size:
+                QtCore.QAbstractItemModel.beginInsertRows(self,
+                                                          QtCore.QModelIndex(),
+                                                          old_size,
+                                                          new_size - 1)
+                QtCore.QAbstractItemModel.endInsertRows(self)
+            else:
+                QtCore.QAbstractItemModel.beginRemoveRows(self,
+                                                          QtCore.QModelIndex(),
+                                                          new_size,
+                                                          old_size - 1)
+                QtCore.QAbstractItemModel.endRemoveRows(self)
+
+        for i in range(min(old_size, new_size)):
+            if old_commits_list[i] != new_commits_list[i]:
+                self.dataChanged.emit(self.index(self, i, 0),
+                                      self.index(self, i, self.columnCount(None)))
+
+
 
     def index(self, row, column, parent=QtCore.QModelIndex()):
         if parent.isValid():
