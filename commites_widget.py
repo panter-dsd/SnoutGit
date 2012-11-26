@@ -25,7 +25,6 @@ class CommitesWidget(QtGui.QWidget):
 
         self._table.resizeColumnToContents(0)
 
-
         selection_model = self._table.selectionModel()
         selection_model.currentChanged.connect(self._current_index_changed)
 

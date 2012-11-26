@@ -8,6 +8,7 @@ import subprocess
 
 DEFAULT_ABBREV = 7
 
+
 class Commit(object):
     def __init__(self, path, id):
         super(Commit, self).__init__()

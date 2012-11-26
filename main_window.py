@@ -77,18 +77,18 @@ class MainWindow(QtGui.QMainWindow):
         settings.beginGroup("MainWindow")
 
         if settings.contains("pos"):
-            super(MainWindow, self).move (settings.value ("pos"))
+            super(MainWindow, self).move(settings.value("pos"))
 
-        size = settings.value ("size", QtCore.QSize (1024, 768))
+        size = settings.value("size", QtCore.QSize(1024, 768))
 
-        super(MainWindow, self).resize (size)
+        super(MainWindow, self).resize(size)
 
-        isMaximized = settings.value ("IsMaximized", False)
+        isMaximized = settings.value("IsMaximized", False)
 
         if isMaximized:
-            super(MainWindow, self).setWindowState (QtCore.Qt.WindowMaximized)
+            super(MainWindow, self).setWindowState(QtCore.Qt.WindowMaximized)
 
-        super(MainWindow, self).restoreState (settings.value ("State"))
+        super(MainWindow, self).restoreState(settings.value("State"))
 
         settings.endGroup()
 
@@ -97,18 +97,17 @@ class MainWindow(QtGui.QMainWindow):
     def _save_settings(self):
         settings = QtCore.QSettings()
 
-        settings.beginGroup ("GUI")
-        settings.beginGroup ("MainWindow")
+        settings.beginGroup("GUI")
+        settings.beginGroup("MainWindow")
 
         if super(MainWindow, self).windowState() != QtCore.Qt.WindowMaximized:
-            settings.setValue ("pos", super(MainWindow, self).pos())
-            settings.setValue ("size", super(MainWindow, self).size())
-            settings.setValue ("IsMaximized", False)
+            settings.setValue("pos", super(MainWindow, self).pos())
+            settings.setValue("size", super(MainWindow, self).size())
+            settings.setValue("IsMaximized", False)
         else:
-            settings.setValue ("IsMaximized", True)
+            settings.setValue("IsMaximized", True)
 
-
-        settings.setValue ("State", super(MainWindow, self).saveState ())
+        settings.setValue("State", super(MainWindow, self).saveState())
 
         settings.endGroup()
         settings.endGroup()
