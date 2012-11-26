@@ -66,5 +66,6 @@ class DiffWidget(QtGui.QWidget):
     def _select_file(self, item):
         doc = self._diff_veiw.document()
         cursor = doc.find(QtCore.QRegExp("a/" + item.text()))
+        cursor.movePosition(QtGui.QTextCursor.StartOfLine)
         self._diff_veiw.setTextCursor(cursor)
         self._diff_veiw.centerCursor()
