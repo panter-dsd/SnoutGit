@@ -4,6 +4,7 @@ __author__ = 'panter.dsd@gmail.com'
 from PySide import QtCore, QtGui
 import subprocess
 import os
+import sys
 
 
 def get_status(path):
@@ -49,6 +50,9 @@ class StatusWidget(QtGui.QWidget):
         self._files_view.setHeaderHidden(True)
         self._files_view.itemDoubleClicked.connect(self._change_item_status)
         self._files_view.currentItemChanged.connect(self._current_item_changed)
+        self._files_view.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self._files_view.customContextMenuRequested.connect(self._show_menu)
+        self._files_view.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
 
         self._unstaged = QtGui.QTreeWidgetItem(self._files_view)
         self._unstaged.setText(0, "Unstaged")
@@ -107,5 +111,65 @@ class StatusWidget(QtGui.QWidget):
             stage(self._path, item.text(0))
 
     def _current_item_changed(self, current, _prev):
-        if current.parent():
+        if current and current.parent():
             self.current_file_changed.emit(current.text(0))
+
+    def is_in_item_list(self, item, item_list):
+        result = False
+        for _item in item_list:
+            if _item is item:
+                result = True
+                break
+        return result
+
+    def _show_menu(self, point):
+        items = self._files_view.selectedItems()
+
+        menu = QtGui.QMenu(self)
+
+        self._stage_all_action = QtGui.QAction(self)
+        self._stage_all_action.setText("Stage all")
+
+        self._unstage_all_action = QtGui.QAction(self)
+        self._unstage_all_action.setText("Unstage all")
+
+        self._add_all_action = QtGui.QAction(self)
+        self._add_all_action.setText("Add all")
+
+        self._stage_selected_action = QtGui.QAction(self)
+        self._stage_selected_action.setText("Stage selected")
+
+        self._unstage_selected_action = QtGui.QAction(self)
+        self._unstage_selected_action.setText("Unstage selected")
+
+        self._add_selected_action = QtGui.QAction(self)
+        self._add_selected_action.setText("Add selected")
+
+        if self.is_in_item_list(self._unstaged, items):
+            menu.addAction(self._stage_all_action)
+
+        if self.is_in_item_list(self._staged, items):
+            menu.addAction(self._unstage_all_action)
+
+        if self.is_in_item_list(self._untracked, items):
+            menu.addAction(self._add_all_action)
+
+        if len(menu.actions()) > 0:
+            menu.addSeparator()
+
+        for item in items:
+            if item.parent() is self._unstaged:
+                if not self._stage_selected_action in menu.actions():
+                    menu.addAction(self._stage_selected_action)
+
+            if item.parent() is self._staged:
+                if not self._unstage_selected_action in menu.actions():
+                    menu.addAction(self._unstage_selected_action)
+
+            if item.parent() is self._untracked:
+                if not self._add_selected_action in menu.actions():
+                    menu.addAction(self._add_selected_action)
+
+        if len(menu.actions()) > 0:
+            menu.exec_(self.mapToGlobal(point))
+
