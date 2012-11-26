@@ -58,7 +58,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
         for i in range(min(old_size, new_size)):
             if old_commits_list[i] != new_commits_list[i]:
                 self.dataChanged.emit(self.index(i, 0),
-                                      self.index(i, self.columnCount(None)))
+                                      self.index(i, self.columnCount()))
 
 
 
