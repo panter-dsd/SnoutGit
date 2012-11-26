@@ -35,7 +35,11 @@ class Commit(object):
 
     def name(self):
         if len(self._name) == 0:
-            self._name = self._commit_info("%B").splitlines()[0]
+            commit_info = self._commit_info("%B").splitlines()
+            if len(commit_info) == 0:
+                self._name = str()
+            else:
+                self._name = commit_info[0]
         return self._name
 
     def author(self):
