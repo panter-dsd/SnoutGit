@@ -83,9 +83,9 @@ class MainWindow(QtGui.QMainWindow):
 
         super(MainWindow, self).resize(size)
 
-        isMaximized = settings.value("IsMaximized", False)
+        isMaximized = settings.value("IsMaximized", False) == "true"
 
-        if isMaximized:
+        if isMaximized == True:
             super(MainWindow, self).setWindowState(QtCore.Qt.WindowMaximized)
 
         super(MainWindow, self).restoreState(settings.value("State"))
