@@ -17,7 +17,7 @@ class Commit(object):
 
     def _commit_info(self, format_id):
         command = "show -s --pretty=" + format_id + " " + self._id
-        return git.Git().execute_command(command)
+        return git.Git().execute_command(command, False)
 
     def id(self):
         return self._id
@@ -47,10 +47,10 @@ class Commit(object):
         cmd_template = "show --pretty=fuller --unified={0} {1}"
         command = cmd_template.format(lines_count, self._id)
 
-        return "\n".join(git.Git().execute_command(command))
+        return "\n".join(git.Git().execute_command(command, False))
 
     def changed_files(self):
         cmd_template = "show --pretty=format: --name-only {0}"
         command = cmd_template.format(self._id)
 
-        return git.Git().execute_command(command)
+        return git.Git().execute_command(command, False)

@@ -7,7 +7,7 @@ import git
 
 def get_commites_list():
     result = []
-    for line in git.Git().execute_command(["log", "--pretty=%H"]):
+    for line in git.Git().execute_command(["log", "--pretty=%H"], False):
         result.append(commit.Commit(line))
     return result
 

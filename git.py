@@ -6,11 +6,12 @@ import subprocess
 
 class Git(object):
     git_path = "git"
+    log_view = None
 
     def __init__(self):
         pass
 
-    def execute_command(self, command):
+    def execute_command(self, command, show_log=True):
         if type(command) != type([]):
             command = command.split()
         try:
@@ -34,9 +35,14 @@ class Git(object):
             if len(line) > 0:
                 error.append(line.decode())
 
-        print(command)
-        print(output)
-        print(error)
+        if self.log_view and show_log:
+            self.log_view.append_command(" ".join(command))
+            self.log_view.append_output("\n".join(output))
+            self.log_view.append_error("\n".join(error))
+        else:
+            print(command)
+            print(output)
+            print(error)
 
         del process
         return output
@@ -61,7 +67,7 @@ class Git(object):
 
     def get_status(self):
         command = ["status", "-u", "--porcelain"]
-        return self.execute_command(command)
+        return self.execute_command(command, False)
 
 
     def stage(self, file_name):

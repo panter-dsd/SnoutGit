@@ -35,4 +35,4 @@ class DiffFileWidget(QtGui.QWidget):
     def _update_diff(self):
         command = ["diff-index", "-U5", "HEAD", "{0}".format(self._file_name)]
 
-        self._diff_veiw.setPlainText("\n".join(git.Git().execute_command(command)))
+        self._diff_veiw.setPlainText("\n".join(git.Git().execute_command(command, False)))

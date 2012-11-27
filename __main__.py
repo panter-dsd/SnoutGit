@@ -15,6 +15,8 @@ def main():
     else:
         path = sys.argv[1]
 
+    os.chdir(path)
+
     app = QtGui.QApplication(sys.argv)
     app.setApplicationName("PyGitGui")
     app.setApplicationVersion("0.0.0.0")

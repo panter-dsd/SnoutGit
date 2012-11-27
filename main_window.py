@@ -8,6 +8,8 @@ import status_widget
 import diff_file_widget
 import commit_widget
 import actions_widget
+import log_view
+import git
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -62,6 +64,14 @@ class MainWindow(QtGui.QMainWindow):
         actions = actions_widget.ActionsWidget(actions_widget_dock)
         actions_widget_dock.setWidget(actions)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, actions_widget_dock)
+
+        log_view_dock = QtGui.QDockWidget(self)
+        log_view_dock.setObjectName("LogView")
+        log_view_dock.setWindowTitle("Log")
+        log = log_view.LogView(log_view_dock)
+        log_view_dock.setWidget(log)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, log_view_dock)
+        git.Git.log_view = log
 
         self._load_settings()
 
