@@ -36,3 +36,15 @@ class Git(object):
 
         del process
         return output
+
+    def push(self):
+        self.execute_command("push")
+
+    def pull(self):
+        self.execute_command("pull")
+
+    def svn_rebase(self):
+        self.execute_command("svn_rebase")
+
+    def svn_dcommit(self):
+        self.execute_command("svn dcommit")
