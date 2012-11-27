@@ -58,3 +58,17 @@ class Git(object):
         self.execute_command(command)
 
         return True
+
+    def get_status(self):
+        command = ["status", "-u", "--porcelain"]
+        return self.execute_command(command)
+
+
+    def stage(self, file_name):
+        command = ["add", "{0}".format(file_name)]
+        self.execute_command(command)
+
+
+    def unstage(self, file_name):
+        command = ["reset", "{0}".format(file_name)]
+        self.execute_command(command)
