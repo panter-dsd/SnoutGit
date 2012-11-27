@@ -2,52 +2,13 @@
 __author__ = 'panter.dsd@gmail.com'
 
 from PySide import QtGui
-import subprocess
-import os
-
-
-def push(path):
-    os.chdir(path)
-    command = "git push"
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-
-    print(process.stdout.readlines())
-    return True
-
-
-def pull(path):
-    os.chdir(path)
-    command = "git pull"
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-
-    print(process.stdout.readlines())
-    return True
-
-def svn_rebase(path):
-    os.chdir(path)
-    command = "git svn rebase"
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-
-    print(process.stdout.readlines())
-    return True
-
-def svn_dcommit(path):
-    os.chdir(path)
-    command = "git svn dcommit"
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-
-    print(process.stdout.readlines())
-    return True
-
+import git
 
 
 class ActionsWidget(QtGui.QWidget):
-    _path = str()
 
     def __init__(self, path, parent=None):
         super(ActionsWidget, self).__init__(parent)
-
-        self._path = path
 
         _push_button = QtGui.QPushButton(self)
         _push_button.setText("Push")
@@ -84,13 +45,13 @@ class ActionsWidget(QtGui.QWidget):
         super(ActionsWidget, self).setLayout(layout)
 
     def push(self):
-        push(self._path)
+        git.Git().push()
 
     def pull(self):
-        pull(self._path)
+        git.Git().pull()
 
     def _svn_rebase(self):
-        svn_rebase(self._path)
+        git.Git().svn_rebase()
 
     def _svn_dcommit(self):
-        svn_dcommit(self._path)
+        git.Git().svn_dcommit()

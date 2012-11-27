@@ -59,7 +59,7 @@ class MainWindow(QtGui.QMainWindow):
         actions_widget_dock = QtGui.QDockWidget(self)
         actions_widget_dock.setObjectName("ActionsDock")
         actions_widget_dock.setWindowTitle("Actions")
-        actions = actions_widget.ActionsWidget(path)
+        actions = actions_widget.ActionsWidget(actions_widget_dock)
         actions_widget_dock.setWidget(actions)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, actions_widget_dock)
 
