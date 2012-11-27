@@ -54,7 +54,7 @@ class Git(object):
         self.execute_command("pull")
 
     def svn_rebase(self):
-        self.execute_command("svn_rebase")
+        self.execute_command("svn rebase")
 
     def svn_dcommit(self):
         self.execute_command("svn dcommit")
