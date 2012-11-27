@@ -2,17 +2,7 @@
 __author__ = 'panter.dsd@gmail.com'
 
 from PySide import QtCore, QtGui
-import os
-import subprocess
-
-
-def commit(path, name, description):
-    os.chdir(path)
-    command = "git commit -m \"{0}\"".format(name + "\n" + description)
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-
-    print(process.stdout.readlines())
-    return True
+import git
 
 
 class CommitWidget(QtGui.QWidget):
@@ -64,9 +54,8 @@ class CommitWidget(QtGui.QWidget):
     def _commit(self):
         commit_name = self._commit_name_edit.text()
         if len(commit_name) > 0:
-            if commit(self._path,
-                      commit_name,
-                      self._commit_description_edit.toPlainText()):
+            if git.Git ().commit(commit_name,
+                                 self._commit_description_edit.toPlainText()):
                 self._commit_name_edit.clear()
                 self._commit_description_edit.clear()
                 self.commited.emit()
