@@ -54,7 +54,7 @@ class Git(object):
         self.execute_command("svn dcommit")
 
     def commit(self, name, description):
-        command = ["commit", "-m", "\"{0}\"".format(name + "\n" + description)]
+        command = ["commit", "-m", "{0}".format(name + "\n" + description)]
         self.execute_command(command)
 
         return True
