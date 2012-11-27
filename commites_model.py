@@ -15,7 +15,7 @@ def get_commites_list(path):
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
     for line in process.stdout.readlines():
-        result.append(commit.Commit(path, line.rstrip().decode()))
+        result.append(commit.Commit(line.rstrip().decode()))
     return result
 
 

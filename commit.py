@@ -1,33 +1,23 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-import os
-import subprocess
+import git
 
-#noinspection PyUnresolvedReferences
 
 DEFAULT_ABBREV = 7
 
 
 class Commit(object):
-    def __init__(self, path, id):
+    def __init__(self, id):
         super(Commit, self).__init__()
-        self._path = path
+
         self._id = id
         self._name = str()
         self._author = str()
 
-    #noinspection PyUnresolvedReferences
     def _commit_info(self, format_id):
-        os.chdir(self._path)
-        command = "git show -s --pretty=\"" + format_id + "\" " + self._id
-        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-
-        result = []
-        #noinspection PyUnresolvedReferences
-        for line in process.stdout.readlines():
-            result.append(line.decode().rstrip())
-        return result
+        command = "show -s --pretty=" + format_id + " " + self._id
+        return git.Git().execute_command(command)
 
     def id(self):
         return self._id
@@ -54,28 +44,13 @@ class Commit(object):
         return self._author
 
     def diff(self, lines_count=3):
-        os.chdir(self._path)
-        cmd_template = "git show --pretty=fuller --unified={0} {1}"
+        cmd_template = "show --pretty=fuller --unified={0} {1}"
         command = cmd_template.format(lines_count, self._id)
-        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
-        result = []
-        for line in process.stdout.readlines():
-            try:
-                result.append(line.decode())
-            except:
-                result.append(line.decode("CP1251"))
-        return "".join(result)
+        return "\n".join(git.Git().execute_command(command))
 
     def changed_files(self):
-        os.chdir(self._path)
-        cmd_template = "git show --pretty=\"format:\" --name-only {0}"
+        cmd_template = "show --pretty=format: --name-only {0}"
         command = cmd_template.format(self._id)
-        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
-        result = []
-        for line in process.stdout.readlines():
-            line = line.strip()
-            if len(line) > 0:
-                result.append(line.decode())
-        return result
+        return git.Git().execute_command(command)
