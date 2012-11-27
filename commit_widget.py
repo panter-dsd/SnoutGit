@@ -7,12 +7,9 @@ import git
 
 class CommitWidget(QtGui.QWidget):
     commited = QtCore.Signal()
-    _path = str()
 
-    def __init__(self, path, parent=None):
+    def __init__(self, parent=None):
         super(CommitWidget, self).__init__(parent)
-
-        self._path = path
 
         self._menu_button = QtGui.QToolButton(self)
         self._menu_button.setAutoRaise(True)

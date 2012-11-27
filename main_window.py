@@ -17,14 +17,14 @@ class MainWindow(QtGui.QMainWindow):
         commitesDock = QtGui.QDockWidget(self)
         commitesDock.setObjectName("CommitesDock")
         commitesDock.setWindowTitle("Commites tree")
-        commites = commites_widget.CommitesWidget(path, commitesDock)
+        commites = commites_widget.CommitesWidget(commitesDock)
         commitesDock.setWidget(commites)
         self.addDockWidget(QtCore.Qt.TopDockWidgetArea, commitesDock)
 
         diffDock = QtGui.QDockWidget(self)
         diffDock.setObjectName("DiffDock")
         diffDock.setWindowTitle("Commit info")
-        diff = diff_widget.DiffWidget(path, diffDock)
+        diff = diff_widget.DiffWidget(diffDock)
         diffDock.setWidget(diff)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, diffDock)
 
@@ -33,14 +33,14 @@ class MainWindow(QtGui.QMainWindow):
         status_dock = QtGui.QDockWidget(self)
         status_dock.setObjectName("StatusDock")
         status_dock.setWindowTitle("Status")
-        status = status_widget.StatusWidget(path, status_dock)
+        status = status_widget.StatusWidget(status_dock)
         status_dock.setWidget(status)
         self.addDockWidget(QtCore.Qt.TopDockWidgetArea, status_dock)
 
         diff_file_dock = QtGui.QDockWidget(self)
         diff_file_dock.setObjectName("DiffFileDock")
         diff_file_dock.setWindowTitle("Diff")
-        diff_file = diff_file_widget.DiffFileWidget(path)
+        diff_file = diff_file_widget.DiffFileWidget(diff_file_dock)
         diff_file_dock.setWidget(diff_file)
         self.addDockWidget(QtCore.Qt.TopDockWidgetArea, diff_file_dock)
 
@@ -50,7 +50,7 @@ class MainWindow(QtGui.QMainWindow):
         commit_widget_dock = QtGui.QDockWidget(self)
         commit_widget_dock.setObjectName("CommitDock")
         commit_widget_dock.setWindowTitle("Commit")
-        commit = commit_widget.CommitWidget(path)
+        commit = commit_widget.CommitWidget(commit_widget_dock)
         commit_widget_dock.setWidget(commit)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, commit_widget_dock)
 

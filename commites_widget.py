@@ -11,13 +11,13 @@ DEFAULT_COLUMN_WIDTH = [0, 300, 0]
 class CommitesWidget(QtGui.QWidget):
     current_commit_changed = QtCore.Signal(str)
 
-    def __init__(self, path, parent=None):
+    def __init__(self, parent=None):
         super(CommitesWidget, self).__init__(parent)
 
         self._table = QtGui.QTreeView(self)
         self._table.setRootIsDecorated(False)
 
-        self._model = commites_model.CommitesModel(path, self)
+        self._model = commites_model.CommitesModel(self)
         self._table.setModel(self._model)
 
         for i in range(len(DEFAULT_COLUMN_WIDTH)):

@@ -2,36 +2,23 @@
 __author__ = 'panter.dsd@gmail.com'
 
 from PySide import QtCore, QtGui
-import subprocess
-import os
-import sys
+import git
 
 
 def get_status(path):
-    os.chdir(path)
-    command = "git status -u --porcelain"
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+    command = ["status", "-u", "--porcelain"]
 
-    result = []
-    for line in process.stdout.readlines():
-        line = line.rstrip()
-        if len(line) > 0:
-            result.append(line.decode())
-    return result
+    return git.Git().execute_command(command)
 
 
 def stage(path, file_name):
-    os.chdir(path)
-    command = "git add {0}".format(file_name)
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-    print(process.stdout.readlines())
+    command = ["add", "{0}".format(file_name)]
+    git.Git().execute_command(command)
 
 
 def unstage(path, file_name):
-    os.chdir(path)
-    command = "git reset {0}".format(file_name)
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-    print(process.stdout.readlines())
+    command = ["reset", "{0}".format(file_name)]
+    git.Git().execute_command(command)
 
 
 class StatusWidget(QtGui.QWidget):
@@ -41,10 +28,8 @@ class StatusWidget(QtGui.QWidget):
     _path = str()
     _last_status = []
 
-    def __init__(self, path, parent):
+    def __init__(self, parent):
         super(StatusWidget, self).__init__(parent)
-
-        self._path = path
 
         self._files_view = QtGui.QTreeWidget(self)
         self._files_view.setHeaderHidden(True)

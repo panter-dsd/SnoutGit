@@ -2,9 +2,8 @@
 __author__ = 'panter.dsd@gmail.com'
 
 from PySide import QtCore, QtGui
-import os
-import subprocess
 import diff_highlighter
+import git
 
 
 class DiffFileWidget(QtGui.QWidget):
@@ -34,13 +33,6 @@ class DiffFileWidget(QtGui.QWidget):
         self._diff_veiw.clear()
 
     def _update_diff(self):
-        os.chdir(self._path)
-        command = "git diff-index -U5 HEAD {0}".format(self._file_name)
-        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+        command = ["diff-index", "-U5", "HEAD", "{0}".format(self._file_name)]
 
-        text = []
-
-        for line in process.stdout.readlines():
-            text.append(line.decode())
-
-        self._diff_veiw.setPlainText("".join(text))
+        self._diff_veiw.setPlainText("\n".join(git.Git().execute_command(command)))

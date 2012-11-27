@@ -5,7 +5,7 @@ from PySide import QtCore
 import commit
 import git
 
-def get_commites_list(path):
+def get_commites_list():
     result = []
     for line in git.Git().execute_command(["log", "--pretty=%H"]):
         result.append(commit.Commit(line))
@@ -17,15 +17,14 @@ class CommitesModel(QtCore.QAbstractItemModel):
 
     _commits_list = []
 
-    def __init__(self, path, parent=None):
+    def __init__(self, parent=None):
         """__init__"""
         super(CommitesModel, self).__init__(parent)
-        self._path = path
         self.update_commits_list()
 
     def update_commits_list(self):
         old_commits_list = self._commits_list
-        new_commits_list = get_commites_list(self._path)
+        new_commits_list = get_commites_list()
         if old_commits_list == new_commits_list:
             return
 
