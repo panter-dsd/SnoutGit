@@ -11,8 +11,10 @@ class Git(object):
         pass
 
     def execute_command(self, command):
+        if type(command) != type([]):
+            command = command.split()
         try:
-            process = subprocess.Popen([self.git_path] + command.split(),
+            process = subprocess.Popen([self.git_path] + command,
                                        shell=False,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)
@@ -50,3 +52,9 @@ class Git(object):
 
     def svn_dcommit(self):
         self.execute_command("svn dcommit")
+
+    def commit(self, name, description):
+        command = ["commit", "-m", "\"{0}\"".format(name + "\n" + description)]
+        self.execute_command(command)
+
+        return True
