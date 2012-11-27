@@ -3,19 +3,12 @@ __author__ = 'panter.dsd@gmail.com'
 
 from PySide import QtCore
 import commit
-
-import os
-import subprocess
-
+import git
 
 def get_commites_list(path):
-    os.chdir(path)
     result = []
-    command = "git log --pretty=format:%H"
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-
-    for line in process.stdout.readlines():
-        result.append(commit.Commit(line.rstrip().decode()))
+    for line in git.Git().execute_command(["log", "--pretty=%H"]):
+        result.append(commit.Commit(line))
     return result
 
 
@@ -59,7 +52,6 @@ class CommitesModel(QtCore.QAbstractItemModel):
             if old_commits_list[i] != new_commits_list[i]:
                 self.dataChanged.emit(self.index(i, 0),
                                       self.index(i, self.columnCount()))
-
 
 
     def index(self, row, column, parent=QtCore.QModelIndex()):
