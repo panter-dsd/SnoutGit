@@ -12,7 +12,7 @@ class Git(object):
 
     def execute_command(self, command):
         try:
-            process = subprocess.Popen([self.git_path, command],
+            process = subprocess.Popen([self.git_path] + command.split(),
                                        shell=False,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)
@@ -32,6 +32,8 @@ class Git(object):
             if len(line) > 0:
                 error.append(line.decode())
 
+        print(command)
+        print(output)
         print(error)
 
         del process
