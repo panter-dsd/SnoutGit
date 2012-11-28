@@ -22,7 +22,7 @@ def main():
     app.setApplicationVersion("0.0.0.0")
     app.setOrganizationName("PanteR")
 
-    window = main_window.MainWindow(path)
+    window = main_window.MainWindow()
     window.show()
 
     sys.exit(app.exec_())

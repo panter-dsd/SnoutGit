@@ -32,7 +32,7 @@ class CommitesWidget(QtGui.QWidget):
         layout.addWidget(self._table)
         super(CommitesWidget, self).setLayout(layout)
 
-    def _current_index_changed(self, current, previous):
+    def _current_index_changed(self, current, _previous):
         index = self._model.index(current.row(), 0)
         commit_id = index.data(QtCore.Qt.DisplayRole)
         self.current_commit_changed.emit(commit_id)

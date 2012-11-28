@@ -13,7 +13,7 @@ import git
 
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self, path, parent=None):
+    def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
 
         commitesDock = QtGui.QDockWidget(self)
@@ -95,7 +95,7 @@ class MainWindow(QtGui.QMainWindow):
 
         isMaximized = settings.value("IsMaximized", False) == "true"
 
-        if isMaximized == True:
+        if isMaximized:
             super(MainWindow, self).setWindowState(QtCore.Qt.WindowMaximized)
 
         super(MainWindow, self).restoreState(settings.value("State"))

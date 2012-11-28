@@ -18,8 +18,8 @@ class Git(object):
                 shell=False,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE)
-        except:
-            print(self.git_path, command, "error")
+        except subprocess.CalledProcessError as error:
+            print(self.git_path, command, error)
             return []
 
         output = []

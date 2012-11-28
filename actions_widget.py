@@ -6,7 +6,7 @@ import git
 
 
 class ActionsWidget(QtGui.QWidget):
-    def __init__(self, path, parent=None):
+    def __init__(self, parent=None):
         super(ActionsWidget, self).__init__(parent)
 
         _push_button = QtGui.QPushButton(self)
