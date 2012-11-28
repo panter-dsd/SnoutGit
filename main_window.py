@@ -50,10 +50,25 @@ class States(object):
     def append_state(self, name, data):
         self._states.append(State(name, data))
 
+    def remove_state(self, state):
+        self.remove_state_by_name(state.name())
+
     def remove_state_by_name(self, name):
         for state in self._states:
             if state.name() == name:
                 self._states.remove(state)
+                break
+
+    def rename_state(self, old_name, new_name):
+        for state in self._states:
+            if state.name() == old_name:
+                state._name = new_name
+                break
+
+    def update_state(self, name, data):
+        for state in self._states:
+            if state.name() == name:
+                state._data = data
                 break
 
 
@@ -126,6 +141,14 @@ class MainWindow(QtGui.QMainWindow):
         self._save_state_action.setText("Save state")
         self._save_state_action.triggered.connect(self.save_state)
 
+        self._update_state_action = QtGui.QAction(self)
+        self._update_state_action.setText("Update state")
+        self._update_state_action.triggered.connect(self.update_state)
+
+        self._rename_state_action = QtGui.QAction(self)
+        self._rename_state_action.setText("Rename state")
+        self._rename_state_action.triggered.connect(self.rename_state)
+
         self._remove_state_action = QtGui.QAction(self)
         self._remove_state_action.setText("Remove state")
         self._remove_state_action.triggered.connect(self.remove_state)
@@ -147,7 +170,7 @@ class MainWindow(QtGui.QMainWindow):
             self._states.append_state(state_name, super(MainWindow, self).saveState())
             self.update_states_menu()
 
-    def remove_state(self):
+    def select_state(self):
         states = []
         for i in range(self._states.states_count()):
             states.append(self._states.state(i).name())
@@ -157,18 +180,41 @@ class MainWindow(QtGui.QMainWindow):
 
         state_name = QtGui.QInputDialog.getItem(self,
             "Save state",
-            "StateName",
+            "State name",
             states,
             0,
             False)[0]
-        if len(state_name) > 0:
-            self._states.remove_state_by_name(state_name)
+        return self._states.state_for_name(state_name)
+
+    def remove_state(self):
+        state = self.select_state()
+        if len(state.name()) > 0:
+            self._states.remove_state(state)
+            self.update_states_menu()
+
+    def rename_state(self):
+        state = self.select_state()
+        if len(state.name()) > 0:
+            state_name = QtGui.QInputDialog.getText(self,
+                "Rename state",
+                "State name")[0]
+            if len(state_name) > 0:
+                self._states.rename_state(state.name(), state_name)
+                self.update_states_menu()
+
+    def update_state(self):
+        state = self.select_state()
+
+        if len(state.name()) > 0:
+            self._states.update_state(state.name(), super(MainWindow, self).saveState())
             self.update_states_menu()
 
 
     def update_states_menu(self):
         self._states_menu.clear()
         self._states_menu.addAction(self._save_state_action)
+        self._states_menu.addAction(self._update_state_action)
+        self._states_menu.addAction(self._rename_state_action)
         self._states_menu.addAction(self._remove_state_action)
         self._remove_state_action.setEnabled(self._states.states_count() > 0)
         self._states_menu.addSeparator()
