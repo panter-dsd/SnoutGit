@@ -29,7 +29,6 @@ class State(object):
         return self._data
 
 
-
 class States(object):
     _states = []
 
@@ -212,6 +211,14 @@ class MainWindow(QtGui.QMainWindow):
 
         settings.endGroup()
 
+        states_count = settings.beginReadArray("States")
+        for i in range(states_count):
+            settings.setArrayIndex(i)
+            self._states.append_state(
+                settings.value("Name"),
+                settings.value("Data"))
+        settings.endArray()
+
         settings.endGroup()
 
     def _save_settings(self):
@@ -227,7 +234,14 @@ class MainWindow(QtGui.QMainWindow):
         else:
             settings.setValue("IsMaximized", True)
 
-        settings.setValue("State", super(MainWindow, self).saveState())
-
         settings.endGroup()
+
+        settings.beginWriteArray("States")
+        for i in range(self._states.states_count()):
+            settings.setArrayIndex(i)
+            state = self._states.state(i)
+            settings.setValue("Name", state.name())
+            settings.setValue("Data", state.data())
+        settings.endArray()
+
         settings.endGroup()
