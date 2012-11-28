@@ -122,7 +122,7 @@ class StatusWidget(QtGui.QWidget):
         self._add_selected_action.triggered.connect(self._add_selected)
 
         if self.is_in_item_list(self._unstaged, items):
-           if self._unstaged.childCount() > 0:
+            if self._unstaged.childCount() > 0:
                 menu.addAction(self._stage_all_action)
 
         if self.is_in_item_list(self._staged, items):

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-
 import subprocess
 
 class Git(object):
@@ -16,9 +15,9 @@ class Git(object):
             command = command.split()
         try:
             process = subprocess.Popen([self.git_path] + command,
-                                       shell=False,
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE)
+                shell=False,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE)
         except:
             print(self.git_path, command, "error")
             return []

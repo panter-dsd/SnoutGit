@@ -51,8 +51,8 @@ class CommitWidget(QtGui.QWidget):
     def _commit(self):
         commit_name = self._commit_name_edit.text()
         if len(commit_name) > 0:
-            if git.Git ().commit(commit_name,
-                                 self._commit_description_edit.toPlainText()):
+            if git.Git().commit(commit_name,
+                self._commit_description_edit.toPlainText()):
                 self._commit_name_edit.clear()
                 self._commit_description_edit.clear()
                 self.commited.emit()

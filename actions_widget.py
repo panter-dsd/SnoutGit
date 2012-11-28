@@ -6,7 +6,6 @@ import git
 
 
 class ActionsWidget(QtGui.QWidget):
-
     def __init__(self, path, parent=None):
         super(ActionsWidget, self).__init__(parent)
 
@@ -21,7 +20,7 @@ class ActionsWidget(QtGui.QWidget):
         _svn_button = QtGui.QToolButton(self)
         _svn_button.setText("Svn")
         _svn_button.setSizePolicy(QtGui.QSizePolicy.Preferred,
-                                  QtGui.QSizePolicy.Preferred)
+            QtGui.QSizePolicy.Preferred)
         _svn_button.setPopupMode(QtGui.QToolButton.MenuButtonPopup)
 
         rebase_action = QtGui.QAction(self)
@@ -39,9 +38,9 @@ class ActionsWidget(QtGui.QWidget):
         layout.addWidget(_pull_button)
         layout.addWidget(_svn_button)
         layout.addSpacerItem(QtGui.QSpacerItem(0,
-                                               0,
-                                               QtGui.QSizePolicy.Preferred,
-                                               QtGui.QSizePolicy.Expanding))
+            0,
+            QtGui.QSizePolicy.Preferred,
+            QtGui.QSizePolicy.Expanding))
         super(ActionsWidget, self).setLayout(layout)
 
     def push(self):
