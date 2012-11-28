@@ -12,7 +12,55 @@ import log_view
 import git
 
 
+class State(object):
+    _name = str()
+    _data = None
+
+    def __init__(self, name, data):
+        super(State, self).__init__()
+
+        self._name = name
+        self._data = data
+
+    def name(self):
+        return self._name
+
+    def data(self):
+        return self._data
+
+
+
+class States(object):
+    _states = []
+
+    def __init__(self):
+        super(States, self).__init__()
+
+    def states_count(self):
+        return len(self._states)
+
+    def state(self, index):
+        return self._states[index]
+
+    def state_for_name(self, name):
+        for state in self._states:
+            if state.name() == name:
+                return state
+        return None
+
+    def append_state(self, name, data):
+        self._states.append(State(name, data))
+
+    def remove_state_by_name(self, name):
+        for state in self._states:
+            if state.name() == name:
+                self._states.remove(state)
+                break
+
+
 class MainWindow(QtGui.QMainWindow):
+    _states = States()
+
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
 
@@ -74,6 +122,68 @@ class MainWindow(QtGui.QMainWindow):
         git.Git.log_view = log
 
         self._load_settings()
+
+        self._save_state_action = QtGui.QAction(self)
+        self._save_state_action.setText("Save state")
+        self._save_state_action.triggered.connect(self.save_state)
+
+        self._remove_state_action = QtGui.QAction(self)
+        self._remove_state_action.setText("Remove state")
+        self._remove_state_action.triggered.connect(self.remove_state)
+
+        self._menu_bar = QtGui.QMenuBar(self)
+        super(MainWindow, self).setMenuBar(self._menu_bar)
+
+        self._states_menu = QtGui.QMenu(self)
+        self._states_menu.setTitle("States")
+        self._menu_bar.addMenu(self._states_menu)
+        self.update_states_menu()
+
+
+    def save_state(self):
+        state_name = QtGui.QInputDialog.getText(self,
+            "Save state",
+            "StateName")[0]
+        if len(state_name) > 0:
+            self._states.append_state(state_name, super(MainWindow, self).saveState())
+            self.update_states_menu()
+
+    def remove_state(self):
+        states = []
+        for i in range(self._states.states_count()):
+            states.append(self._states.state(i).name())
+
+        if len(states) == 0:
+            return
+
+        state_name = QtGui.QInputDialog.getItem(self,
+            "Save state",
+            "StateName",
+            states,
+            0,
+            False)[0]
+        if len(state_name) > 0:
+            self._states.remove_state_by_name(state_name)
+            self.update_states_menu()
+
+
+    def update_states_menu(self):
+        self._states_menu.clear()
+        self._states_menu.addAction(self._save_state_action)
+        self._states_menu.addAction(self._remove_state_action)
+        self._remove_state_action.setEnabled(self._states.states_count() > 0)
+        self._states_menu.addSeparator()
+
+        for i in range(self._states.states_count()):
+            action = QtGui.QAction(self)
+            action.setText(self._states.state(i).name())
+            action.triggered.connect(self.restore_state)
+            self._states_menu.addAction(action)
+
+    def restore_state(self):
+        state_name = self.sender().text()
+        print(state_name)
+        super(MainWindow, self).restoreState(self._states.state_for_name(state_name).data())
 
     def closeEvent(self, event):
         self._save_settings()
