@@ -35,14 +35,15 @@ class Git(object):
             if len(line) > 0:
                 error.append(line.decode())
 
-        if self.log_view and show_log:
-            self.log_view.append_command(" ".join(command))
-            self.log_view.append_output("\n".join(output))
-            self.log_view.append_error("\n".join(error))
-        else:
-            print(command)
-            print(output)
-            print(error)
+        if show_log:
+            if self.log_view:
+                self.log_view.append_command(" ".join(command))
+                self.log_view.append_output("\n".join(output))
+                self.log_view.append_error("\n".join(error))
+            else:
+                print(command)
+                print(output)
+                print(error)
 
         del process
         return output
