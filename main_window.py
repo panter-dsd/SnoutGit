@@ -16,7 +16,7 @@ class State(object):
     _name = str()
     _data = None
 
-    def __init__(self, name, data):
+    def __init__(self, name=None, data=None):
         super(State, self).__init__()
 
         self._name = name
@@ -74,6 +74,7 @@ class States(object):
 
 class MainWindow(QtGui.QMainWindow):
     _states = States()
+    _current_state = State()
 
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -167,7 +168,9 @@ class MainWindow(QtGui.QMainWindow):
             "Save state",
             "StateName")[0]
         if len(state_name) > 0:
-            self._states.append_state(state_name, super(MainWindow, self).saveState())
+            self._current_state = self._states.append_state(
+                state_name,
+                super(MainWindow, self).saveState())
             self.update_states_menu()
 
     def select_state(self):
@@ -221,19 +224,24 @@ class MainWindow(QtGui.QMainWindow):
 
         for i in range(self._states.states_count()):
             action = QtGui.QAction(self)
-            action.setText(self._states.state(i).name())
+            state = self._states.state(i)
+            action.setText(state.name())
             action.triggered.connect(self.restore_state)
+            action.setCheckable(True)
             self._states_menu.addAction(action)
+            if state.name() == self._current_state.name():
+                action.setChecked(True)
 
     def restore_state(self):
         state_name = self.sender().text()
         print(state_name)
-        super(MainWindow, self).restoreState(self._states.state_for_name(state_name).data())
+        self._current_state = self._states.state_for_name(state_name)
+        super(MainWindow, self).restoreState(self._current_state.data())
+        self.update_states_menu()
 
     def closeEvent(self, event):
         self._save_settings()
         event.accept()
-
 
     def _load_settings(self):
         settings = QtCore.QSettings()
@@ -265,6 +273,11 @@ class MainWindow(QtGui.QMainWindow):
                 settings.value("Data"))
         settings.endArray()
 
+        state_name = settings.value("CurrentState", str())
+        if len(state_name) > 0:
+            self._current_state = self._states.state_for_name(state_name)
+            super(MainWindow, self).restoreState(self._current_state.data())
+
         settings.endGroup()
 
     def _save_settings(self):
@@ -289,5 +302,7 @@ class MainWindow(QtGui.QMainWindow):
             settings.setValue("Name", state.name())
             settings.setValue("Data", state.data())
         settings.endArray()
+
+        settings.setValue("CurrentState", self._current_state.name())
 
         settings.endGroup()
