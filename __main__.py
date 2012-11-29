@@ -11,10 +11,16 @@ def main():
     """main"""
 
     if len(sys.argv) < 2:
-        path = os.curdir
+        path = os.path.abspath(os.curdir)
     else:
-        path = sys.argv[1]
+        path = os.path.abspath(sys.argv[1])
 
+    while not os.path.exists(path + "/.git"):
+        path = os.path.dirname(path)
+        if len(path) == 1:
+            break
+
+    print("result", path)
     os.chdir(path)
 
     app = QtGui.QApplication(sys.argv)
