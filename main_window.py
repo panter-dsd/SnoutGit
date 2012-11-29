@@ -162,6 +162,11 @@ class MainWindow(QtGui.QMainWindow):
         self._menu_bar.addMenu(self._states_menu)
         self.update_states_menu()
 
+        exit_action = QtGui.QAction(self)
+        exit_action.setShortcut(QtCore.Qt.CTRL | QtCore.Qt.Key_Q)
+        exit_action.triggered.connect(self.close)
+        super(MainWindow, self).addAction(exit_action)
+
 
     def save_state(self):
         state_name = QtGui.QInputDialog.getText(self,
