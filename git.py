@@ -26,7 +26,10 @@ class Git(object):
         for line in process.stdout:
             line = line.rstrip()
             if len(line) > 0:
-                output.append(line.decode())
+                try:
+                    output.append(line.decode())
+                except UnicodeDecodeError:
+                    output.append(line.decode("CP1251"))
 
         error = []
         for line in process.stderr:
