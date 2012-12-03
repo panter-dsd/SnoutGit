@@ -56,6 +56,18 @@ class StatusWidget(QtGui.QWidget):
             status = status_line[:2]
             file_name = status_line[3:]
 
+            if status[0] == 'R':
+                names = file_name.split(" -> ")
+                item = QtGui.QTreeWidgetItem(self._staged)
+                item.setText(0, names[0])
+                if status[1] == "M":
+                    parent = self._unstaged
+                else:
+                    parent = self._staged
+                item = QtGui.QTreeWidgetItem(parent)
+                item.setText(0, names[1])
+                continue
+
             if not status[0] in [' ', '?']:
                 item = QtGui.QTreeWidgetItem(self._staged)
                 item.setText(0, file_name)
