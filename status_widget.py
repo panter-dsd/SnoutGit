@@ -6,7 +6,7 @@ import git
 
 
 class StatusWidget(QtGui.QWidget):
-    current_file_changed = QtCore.Signal(str)
+    current_file_changed = QtCore.Signal(str,int)
     status_changed = QtCore.Signal()
 
     _path = str()
@@ -94,7 +94,10 @@ class StatusWidget(QtGui.QWidget):
 
     def _current_item_changed(self, current, _prev):
         if current and current.parent():
-            self.current_file_changed.emit(current.text(0))
+            if current.parent() is self._staged:
+                self.current_file_changed.emit(current.text(0), 1)
+            else:
+                self.current_file_changed.emit(current.text(0), 0)
 
     def is_in_item_list(self, item, item_list):
         result = False
