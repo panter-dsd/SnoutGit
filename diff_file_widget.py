@@ -24,17 +24,17 @@ class DiffFileWidget(QtGui.QWidget):
         super(DiffFileWidget, self).setLayout(layout)
 
     @QtCore.Slot(str)
-    def set_file(self, file_name, diff_type=0):
+    def set_file(self, file_name, diff_with_index=False):
         self._file_name = file_name
-        self._update_diff(diff_type)
+        self._update_diff(diff_with_index)
 
     @QtCore.Slot()
     def clear(self):
         self._diff_veiw.clear()
 
-    def _update_diff(self, diff_type):
+    def _update_diff(self, diff_with_index):
         command = ["diff", "-U5", self._file_name]
-        if diff_type == 1:
+        if diff_with_index:
             command.insert(1, "--staged")
 
         self._diff_veiw.setPlainText("\n".join(git.Git().execute_command(command, False)))
