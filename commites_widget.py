@@ -5,7 +5,7 @@ from PySide import QtCore, QtGui
 import commites_model
 
 
-DEFAULT_COLUMN_WIDTH = [0, 300, 0]
+DEFAULT_COLUMN_WIDTH = [0, 300, 200, 0]
 
 
 class CommitesWidget(QtGui.QWidget):
