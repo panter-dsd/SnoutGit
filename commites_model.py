@@ -16,6 +16,10 @@ class CommitesModel(QtCore.QAbstractItemModel):
     """CommitesModel"""
 
     _commits_list = []
+    _headers = ["Abbreviated id",
+                "Comment",
+                "Author",
+                "Timestamp"]
 
     def __init__(self, parent=None):
         """__init__"""
@@ -67,7 +71,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
     def columnCount(self, parent=QtCore.QModelIndex()):
         if parent.isValid():
             return 0
-        return 3
+        return 4
 
     def data(self, index, role=QtCore.Qt.DisplayRole):
         if role == QtCore.Qt.DisplayRole:
@@ -77,6 +81,8 @@ class CommitesModel(QtCore.QAbstractItemModel):
                 return self._commits_list[index.row()].name()
             elif index.column() == 2:
                 return self._commits_list[index.row()].author()
+            elif index.column() == 3:
+                return self._commits_list[index.row()].timestamp()
         elif role == QtCore.Qt.ToolTipRole:
             if index.column() == 0:
                 return self._commits_list[index.row()].id()
@@ -84,8 +90,16 @@ class CommitesModel(QtCore.QAbstractItemModel):
                 return self._commits_list[index.row()].full_name()
             elif index.column() == 2:
                 return self._commits_list[index.row()].author()
+            elif index.column() == 3:
+                return self._commits_list[index.row()].timestamp()
 
         return None
 
     def parent(self, index):
         return QtCore.QModelIndex()
+
+    def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
+        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
+            return self._headers[section]
+
+        return super(CommitesModel, self).headerData(section, orientation, role)
