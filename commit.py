@@ -14,6 +14,7 @@ class Commit(object):
         self._id = id
         self._name = str()
         self._author = str()
+        self._timestamp = str()
 
     def _commit_info(self, format_id):
         command = "show -s --pretty=" + format_id + " " + self._id
@@ -42,6 +43,11 @@ class Commit(object):
         if len(self._author) == 0:
             self._author = self._commit_info("%ae")[0]
         return self._author
+
+    def timestamp(self):
+        if len(self._timestamp) == 0:
+            self._timestamp = self._commit_info("%aD")[0]
+        return self._timestamp
 
     def diff(self, lines_count=3):
         cmd_template = "show --pretty=fuller --unified={0} {1}"
