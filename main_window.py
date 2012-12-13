@@ -167,6 +167,10 @@ class MainWindow(QtGui.QMainWindow):
         exit_action.triggered.connect(self.close)
         super(MainWindow, self).addAction(exit_action)
 
+        self.update_title()
+
+    def update_title(self):
+        super(MainWindow, self).setWindowTitle("Branch: " + git.Git().current_branch())
 
     def save_state(self):
         state_name = QtGui.QInputDialog.getText(self,
