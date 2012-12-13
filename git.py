@@ -81,3 +81,10 @@ class Git(object):
     def unstage(self, file_name):
         command = ["reset", "{0}".format(file_name)]
         self.execute_command(command)
+
+    def current_branch(self):
+        command = ["branch"]
+        for branch in self.execute_command(command, True):
+            if branch.startswith('* '):
+                return branch[2:]
+        return "Unknow"
