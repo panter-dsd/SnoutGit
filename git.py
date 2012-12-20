@@ -88,3 +88,11 @@ class Git(object):
             if branch.startswith('* '):
                 return branch[2:]
         return "Unknow"
+
+    def tag_info(self, tag):
+        command = ["show", "-s", "--pretty=%b", tag]
+        result = self.execute_command(command, False)
+        for line in result:
+            if len(line.strip()) == 0:
+                result.remove(line)
+        return result
