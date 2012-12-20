@@ -60,3 +60,9 @@ class Commit(object):
         command = cmd_template.format(self._id)
 
         return git.Git().execute_command(command, False)
+
+    def tags_list(self):
+        cmd_template = "tag --points-at {0}"
+        command = cmd_template.format(self._id)
+        return git.Git().execute_command(command, False)
+
