@@ -78,7 +78,10 @@ class CommitesModel(QtCore.QAbstractItemModel):
             if index.column() == 0:
                 return self._commits_list[index.row()].abbreviated_id()
             elif index.column() == 1:
-                return self._commits_list[index.row()].name()
+                tags = str()
+                for tag in self._commits_list[index.row()].tags_list():
+                    tags += "[" + tag + "] "
+                return tags + self._commits_list[index.row()].name()
             elif index.column() == 2:
                 return self._commits_list[index.row()].author()
             elif index.column() == 3:
