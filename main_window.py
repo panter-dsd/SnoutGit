@@ -16,7 +16,7 @@ class State(object):
     _name = str()
     _data = None
 
-    def __init__(self, name=None, data=None):
+    def __init__(self, name=str(), data=None):
         super(State, self).__init__()
 
         self._name = name
@@ -27,6 +27,9 @@ class State(object):
 
     def data(self):
         return self._data
+
+    def empty(self):
+        return len(self._name) == 0
 
 
 class States(object):
@@ -267,6 +270,8 @@ class MainWindow(QtGui.QMainWindow):
         settings.beginGroup("GUI")
         settings.beginGroup("MainWindow")
 
+        super(MainWindow, self).restoreState(settings.value("State"))
+
         if settings.contains("pos"):
             super(MainWindow, self).move(settings.value("pos"))
 
@@ -278,8 +283,6 @@ class MainWindow(QtGui.QMainWindow):
 
         if isMaximized:
             super(MainWindow, self).setWindowState(QtCore.Qt.WindowMaximized)
-
-        super(MainWindow, self).restoreState(settings.value("State"))
 
         settings.endGroup()
 
@@ -321,6 +324,9 @@ class MainWindow(QtGui.QMainWindow):
             settings.setValue("Data", state.data())
         settings.endArray()
 
-        settings.setValue("CurrentState", self._current_state.name())
+        if not self._current_state.empty():
+            settings.setValue("CurrentState", self._current_state.name())
+        else:
+            settings.remove("CurrentState")
 
         settings.endGroup()
