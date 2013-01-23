@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtGui
+from PySide import QtCore, QtGui
 import git
 
 
 class ActionsWidget(QtGui.QWidget):
+    state_changed = QtCore.Signal()
+
     def __init__(self, parent=None):
         super(ActionsWidget, self).__init__(parent)
 
@@ -45,6 +47,7 @@ class ActionsWidget(QtGui.QWidget):
 
     def push(self):
         git.Git().push()
+        self.state_changed.emit()
 
     def pull(self):
         git.Git().pull()
