@@ -2,6 +2,7 @@
 __author__ = 'panter.dsd@gmail.com'
 
 import subprocess
+import re
 
 class Git(object):
     git_path = "git"
@@ -91,6 +92,32 @@ class Git(object):
             if branch.startswith('* '):
                 return branch[2:]
         return "Unknow"
+
+    def local_branches(self):
+        command = ["branch"]
+
+        result = []
+
+        branch_re = re.compile(r"^[\*, ]? ([\w,/]*)$")
+        for line in self.execute_command(command, True):
+            match = branch_re.match(line)
+            if match:
+                result.append(match.group(1))
+
+        return result
+
+    def remote_branches(self):
+        command = ["branch", "-r"]
+
+        result = []
+
+        branch_re = re.compile(r"^  (\w*)/([\w,/]*)$")
+        for line in self.execute_command(command, True):
+            match = branch_re.match(line)
+            if match:
+                result.append(match.group(2))
+
+        return result
 
     def tag_info(self, tag):
         command = ["show", "-s", "--pretty=%b", tag]
