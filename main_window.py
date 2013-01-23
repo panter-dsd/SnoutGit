@@ -242,9 +242,10 @@ class MainWindow(QtGui.QMainWindow):
         self._states_menu.addAction(self._remove_state_action)
         self._states_menu.addSeparator()
 
-        self._update_state_action.setEnabled(self._states.states_count() > 0)
-        self._rename_state_action.setEnabled(self._states.states_count() > 0)
-        self._remove_state_action.setEnabled(self._states.states_count() > 0)
+        enabled = self._states.states_count() > 0
+        self._update_state_action.setEnabled(enabled)
+        self._rename_state_action.setEnabled(enabled)
+        self._remove_state_action.setEnabled(enabled)
 
         for i in range(self._states.states_count()):
             action = QtGui.QAction(self)
