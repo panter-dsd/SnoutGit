@@ -3,6 +3,7 @@ __author__ = 'panter.dsd@gmail.com'
 
 import subprocess
 import re
+import commit
 
 class Git(object):
     git_path = "git"
@@ -121,4 +122,10 @@ class Git(object):
         for line in result:
             if len(line.strip()) == 0:
                 result.remove(line)
+        return result
+
+    def commites(self):
+        result = []
+        for line in self.execute_command(["log", "--pretty=%H"], False):
+            result.append(commit.Commit(line))
         return result
