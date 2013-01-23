@@ -2,7 +2,6 @@
 __author__ = 'panter.dsd@gmail.com'
 
 from PySide import QtCore
-import commit
 import git
 
 
