@@ -85,11 +85,11 @@ class StatusWidget(QtGui.QWidget):
 
     def _change_item_status(self, item):
         if item.parent() is self._unstaged:
-            git.Git().stage(item.text(0))
+            git.Git().stage_files([item.text(0)])
         elif item.parent() is self._staged:
-            git.Git().unstage(item.text(0))
+            git.Git().unstage_files([item.text(0)])
         elif item.parent() is self._untracked:
-            git.Git().stage(item.text(0))
+            git.Git().stage_files([item.text(0)])
         self._update_file_list()
 
     def _current_item_changed(self, current, _prev):
@@ -168,10 +168,9 @@ class StatusWidget(QtGui.QWidget):
     def _stage_all(self):
         files_list = []
         for i in range(self._unstaged.childCount()):
-            files_list.append(self._unstaged.child(i).text(0))
+            files_list.append(str(self._unstaged.child(i).text(0)))
 
-        for file_name in files_list:
-            git.Git().stage(file_name)
+        git.Git().stage_files(files_list)
 
         self._update_file_list()
 
@@ -180,8 +179,7 @@ class StatusWidget(QtGui.QWidget):
         for i in range(self._staged.childCount()):
             files_list.append(self._staged.child(i).text(0))
 
-        for file_name in files_list:
-            git.Git().unstage(file_name)
+        git.Git().unstage_files(files_list)
 
         self._update_file_list()
 
@@ -190,8 +188,7 @@ class StatusWidget(QtGui.QWidget):
         for i in range(self._untracked.childCount()):
             files_list.append(self._untracked.child(i).text(0))
 
-        for file_name in files_list:
-            git.Git().stage(file_name)
+        git.Git().stage_files(files_list)
 
         self._update_file_list()
 
@@ -201,8 +198,7 @@ class StatusWidget(QtGui.QWidget):
             if item.parent() is self._unstaged:
                 files_list.append(item.text(0))
 
-        for file_name in files_list:
-            git.Git().stage(file_name)
+        git.Git().stage_files(files_list)
 
         self._update_file_list()
 
@@ -212,8 +208,7 @@ class StatusWidget(QtGui.QWidget):
             if item.parent() is self._staged:
                 files_list.append(item.text(0))
 
-        for file_name in files_list:
-            git.Git().unstage(file_name)
+        git.Git().unstage_files(files_list)
 
         self._update_file_list()
 
@@ -223,7 +218,6 @@ class StatusWidget(QtGui.QWidget):
             if item.parent() is self._untracked:
                 files_list.append(item.text(0))
 
-        for file_name in files_list:
-            git.Git().stage(file_name)
+        git.Git().stage_files(files_list)
 
         self._update_file_list()
