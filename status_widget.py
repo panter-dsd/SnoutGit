@@ -95,7 +95,7 @@ class StatusWidget(QtGui.QWidget):
     def _current_item_changed(self, current, _prev):
         if current and current.parent():
             self.current_file_changed.emit(current.text(0),
-                current.parent() is self._staged)
+                                           current.parent() is self._staged)
 
     def is_in_item_list(self, item, item_list):
         result = False

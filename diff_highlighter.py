@@ -15,11 +15,11 @@ class DiffHighlighter(QtGui.QSyntaxHighlighter):
         added = re.match("^\+.*$", text)
         if added:
             super(DiffHighlighter, self).setFormat(added.pos,
-                added.endpos,
-                QtCore.Qt.green)
+                                                   added.endpos,
+                                                   QtCore.Qt.green)
 
         removed = re.match("^\-.*$", text)
         if removed:
             super(DiffHighlighter, self).setFormat(removed.pos,
-                removed.endpos,
-                QtCore.Qt.red)
+                                                   removed.endpos,
+                                                   QtCore.Qt.red)

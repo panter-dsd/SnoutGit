@@ -24,7 +24,7 @@ class DiffWidget(QtGui.QWidget):
 
         panel = QtGui.QWidget(self)
         panel.setSizePolicy(QtGui.QSizePolicy.Preferred,
-            QtGui.QSizePolicy.Maximum)
+                            QtGui.QSizePolicy.Maximum)
 
         self._diff_lines_count_edit = QtGui.QSpinBox(self)
         self._diff_lines_count_edit.valueChanged.connect(self._update_diff)
@@ -34,9 +34,9 @@ class DiffWidget(QtGui.QWidget):
         panelLayout.addWidget(QtGui.QLabel("Context strings count"))
         panelLayout.addWidget(self._diff_lines_count_edit)
         spacer = QtGui.QSpacerItem(0,
-            0,
-            QtGui.QSizePolicy.Expanding,
-            QtGui.QSizePolicy.Preferred)
+                                   0,
+                                   QtGui.QSizePolicy.Expanding,
+                                   QtGui.QSizePolicy.Preferred)
         panelLayout.addSpacerItem(spacer)
 
         panel.setLayout(panelLayout)
