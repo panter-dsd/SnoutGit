@@ -10,7 +10,7 @@ import commit_widget
 import actions_widget
 import log_view
 import git
-
+import branches_widget
 
 class State(object):
     _name = str()
@@ -137,6 +137,13 @@ class MainWindow(QtGui.QMainWindow):
         log_view_dock.setWidget(log)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, log_view_dock)
         git.Git.log_view = log
+
+        branches_dock = QtGui.QDockWidget(self)
+        branches_dock.setObjectName("BranchesWidget")
+        branches_dock.setWindowTitle("Branches")
+        branches = branches_widget.BranchesWidget(branches_dock)
+        branches_dock.setWidget(branches)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, branches_dock)
 
         self._load_settings()
 

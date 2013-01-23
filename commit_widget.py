@@ -77,7 +77,7 @@ class CommitWidget(QtGui.QWidget):
         menu.addSeparator()
         menu.addAction(self.save_action)
         menu.addAction(self.ammend_action)
-        
+
         self._menu_button.setMenu(menu)
 
     def set_old_message(self):
