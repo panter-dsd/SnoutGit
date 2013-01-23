@@ -128,6 +128,8 @@ class MainWindow(QtGui.QMainWindow):
         actions_widget_dock.setWidget(actions)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, actions_widget_dock)
 
+        actions.state_changed.connect(commites.update_commites_list)
+
         log_view_dock = QtGui.QDockWidget(self)
         log_view_dock.setObjectName("LogView")
         log_view_dock.setWindowTitle("Log")
