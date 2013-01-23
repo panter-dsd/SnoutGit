@@ -5,12 +5,6 @@ from PySide import QtCore
 import commit
 import git
 
-def get_commites_list():
-    result = []
-    for line in git.Git().execute_command(["log", "--pretty=%H"], False):
-        result.append(commit.Commit(line))
-    return result
-
 
 class CommitesModel(QtCore.QAbstractItemModel):
     """CommitesModel"""
@@ -28,7 +22,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
 
     def update_commits_list(self):
         old_commits_list = self._commits_list
-        new_commits_list = get_commites_list()
+        new_commits_list = git.Git().commites()
         if old_commits_list == new_commits_list:
             return
 
