@@ -77,6 +77,9 @@ class Git(object):
         command = ["add", "{0}".format(file_name)]
         self.execute_command(command)
 
+    def stage_files(self, files):
+        command = ["add"] + files
+        self.execute_command(command)
 
     def unstage(self, file_name):
         command = ["reset", "{0}".format(file_name)]
