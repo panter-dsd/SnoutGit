@@ -21,7 +21,7 @@ def main():
         if len(path) == 1:
             break
 
-    print("result", path)
+    print("Use git repository:", path)
     os.chdir(path)
 
     app = QtGui.QApplication(sys.argv)
