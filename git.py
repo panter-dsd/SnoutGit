@@ -129,3 +129,7 @@ class Git(object):
         for line in self.execute_command(["log", "--pretty=%H"], False):
             result.append(commit.Commit(line))
         return result
+
+    def revert_files(self, files):
+        command = ["checkout", "--"] + files
+        self.execute_command(command, True)
