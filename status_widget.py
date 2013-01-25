@@ -41,6 +41,8 @@ class StatusWidget(QtGui.QWidget):
         self.update_timer.start(1000)
 
     def _update_file_list(self):
+        new_icon = QtGui.QIcon("share/images/add.png")
+
         current_status = git.Git().get_status()
         if self._last_status == current_status:
             return
@@ -78,6 +80,7 @@ class StatusWidget(QtGui.QWidget):
 
             if status[0] == '?' or status[1] == '?':
                 item = QtGui.QTreeWidgetItem(self._untracked)
+                item.setIcon(0, new_icon)
                 item.setText(0, file_name)
 
         self._files_view.expandAll()
