@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 import git
 
 
 class StatusWidget(QtGui.QWidget):
-    current_file_changed = QtCore.Signal(str, bool)
-    status_changed = QtCore.Signal()
+    current_file_changed = QtCore.pyqtSignal(str, bool)
+    status_changed = QtCore.pyqtSignal()
 
     _path = str()
     _last_status = []

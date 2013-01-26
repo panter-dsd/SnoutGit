@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 import commit
 import diff_highlighter
 
@@ -50,7 +50,7 @@ class DiffWidget(QtGui.QWidget):
         layout.addWidget(horizontal_split)
         super(DiffWidget, self).setLayout(layout)
 
-    @QtCore.Slot(str)
+    @QtCore.pyqtSlot(str)
     def set_commit(self, id):
         self._id = id
         self._update_diff()

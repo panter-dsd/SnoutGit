@@ -4,7 +4,7 @@ __author__ = 'panter.dsd@gmail.com'
 
 import sys
 import os
-from PySide import QtGui
+from PyQt4 import QtGui
 import main_window
 
 

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 import git
 
 
 class ActionsWidget(QtGui.QWidget):
-    state_changed = QtCore.Signal()
+    state_changed = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(ActionsWidget, self).__init__(parent)

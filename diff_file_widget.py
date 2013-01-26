@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 import diff_highlighter
 import git
 
@@ -23,12 +23,12 @@ class DiffFileWidget(QtGui.QWidget):
         layout.addWidget(self._diff_veiw)
         super(DiffFileWidget, self).setLayout(layout)
 
-    @QtCore.Slot(str)
+    @QtCore.pyqtSlot(str)
     def set_file(self, file_name, diff_with_index=False):
         self._file_name = file_name
         self._update_diff(diff_with_index)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def clear(self):
         self._diff_veiw.clear()
 

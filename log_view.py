@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtGui
+from PyQt4 import QtGui
 
 
 class LogView(QtGui.QWidget):

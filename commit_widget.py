@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 import git
 import commit
 
 class CommitWidget(QtGui.QWidget):
-    commited = QtCore.Signal()
+    commited = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(CommitWidget, self).__init__(parent)
@@ -59,7 +59,7 @@ class CommitWidget(QtGui.QWidget):
         else:
             QtGui.QMessageBox.critical(self, "Error", "Commit name is empty.")
 
-    @QtCore.Slot(str)
+    @QtCore.pyqtSlot(str)
     def refresh(self):
         menu = QtGui.QMenu(self._menu_button)
 
