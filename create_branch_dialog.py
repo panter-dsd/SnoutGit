@@ -47,6 +47,8 @@ class CreateBranchDialog(QtGui.QDialog):
         for name in self._git.local_branches() + self._git.remote_branches():
             self._parent_branch.addItem(name)
 
+        self.set_parent_branch(self._git.current_branch())
+
     def branch_name(self):
         return self._branch_name.text()
 
