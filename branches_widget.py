@@ -68,8 +68,11 @@ class BranchesWidget(QtGui.QWidget):
     def _create(self):
         d = create_branch_dialog.CreateBranchDialog(self)
         if d.exec_():
-            git.Git().create_branch(d.branch_name(),
+            _git = git.Git()
+            _git.create_branch(d.branch_name(),
                                     d.parent_branch())
+            if d.can_checkout():
+                _git.checkout(d.branch_name())
             self._update_lists()
 
     def _checkout(self):
@@ -77,5 +80,3 @@ class BranchesWidget(QtGui.QWidget):
         if item and item.checkState() != QtCore.Qt.Checked:
             git.Git().checkout(item.text())
             self._update_lists()
-
-
