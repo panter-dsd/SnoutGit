@@ -112,7 +112,7 @@ class Git(object):
         for line in self.execute_command(command, True):
             match = branch_re.match(line)
             if match:
-                result.append(match.group(2))
+                result.append(match.group(1) + "/" + match.group(2))
 
         return result
 
