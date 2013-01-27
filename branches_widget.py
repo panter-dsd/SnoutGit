@@ -2,6 +2,7 @@
 __author__ = 'panter.dsd@gmail.com'
 
 from PySide import QtCore, QtGui
+import create_branch_dialog
 import git
 
 class BranchesWidget(QtGui.QWidget):
@@ -16,10 +17,14 @@ class BranchesWidget(QtGui.QWidget):
 
         self._remote_branches_list = QtGui.QListWidget(self)
 
+        self._create_button = QtGui.QPushButton("Create", self)
+        self._create_button.clicked.connect(self._create)
+
         self._checkout_button = QtGui.QPushButton("Checkout", self)
         self._checkout_button.clicked.connect(self._checkout)
 
         buttons_layout = QtGui.QVBoxLayout()
+        buttons_layout.addWidget(self._create_button)
         buttons_layout.addWidget(self._checkout_button)
         buttons_layout.addSpacerItem(QtGui.QSpacerItem(0,
                                                        0,
@@ -59,6 +64,13 @@ class BranchesWidget(QtGui.QWidget):
             item = QtGui.QListWidgetItem(branch, self._remote_branches_list)
             item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self._remote_branches_list.addItem(item)
+
+    def _create(self):
+        d = create_branch_dialog.CreateBranchDialog(self)
+        if d.exec_():
+            git.Git().create_branch(d.branch_name(),
+                                    d.parent_branch())
+            self._update_lists()
 
     def _checkout(self):
         item = self._local_branches_list.currentItem()
