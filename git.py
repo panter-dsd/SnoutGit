@@ -139,5 +139,5 @@ class Git(object):
         self.execute_command(command, True)
 
     def create_branch(self, branch_name, parent_branch):
-        command = ["checkout", branch_name, parent_branch]
+        command = ["checkout", "-b", branch_name, parent_branch]
         self.execute_command(command, True)
