@@ -133,3 +133,7 @@ class Git(object):
     def revert_files(self, files):
         command = ["checkout", "--"] + files
         self.execute_command(command, True)
+
+    def checkout(self, branch_name):
+        command = ["checkout", branch_name]
+        self.execute_command(command, True)
