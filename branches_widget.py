@@ -16,12 +16,27 @@ class BranchesWidget(QtGui.QWidget):
 
         self._remote_branches_list = QtGui.QListWidget(self)
 
-        layout = QtGui.QVBoxLayout()
-        layout.addWidget(self._local_branches_label)
-        layout.addWidget(self._local_branches_list)
-        layout.addWidget(self._remote_branches_label)
-        layout.addWidget(self._remote_branches_list)
-        super(BranchesWidget, self).setLayout(layout)
+        self._checkout_button = QtGui.QPushButton("Checkout", self)
+        self._checkout_button.clicked.connect(self._checkout)
+
+        buttons_layout = QtGui.QVBoxLayout()
+        buttons_layout.addWidget(self._checkout_button)
+        buttons_layout.addSpacerItem(QtGui.QSpacerItem(0,
+                                                       0,
+                                                       QtGui.QSizePolicy.Preferred,
+                                                       QtGui.QSizePolicy.Expanding))
+
+        tables_layout = QtGui.QVBoxLayout()
+        tables_layout.addWidget(self._local_branches_label)
+        tables_layout.addWidget(self._local_branches_list)
+        tables_layout.addWidget(self._remote_branches_label)
+        tables_layout.addWidget(self._remote_branches_list)
+
+        main_layout = QtGui.QHBoxLayout()
+        main_layout.addLayout(tables_layout)
+        main_layout.addLayout(buttons_layout)
+
+        super(BranchesWidget, self).setLayout(main_layout)
         self._update_lists()
 
     def _update_lists(self):
@@ -44,4 +59,11 @@ class BranchesWidget(QtGui.QWidget):
             item = QtGui.QListWidgetItem(branch, self._remote_branches_list)
             item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self._remote_branches_list.addItem(item)
+
+    def _checkout(self):
+        item = self._local_branches_list.currentItem()
+        if item and item.checkState() != QtCore.Qt.Checked:
+            git.Git().checkout(item.text())
+            self._update_lists()
+
 
