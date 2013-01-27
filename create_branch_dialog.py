@@ -20,6 +20,9 @@ class CreateBranchDialog(QtGui.QDialog):
         self._parent_branch = QtGui.QComboBox(self)
         self._parent_branch.setEditable(False)
 
+        self._can_checkout = QtGui.QCheckBox("Checkout into branch", self)
+        self._can_checkout.setChecked(True)
+
         self._buttons = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok
                                                | QtGui.QDialogButtonBox.Cancel,
                                                QtCore.Qt.Horizontal,
@@ -32,6 +35,7 @@ class CreateBranchDialog(QtGui.QDialog):
         layout.addWidget(self._branch_name)
         layout.addWidget(self._parent_branch_label)
         layout.addWidget(self._parent_branch)
+        layout.addWidget(self._can_checkout)
         layout.addWidget(self._buttons)
         super(CreateBranchDialog, self).setLayout(layout)
 
@@ -57,3 +61,6 @@ class CreateBranchDialog(QtGui.QDialog):
             if self._parent_branch.itemText(i) == name:
                 self._parent_branch.setCurrentIndex(i)
                 break
+
+    def can_checkout(self):
+        return self._can_checkout.isChecked()
