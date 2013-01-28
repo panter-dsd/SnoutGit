@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PyQt4 import QtCore, QtGui
 import re
+
+from PyQt4 import QtCore, QtGui
 
 
 class DiffHighlighter(QtGui.QSyntaxHighlighter):
