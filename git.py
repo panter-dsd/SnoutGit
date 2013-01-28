@@ -150,6 +150,10 @@ class Git(object):
 
         return result
 
+    def save_stash(self):
+        command = ["stash", "save"]
+        self.execute_command(command, True)
+
     def pop_stash(self):
         command = ["stash", "pop"]
         self.execute_command(command, True)
