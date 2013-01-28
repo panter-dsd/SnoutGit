@@ -17,7 +17,8 @@ class DiffWidget(QtGui.QWidget):
         self._diff_veiw = QtGui.QPlainTextEdit(self)
         self._diff_veiw.setWordWrapMode(QtGui.QTextOption.NoWrap)
         self._diff_veiw.setUndoRedoEnabled(False)
-        diff_highlighter.DiffHighlighter(self._diff_veiw.document())
+        self._highlighter = diff_highlighter.DiffHighlighter(
+            self._diff_veiw.document())
 
         self._files_list = QtGui.QListWidget(self)
         self._files_list.itemPressed.connect(self._select_file)
