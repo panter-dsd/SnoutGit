@@ -112,7 +112,7 @@ class Git(object):
         for line in self.execute_command(command, True):
             match = branch_re.match(line)
             if match:
-                result.append(match.group(2))
+                result.append(match.group(1) + "/" + match.group(2))
 
         return result
 
@@ -132,4 +132,12 @@ class Git(object):
 
     def revert_files(self, files):
         command = ["checkout", "--"] + files
+        self.execute_command(command, True)
+
+    def checkout(self, branch_name):
+        command = ["checkout", branch_name]
+        self.execute_command(command, True)
+
+    def create_branch(self, branch_name, parent_branch):
+        command = ["branch", branch_name, parent_branch]
         self.execute_command(command, True)
