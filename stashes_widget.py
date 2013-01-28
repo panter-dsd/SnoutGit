@@ -12,6 +12,10 @@ class StashesWidget(QtGui.QWidget):
 
         self._stashes_list = QtGui.QTableWidget(self)
 
+        self._pop_action = QtGui.QAction(self)
+        self._pop_action.setText("Pop stash")
+        self._pop_action.triggered.connect(self.pop)
+
         layout = QtGui.QVBoxLayout()
         layout.addWidget(self._stashes_list)
         super(StashesWidget, self).setLayout(layout)
@@ -35,3 +39,15 @@ class StashesWidget(QtGui.QWidget):
 
         self._stashes_list.resizeColumnsToContents()
         self._stashes_list.resizeRowsToContents()
+
+    def menu(self):
+        result = QtGui.QMenu(self)
+        result.setTitle("Stashes")
+
+        result.addAction(self._pop_action)
+
+        return result
+
+    def pop(self):
+        self._git.pop_stash()
+        self.update_stashes_list()
