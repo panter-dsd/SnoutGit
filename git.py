@@ -141,3 +141,11 @@ class Git(object):
     def create_branch(self, branch_name, parent_branch):
         command = ["branch", branch_name, parent_branch]
         self.execute_command(command, True)
+
+    def stashes(self):
+        command = ["stash", "list"]
+        result = []
+        for line in self.execute_command(command, True):
+            result.append(line)
+
+        return result
