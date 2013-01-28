@@ -24,7 +24,7 @@ class DiffFileWidget(QtGui.QWidget):
         layout.addWidget(self._diff_veiw)
         super(DiffFileWidget, self).setLayout(layout)
 
-    @QtCore.pyqtSlot(str)
+    @QtCore.pyqtSlot(str, bool)
     def set_file(self, file_name, diff_with_index=False):
         self._file_name = file_name
         self._update_diff(diff_with_index)

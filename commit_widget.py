@@ -59,7 +59,7 @@ class CommitWidget(QtGui.QWidget):
         else:
             QtGui.QMessageBox.critical(self, "Error", "Commit name is empty.")
 
-    @QtCore.pyqtSlot(str)
+    @QtCore.pyqtSlot()
     def refresh(self):
         menu = QtGui.QMenu(self._menu_button)
 
