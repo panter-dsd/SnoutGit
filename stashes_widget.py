@@ -12,6 +12,10 @@ class StashesWidget(QtGui.QWidget):
 
         self._stashes_list = QtGui.QTableWidget(self)
 
+        self._save_action = QtGui.QAction(self)
+        self._save_action.setText("Save")
+        self._save_action.triggered.connect(self.save)
+
         self._pop_action = QtGui.QAction(self)
         self._pop_action.setText("Pop stash")
         self._pop_action.triggered.connect(self.pop)
@@ -44,9 +48,14 @@ class StashesWidget(QtGui.QWidget):
         result = QtGui.QMenu(self)
         result.setTitle("Stashes")
 
+        result.addAction(self._save_action)
         result.addAction(self._pop_action)
 
         return result
+
+    def save(self):
+        self._git.save_stash()
+        self.update_stashes_list()
 
     def pop(self):
         self._git.pop_stash()
