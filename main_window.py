@@ -11,6 +11,7 @@ import actions_widget
 import log_view
 import git
 import branches_widget
+import stashes_widget
 
 class State(object):
     _name = str()
@@ -147,6 +148,13 @@ class MainWindow(QtGui.QMainWindow):
         branches = branches_widget.BranchesWidget(branches_dock)
         branches_dock.setWidget(branches)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, branches_dock)
+
+        stashes_dock = QtGui.QDockWidget(self)
+        stashes_dock.setObjectName("StashesWidget")
+        stashes_dock.setWindowTitle("Stashes")
+        stashes = stashes_widget.StashesWidget(stashes_dock)
+        stashes_dock.setWidget(stashes)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, stashes_dock)
 
         self._load_settings()
 
