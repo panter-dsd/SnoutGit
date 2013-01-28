@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 import git
 
 
 class StatusWidget(QtGui.QWidget):
-    current_file_changed = QtCore.Signal(str, bool)
-    status_changed = QtCore.Signal()
+    current_file_changed = QtCore.pyqtSignal(str, bool)
+    status_changed = QtCore.pyqtSignal()
 
     _path = str()
     _last_status = []
@@ -41,6 +41,8 @@ class StatusWidget(QtGui.QWidget):
         self.update_timer.start(1000)
 
     def _update_file_list(self):
+        new_icon = QtGui.QIcon("share/images/add.png")
+
         current_status = git.Git().get_status()
         if self._last_status == current_status:
             return
@@ -78,6 +80,7 @@ class StatusWidget(QtGui.QWidget):
 
             if status[0] == '?' or status[1] == '?':
                 item = QtGui.QTreeWidgetItem(self._untracked)
+                item.setIcon(0, new_icon)
                 item.setText(0, file_name)
 
         self._files_view.expandAll()
@@ -95,7 +98,7 @@ class StatusWidget(QtGui.QWidget):
     def _current_item_changed(self, current, _prev):
         if current and current.parent():
             self.current_file_changed.emit(current.text(0),
-                current.parent() is self._staged)
+                                           current.parent() is self._staged)
 
     def is_in_item_list(self, item, item_list):
         result = False
@@ -134,6 +137,10 @@ class StatusWidget(QtGui.QWidget):
         self._add_selected_action.setText("Add selected")
         self._add_selected_action.triggered.connect(self._add_selected)
 
+        self._revert_selected_action = QtGui.QAction(self)
+        self._revert_selected_action.setText("Revert selected")
+        self._revert_selected_action.triggered.connect(self._revert_selected)
+
         if self.is_in_item_list(self._unstaged, items):
             if self._unstaged.childCount() > 0:
                 menu.addAction(self._stage_all_action)
@@ -153,6 +160,7 @@ class StatusWidget(QtGui.QWidget):
             if item.parent() is self._unstaged:
                 if not self._stage_selected_action in menu.actions():
                     menu.addAction(self._stage_selected_action)
+                    menu.addAction(self._revert_selected_action)
 
             if item.parent() is self._staged:
                 if not self._unstage_selected_action in menu.actions():
@@ -219,5 +227,15 @@ class StatusWidget(QtGui.QWidget):
                 files_list.append(item.text(0))
 
         git.Git().stage_files(files_list)
+
+        self._update_file_list()
+
+    def _revert_selected(self):
+        files_list = []
+        for item in self._files_view.selectedItems():
+            if item.parent() is self._unstaged:
+                files_list.append(item.text(0))
+
+        git.Git().revert_files(files_list)
 
         self._update_file_list()

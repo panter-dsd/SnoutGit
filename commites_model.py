@@ -1,15 +1,8 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtCore
-import commit
+from PyQt4 import QtCore
 import git
-
-def get_commites_list():
-    result = []
-    for line in git.Git().execute_command(["log", "--pretty=%H"], False):
-        result.append(commit.Commit(line))
-    return result
 
 
 class CommitesModel(QtCore.QAbstractItemModel):
@@ -28,7 +21,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
 
     def update_commits_list(self):
         old_commits_list = self._commits_list
-        new_commits_list = get_commites_list()
+        new_commits_list = git.Git().commites()
         if old_commits_list == new_commits_list:
             return
 
@@ -40,21 +33,21 @@ class CommitesModel(QtCore.QAbstractItemModel):
         if old_size != new_size:
             if old_size < new_size:
                 QtCore.QAbstractItemModel.beginInsertRows(self,
-                    QtCore.QModelIndex(),
-                    old_size,
-                    new_size - 1)
+                                                          QtCore.QModelIndex(),
+                                                          old_size,
+                                                          new_size - 1)
                 QtCore.QAbstractItemModel.endInsertRows(self)
             else:
                 QtCore.QAbstractItemModel.beginRemoveRows(self,
-                    QtCore.QModelIndex(),
-                    new_size,
-                    old_size - 1)
+                                                          QtCore.QModelIndex(),
+                                                          new_size,
+                                                          old_size - 1)
                 QtCore.QAbstractItemModel.endRemoveRows(self)
 
         for i in range(min(old_size, new_size)):
             if old_commits_list[i] != new_commits_list[i]:
                 self.dataChanged.emit(self.index(i, 0),
-                    self.index(i, self.columnCount()))
+                                      self.index(i, self.columnCount()))
 
 
     def index(self, row, column, parent=QtCore.QModelIndex()):
@@ -93,7 +86,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
                 tags = str()
                 _git = git.Git()
                 for tag in self._commits_list[index.row()].tags_list():
-                    tag_info =_git.tag_info(tag)
+                    tag_info = _git.tag_info(tag)
                     if len(tag_info) > 0:
                         tags += "\n".join(tag_info) + "\n\n"
                 return tags + self._commits_list[index.row()].full_name()

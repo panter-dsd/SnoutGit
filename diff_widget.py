@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 import commit
 import diff_highlighter
 
@@ -17,14 +17,15 @@ class DiffWidget(QtGui.QWidget):
         self._diff_veiw = QtGui.QPlainTextEdit(self)
         self._diff_veiw.setWordWrapMode(QtGui.QTextOption.NoWrap)
         self._diff_veiw.setUndoRedoEnabled(False)
-        diff_highlighter.DiffHighlighter(self._diff_veiw.document())
+        self._highlighter = diff_highlighter.DiffHighlighter(
+            self._diff_veiw.document())
 
         self._files_list = QtGui.QListWidget(self)
         self._files_list.itemPressed.connect(self._select_file)
 
         panel = QtGui.QWidget(self)
         panel.setSizePolicy(QtGui.QSizePolicy.Preferred,
-            QtGui.QSizePolicy.Maximum)
+                            QtGui.QSizePolicy.Maximum)
 
         self._diff_lines_count_edit = QtGui.QSpinBox(self)
         self._diff_lines_count_edit.valueChanged.connect(self._update_diff)
@@ -34,9 +35,9 @@ class DiffWidget(QtGui.QWidget):
         panelLayout.addWidget(QtGui.QLabel("Context strings count"))
         panelLayout.addWidget(self._diff_lines_count_edit)
         spacer = QtGui.QSpacerItem(0,
-            0,
-            QtGui.QSizePolicy.Expanding,
-            QtGui.QSizePolicy.Preferred)
+                                   0,
+                                   QtGui.QSizePolicy.Expanding,
+                                   QtGui.QSizePolicy.Preferred)
         panelLayout.addSpacerItem(spacer)
 
         panel.setLayout(panelLayout)
@@ -50,7 +51,7 @@ class DiffWidget(QtGui.QWidget):
         layout.addWidget(horizontal_split)
         super(DiffWidget, self).setLayout(layout)
 
-    @QtCore.Slot(str)
+    @QtCore.pyqtSlot(str)
     def set_commit(self, id):
         self._id = id
         self._update_diff()

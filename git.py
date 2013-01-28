@@ -3,6 +3,7 @@ __author__ = 'panter.dsd@gmail.com'
 
 import subprocess
 import re
+import commit
 
 class Git(object):
     git_path = "git"
@@ -16,9 +17,9 @@ class Git(object):
             command = command.split()
         try:
             process = subprocess.Popen([self.git_path] + command,
-                shell=False,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
+                                       shell=False,
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE)
         except subprocess.CalledProcessError as error:
             print(self.git_path, command, error)
             return []
@@ -111,7 +112,7 @@ class Git(object):
         for line in self.execute_command(command, True):
             match = branch_re.match(line)
             if match:
-                result.append(match.group(2))
+                result.append(match.group(1) + "/" + match.group(2))
 
         return result
 
@@ -122,3 +123,21 @@ class Git(object):
             if len(line.strip()) == 0:
                 result.remove(line)
         return result
+
+    def commites(self):
+        result = []
+        for line in self.execute_command(["log", "--pretty=%H"], False):
+            result.append(commit.Commit(line))
+        return result
+
+    def revert_files(self, files):
+        command = ["checkout", "--"] + files
+        self.execute_command(command, True)
+
+    def checkout(self, branch_name):
+        command = ["checkout", branch_name]
+        self.execute_command(command, True)
+
+    def create_branch(self, branch_name, parent_branch):
+        command = ["branch", branch_name, parent_branch]
+        self.execute_command(command, True)

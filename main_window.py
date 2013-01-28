@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 import commites_widget
 import diff_widget
 import status_widget
@@ -10,13 +10,13 @@ import commit_widget
 import actions_widget
 import log_view
 import git
-
+import branches_widget
 
 class State(object):
     _name = str()
     _data = None
 
-    def __init__(self, name=None, data=None):
+    def __init__(self, name=str(), data=None):
         super(State, self).__init__()
 
         self._name = name
@@ -27,6 +27,9 @@ class State(object):
 
     def data(self):
         return self._data
+
+    def empty(self):
+        return len(self._name) == 0
 
 
 class States(object):
@@ -138,6 +141,13 @@ class MainWindow(QtGui.QMainWindow):
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, log_view_dock)
         git.Git.log_view = log
 
+        branches_dock = QtGui.QDockWidget(self)
+        branches_dock.setObjectName("BranchesWidget")
+        branches_dock.setWindowTitle("Branches")
+        branches = branches_widget.BranchesWidget(branches_dock)
+        branches_dock.setWidget(branches)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, branches_dock)
+
         self._load_settings()
 
         self._save_state_action = QtGui.QAction(self)
@@ -176,8 +186,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def save_state(self):
         state_name = QtGui.QInputDialog.getText(self,
-            "Save state",
-            "StateName")[0]
+                                                "Save state",
+                                                "StateName")[0]
         if len(state_name) > 0:
             self._current_state = self._states.append_state(
                 state_name,
@@ -193,11 +203,11 @@ class MainWindow(QtGui.QMainWindow):
             return
 
         state_name = QtGui.QInputDialog.getItem(self,
-            "Save state",
-            "State name",
-            states,
-            0,
-            False)[0]
+                                                "Save state",
+                                                "State name",
+                                                states,
+                                                0,
+                                                False)[0]
         return self._states.state_for_name(state_name)
 
     def remove_state(self):
@@ -210,8 +220,8 @@ class MainWindow(QtGui.QMainWindow):
         state = self.select_state()
         if len(state.name()) > 0:
             state_name = QtGui.QInputDialog.getText(self,
-                "Rename state",
-                "State name")[0]
+                                                    "Rename state",
+                                                    "State name")[0]
             if len(state_name) > 0:
                 self._states.rename_state(state.name(), state_name)
                 self.update_states_menu()
@@ -230,8 +240,12 @@ class MainWindow(QtGui.QMainWindow):
         self._states_menu.addAction(self._update_state_action)
         self._states_menu.addAction(self._rename_state_action)
         self._states_menu.addAction(self._remove_state_action)
-        self._remove_state_action.setEnabled(self._states.states_count() > 0)
         self._states_menu.addSeparator()
+
+        enabled = self._states.states_count() > 0
+        self._update_state_action.setEnabled(enabled)
+        self._rename_state_action.setEnabled(enabled)
+        self._remove_state_action.setEnabled(enabled)
 
         for i in range(self._states.states_count()):
             action = QtGui.QAction(self)
@@ -260,6 +274,10 @@ class MainWindow(QtGui.QMainWindow):
         settings.beginGroup("GUI")
         settings.beginGroup("MainWindow")
 
+        super(MainWindow, self).restoreState(
+            settings.value("State",
+                           QtCore.QByteArray()))
+
         if settings.contains("pos"):
             super(MainWindow, self).move(settings.value("pos"))
 
@@ -271,8 +289,6 @@ class MainWindow(QtGui.QMainWindow):
 
         if isMaximized:
             super(MainWindow, self).setWindowState(QtCore.Qt.WindowMaximized)
-
-        super(MainWindow, self).restoreState(settings.value("State"))
 
         settings.endGroup()
 
@@ -314,6 +330,9 @@ class MainWindow(QtGui.QMainWindow):
             settings.setValue("Data", state.data())
         settings.endArray()
 
-        settings.setValue("CurrentState", self._current_state.name())
+        if not self._current_state.empty():
+            settings.setValue("CurrentState", self._current_state.name())
+        else:
+            settings.remove("CurrentState")
 
         settings.endGroup()

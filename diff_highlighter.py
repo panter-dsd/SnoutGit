@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 import re
 
 
@@ -15,11 +15,11 @@ class DiffHighlighter(QtGui.QSyntaxHighlighter):
         added = re.match("^\+.*$", text)
         if added:
             super(DiffHighlighter, self).setFormat(added.pos,
-                added.endpos,
-                QtCore.Qt.green)
+                                                   added.endpos,
+                                                   QtCore.Qt.green)
 
         removed = re.match("^\-.*$", text)
         if removed:
             super(DiffHighlighter, self).setFormat(removed.pos,
-                removed.endpos,
-                QtCore.Qt.red)
+                                                   removed.endpos,
+                                                   QtCore.Qt.red)
