@@ -177,6 +177,8 @@ class MainWindow(QtGui.QMainWindow):
         self._menu_bar = QtGui.QMenuBar(self)
         super(MainWindow, self).setMenuBar(self._menu_bar)
 
+        self._menu_bar.addMenu(stashes.menu())
+
         self._states_menu = QtGui.QMenu(self)
         self._states_menu.setTitle("States")
         self._menu_bar.addMenu(self._states_menu)
