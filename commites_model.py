@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtCore
+from PyQt4 import QtCore
 import git
 
 

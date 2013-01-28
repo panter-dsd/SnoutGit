@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 import commites_widget
 import diff_widget
 import status_widget
@@ -274,7 +274,9 @@ class MainWindow(QtGui.QMainWindow):
         settings.beginGroup("GUI")
         settings.beginGroup("MainWindow")
 
-        super(MainWindow, self).restoreState(settings.value("State"))
+        super(MainWindow, self).restoreState(
+            settings.value("State",
+                           QtCore.QByteArray()))
 
         if settings.contains("pos"):
             super(MainWindow, self).move(settings.value("pos"))

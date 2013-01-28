@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 import commites_model
 
 
@@ -9,7 +9,7 @@ DEFAULT_COLUMN_WIDTH = [0, 300, 200, 0]
 
 
 class CommitesWidget(QtGui.QWidget):
-    current_commit_changed = QtCore.Signal(str)
+    current_commit_changed = QtCore.pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(CommitesWidget, self).__init__(parent)
@@ -37,6 +37,6 @@ class CommitesWidget(QtGui.QWidget):
         commit_id = index.data(QtCore.Qt.DisplayRole)
         self.current_commit_changed.emit(commit_id)
 
-    @QtCore.Slot(str)
+    @QtCore.pyqtSlot()
     def update_commites_list(self):
         self._model.update_commits_list()
