@@ -149,3 +149,7 @@ class Git(object):
             result.append(line)
 
         return result
+
+    def pop_stash(self):
+        command = ["stash", "pop"]
+        self.execute_command(command, True)
