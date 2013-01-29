@@ -151,8 +151,13 @@ class MainWindow(QtGui.QMainWindow):
 
         stashes_dock = QtGui.QDockWidget(self)
         stashes_dock.setObjectName("StashesWidget")
-        stashes_dock.setWindowTitle("Stashes")
         stashes = stashes_widget.StashesWidget(stashes_dock)
+        stashes.state_changed.connect(
+            lambda: stashes_dock.setWindowTitle(
+                "Stashes ({0})".format(stashes.count())
+            )
+        )
+        stashes.update_stashes_list()
         stashes_dock.setWidget(stashes)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, stashes_dock)
 
