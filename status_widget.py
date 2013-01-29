@@ -45,11 +45,18 @@ class StatusWidget(QtGui.QWidget):
 
         new_icon = QtGui.QIcon(images_path + "add.png")
         changed_icon = QtGui.QIcon(images_path + "edit.png")
-        staged_icon = QtGui.QIcon(
+        updated_but_unmerged = QtGui.QIcon(
             super(StatusWidget, self).style().standardIcon(
                 QtGui.QStyle.SP_DialogSaveButton
             ))
         deleted_icon = QtGui.QIcon(images_path + "remove.png")
+
+        icons = {
+            'A': new_icon,
+            'M': changed_icon,
+            'U': updated_but_unmerged,
+            'D': deleted_icon
+        }
 
         current_status = git.Git().get_status()
         if self._last_status == current_status:
@@ -82,16 +89,16 @@ class StatusWidget(QtGui.QWidget):
                     parent = self._staged
                 item_ = QtGui.QTreeWidgetItem(parent)
                 item_.setText(0, names[1])
-            elif status[0] != ' ':
-                item.setIcon(
-                    0,
-                    [staged_icon, deleted_icon][status[0] == 'D'])
-                self._staged.addChild(item)
-            elif status[1] != ' ':
-                item.setIcon(
-                    0,
-                    [changed_icon, deleted_icon][status[1] == 'D'])
-                self._unstaged.addChild(item)
+            else:
+                if not status[0] in [' ', 'U']:
+                    item = QtGui.QTreeWidgetItem(self._staged)
+                    item.setText(0, file_name)
+                    item.setIcon(0, icons[status[0]])
+
+                if status[1] != ' ':
+                    item = QtGui.QTreeWidgetItem(self._unstaged)
+                    item.setText(0, file_name)
+                    item.setIcon(0, icons[status[1]])
 
         self._files_view.expandAll()
         self.status_changed.emit()
