@@ -27,6 +27,11 @@ class StashesWidget(QtGui.QWidget):
         self._drop_action = QtGui.QAction(self)
         self._drop_action.setText("Drop stash")
         self._drop_action.triggered.connect(self.drop)
+        self._stashes_list.selectionModel().selectionChanged.connect(
+            lambda selected: self._drop_action.setDisabled(
+                selected.isEmpty()
+            )
+        )
 
         layout = QtGui.QVBoxLayout()
         layout.addWidget(self._stashes_list)
@@ -57,6 +62,9 @@ class StashesWidget(QtGui.QWidget):
 
         self._stashes_list.resizeColumnsToContents()
         self._stashes_list.resizeRowsToContents()
+
+        self._pop_action.setEnabled(self._stashes_list.rowCount() > 0)
+        self._drop_action.setEnabled(False)
 
     def menu(self):
         result = QtGui.QMenu(self)
