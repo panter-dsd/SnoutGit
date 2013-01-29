@@ -5,6 +5,16 @@ import subprocess
 import re
 import commit
 
+
+class Stash():
+    name = str()
+    description = str()
+
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+
+
 class Git(object):
     git_path = "git"
     log_view = None
@@ -145,8 +155,14 @@ class Git(object):
     def stashes(self):
         command = ["stash", "list"]
         result = []
+
+        stash_re = re.compile(r"(stash@{\d*}): (.*)")
+
         for line in self.execute_command(command, True):
-            result.append(line)
+            match = stash_re.match(line)
+            assert match
+            result.append(Stash(match.group(1),
+                                match.group(2)))
 
         return result
 

@@ -4,6 +4,7 @@ __author__ = 'panter.dsd@gmail.com'
 from PyQt4 import QtGui
 import git
 
+
 class StashesWidget(QtGui.QWidget):
     _git = git.Git()
 
@@ -32,13 +33,19 @@ class StashesWidget(QtGui.QWidget):
         stashes = self._git.stashes()
 
         self._stashes_list.setRowCount(len(stashes))
-        self._stashes_list.setColumnCount(1)
+        self._stashes_list.setColumnCount(2)
+        self._stashes_list.setHorizontalHeaderLabels(["Name",
+                                                      "Description"])
 
         row = 0
         for stash in stashes:
-            item = QtGui.QTableWidgetItem(stash)
+            item = QtGui.QTableWidgetItem(stash.name)
             item.setToolTip(item.text())
             self._stashes_list.setItem(row, 0, item)
+
+            item = QtGui.QTableWidgetItem(stash.description)
+            item.setToolTip(item.text())
+            self._stashes_list.setItem(row, 1, item)
             row += 1
 
         self._stashes_list.resizeColumnsToContents()
