@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PyQt4 import QtGui
+from PyQt4 import QtCore, QtGui
 import git
 
 
 class StashesWidget(QtGui.QWidget):
     _git = git.Git()
+    state_changed = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(StashesWidget, self).__init__(parent)
@@ -37,8 +38,6 @@ class StashesWidget(QtGui.QWidget):
         layout.addWidget(self._stashes_list)
         super(StashesWidget, self).setLayout(layout)
 
-        self.update_stashes_list()
-
     def update_stashes_list(self):
         self._stashes_list.clear()
 
@@ -65,6 +64,7 @@ class StashesWidget(QtGui.QWidget):
 
         self._pop_action.setEnabled(self._stashes_list.rowCount() > 0)
         self._drop_action.setEnabled(False)
+        self.state_changed.emit()
 
     def menu(self):
         result = QtGui.QMenu(self)
@@ -91,3 +91,6 @@ class StashesWidget(QtGui.QWidget):
                 self._stashes_list.item(row, 0).text()
             )
             self.update_stashes_list()
+
+    def count(self):
+        return self._stashes_list.rowCount()
