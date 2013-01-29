@@ -5,6 +5,16 @@ import subprocess
 import re
 import commit
 
+
+class Stash():
+    name = str()
+    description = str()
+
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+
+
 class Git(object):
     git_path = "git"
     log_view = None
@@ -140,4 +150,30 @@ class Git(object):
 
     def create_branch(self, branch_name, parent_branch):
         command = ["branch", branch_name, parent_branch]
+        self.execute_command(command, True)
+
+    def stashes(self):
+        command = ["stash", "list"]
+        result = []
+
+        stash_re = re.compile(r"(stash@{\d*}): (.*)")
+
+        for line in self.execute_command(command, True):
+            match = stash_re.match(line)
+            assert match
+            result.append(Stash(match.group(1),
+                                match.group(2)))
+
+        return result
+
+    def save_stash(self):
+        command = ["stash", "save"]
+        self.execute_command(command, True)
+
+    def pop_stash(self):
+        command = ["stash", "pop"]
+        self.execute_command(command, True)
+
+    def drop_stash(self, stash_name):
+        command = ["stash", "drop", stash_name]
         self.execute_command(command, True)
