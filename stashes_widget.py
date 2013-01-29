@@ -12,6 +12,9 @@ class StashesWidget(QtGui.QWidget):
         super(StashesWidget, self).__init__(parent)
 
         self._stashes_list = QtGui.QTableWidget(self)
+        self._stashes_list.setSelectionBehavior(
+            QtGui.QAbstractItemView.SelectRows
+        )
 
         self._save_action = QtGui.QAction(self)
         self._save_action.setText("Save")
@@ -20,6 +23,10 @@ class StashesWidget(QtGui.QWidget):
         self._pop_action = QtGui.QAction(self)
         self._pop_action.setText("Pop stash")
         self._pop_action.triggered.connect(self.pop)
+
+        self._drop_action = QtGui.QAction(self)
+        self._drop_action.setText("Drop stash")
+        self._drop_action.triggered.connect(self.drop)
 
         layout = QtGui.QVBoxLayout()
         layout.addWidget(self._stashes_list)
@@ -57,6 +64,7 @@ class StashesWidget(QtGui.QWidget):
 
         result.addAction(self._save_action)
         result.addAction(self._pop_action)
+        result.addAction(self._drop_action)
 
         return result
 
@@ -67,3 +75,11 @@ class StashesWidget(QtGui.QWidget):
     def pop(self):
         self._git.pop_stash()
         self.update_stashes_list()
+
+    def drop(self):
+        row = self._stashes_list.currentRow()
+        if row >= 0:
+            self._git.drop_stash(
+                self._stashes_list.item(row, 0).text()
+            )
+            self.update_stashes_list()
