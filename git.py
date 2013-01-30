@@ -105,7 +105,7 @@ class Git(object):
 
         result = []
 
-        branch_re = re.compile(r"^[\*, ]? ([\w,/]*)$")
+        branch_re = re.compile(r"^[\*, ]? (\S*)$")
         for line in self.execute_command(command, True):
             match = branch_re.match(line)
             if match:
@@ -118,7 +118,7 @@ class Git(object):
 
         result = []
 
-        branch_re = re.compile(r"^  (\w*)/([\w,/]*)$")
+        branch_re = re.compile(r"^  (\w*)/(\S*)$")
         for line in self.execute_command(command, True):
             match = branch_re.match(line)
             if match:
