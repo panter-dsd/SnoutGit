@@ -177,3 +177,7 @@ class Git(object):
     def drop_stash(self, stash_name):
         command = ["stash", "drop", stash_name]
         self.execute_command(command, True)
+
+    def tags(self):
+        command = ["tag"]
+        return self.execute_command(command, True)
