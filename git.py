@@ -205,3 +205,7 @@ class Git(object):
     def abort_merge(self):
         command = ["merge", "--abort"]
         self.execute_command(command, True)
+
+    def rename_branch(self, old_name, new_name):
+        command = ["branch", "-m", old_name, new_name]
+        self.execute_command(command, True)
