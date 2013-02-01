@@ -3,7 +3,7 @@ __author__ = 'panter.dsd@gmail.com'
 
 from PyQt4 import QtCore, QtGui
 import git
-
+import os
 
 class StatusWidget(QtGui.QWidget):
     current_file_changed = QtCore.pyqtSignal(str, bool)
@@ -41,7 +41,22 @@ class StatusWidget(QtGui.QWidget):
         self.update_timer.start(1000)
 
     def _update_file_list(self):
-        new_icon = QtGui.QIcon("share/images/add.png")
+        images_path = os.path.dirname(__file__) + "/share/images/"
+
+        new_icon = QtGui.QIcon(images_path + "add.png")
+        changed_icon = QtGui.QIcon(images_path + "edit.png")
+        updated_but_unmerged = QtGui.QIcon(
+            super(StatusWidget, self).style().standardIcon(
+                QtGui.QStyle.SP_DialogSaveButton
+            ))
+        deleted_icon = QtGui.QIcon(images_path + "remove.png")
+
+        icons = {
+            'A': new_icon,
+            'M': changed_icon,
+            'U': updated_but_unmerged,
+            'D': deleted_icon
+        }
 
         current_status = git.Git().get_status()
         if self._last_status == current_status:
@@ -58,30 +73,32 @@ class StatusWidget(QtGui.QWidget):
             status = status_line[:2]
             file_name = status_line[3:]
 
-            if status[0] == 'R':
+            item = QtGui.QTreeWidgetItem()
+            item.setText(0, file_name)
+
+            if status[0] == '?' or status[1] == '?':
+                item.setIcon(0, new_icon)
+                self._untracked.addChild(item)
+            elif status[0] == 'R':
                 names = file_name.split(" -> ")
-                item = QtGui.QTreeWidgetItem(self._staged)
                 item.setText(0, names[0])
+                self._staged.addChild(item)
                 if status[1] == "M":
                     parent = self._unstaged
                 else:
                     parent = self._staged
-                item = QtGui.QTreeWidgetItem(parent)
-                item.setText(0, names[1])
-                continue
+                item_ = QtGui.QTreeWidgetItem(parent)
+                item_.setText(0, names[1])
+            else:
+                if not status[0] in [' ', 'U']:
+                    item = QtGui.QTreeWidgetItem(self._staged)
+                    item.setText(0, file_name)
+                    item.setIcon(0, icons[status[0]])
 
-            if not status[0] in [' ', '?']:
-                item = QtGui.QTreeWidgetItem(self._staged)
-                item.setText(0, file_name)
-
-            if not status[1] in [' ', '?']:
-                item = QtGui.QTreeWidgetItem(self._unstaged)
-                item.setText(0, file_name)
-
-            if status[0] == '?' or status[1] == '?':
-                item = QtGui.QTreeWidgetItem(self._untracked)
-                item.setIcon(0, new_icon)
-                item.setText(0, file_name)
+                if status[1] != ' ':
+                    item = QtGui.QTreeWidgetItem(self._unstaged)
+                    item.setText(0, file_name)
+                    item.setIcon(0, icons[status[1]])
 
         self._files_view.expandAll()
         self.status_changed.emit()

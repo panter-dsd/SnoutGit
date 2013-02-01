@@ -5,6 +5,26 @@ import subprocess
 import re
 import commit
 
+
+class Stash():
+    name = str()
+    description = str()
+
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+
+
+class MergeOptions():
+    source_target = str()
+    commit = True
+    fast_forward = False
+    squash = False
+
+    def __init__(self, source_target):
+        self.source_target = source_target
+
+
 class Git(object):
     git_path = "git"
     log_view = None
@@ -95,7 +115,7 @@ class Git(object):
 
         result = []
 
-        branch_re = re.compile(r"^[\*, ]? ([\w,/]*)$")
+        branch_re = re.compile(r"^[\*, ]? (\S*)$")
         for line in self.execute_command(command, True):
             match = branch_re.match(line)
             if match:
@@ -108,7 +128,7 @@ class Git(object):
 
         result = []
 
-        branch_re = re.compile(r"^  (\w*)/([\w,/]*)$")
+        branch_re = re.compile(r"^  (\w*)/(\S*)$")
         for line in self.execute_command(command, True):
             match = branch_re.match(line)
             if match:
@@ -140,4 +160,48 @@ class Git(object):
 
     def create_branch(self, branch_name, parent_branch):
         command = ["branch", branch_name, parent_branch]
+        self.execute_command(command, True)
+
+    def stashes(self):
+        command = ["stash", "list"]
+        result = []
+
+        stash_re = re.compile(r"(stash@{\d*}): (.*)")
+
+        for line in self.execute_command(command, True):
+            match = stash_re.match(line)
+            assert match
+            result.append(Stash(match.group(1),
+                                match.group(2)))
+
+        return result
+
+    def save_stash(self):
+        command = ["stash", "save"]
+        self.execute_command(command, True)
+
+    def pop_stash(self):
+        command = ["stash", "pop"]
+        self.execute_command(command, True)
+
+    def drop_stash(self, stash_name):
+        command = ["stash", "drop", stash_name]
+        self.execute_command(command, True)
+
+    def tags(self):
+        command = ["tag"]
+        return self.execute_command(command, True)
+
+    def merge(self, merge_options):
+        command = [
+            "merge",
+            ["--no-commit", "--commit"][merge_options.commit],
+            ["--no-ff", "--ff"][merge_options.fast_forward],
+            ["--no-squash", "--squash"][merge_options.squash],
+            merge_options.source_target
+        ]
+        self.execute_command(command, True)
+
+    def abort_merge(self):
+        command = ["merge", "--abort"]
         self.execute_command(command, True)
