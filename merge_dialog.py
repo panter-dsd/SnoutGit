@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtGui
 import git
 
 
@@ -33,9 +33,11 @@ class MergeDialog(QtGui.QDialog):
         self._update_source(self._sources_tabs.currentIndex())
 
     def _update_source(self, current):
+        model = self._source_model
+
         if current == 0:
-            self._source_model.setStringList(self._git.local_branches())
+            model.setStringList(self._git.local_branches())
         elif current == 1:
-            self._source_model.setStringList(self._git.remote_branches())
+            model.setStringList(self._git.remote_branches())
         else:
-            self._source_model.setStringList(self._git.tags())
+            model.setStringList(self._git.tags())
