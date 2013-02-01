@@ -201,3 +201,7 @@ class Git(object):
             merge_options.source_target
         ]
         self.execute_command(command, True)
+
+    def abort_merge(self):
+        command = ["merge", "--abort"]
+        self.execute_command(command, True)
