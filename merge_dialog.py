@@ -73,7 +73,7 @@ class MergeDialog(QtGui.QDialog):
                           QtGui.QDialogButtonBox.AcceptRole)
         buttons.addButton(QtGui.QDialogButtonBox.Cancel)
 
-        buttons.accepted.connect(super(MergeDialog, self).accept)
+        buttons.accepted.connect(self._merge)
         buttons.rejected.connect(super(MergeDialog, self).reject)
 
         layout = QtGui.QVBoxLayout()
@@ -96,3 +96,20 @@ class MergeDialog(QtGui.QDialog):
             model.setStringList(self._git.remote_branches())
         else:
             model.setStringList(self._git.tags())
+
+    def _merge(self):
+        target = self._source_target_edit.text()
+
+        result = QtGui.QMessageBox.question(
+            self,
+            "Are you sure?",
+            "Merge " + target + " into " + self._git.current_branch(),
+            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
+
+        if result == QtGui.QMessageBox.Ok:
+            merge_options = git.MergeOptions(target)
+            merge_options.commit = self._commit_option.isChecked()
+            merge_options.fast_forward = self._fast_forward_option.isChecked()
+            merge_options.squash = self._squash_option.isChecked()
+            self._git.merge(merge_options)
+            super(MergeDialog, self).accept()
