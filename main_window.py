@@ -79,6 +79,7 @@ class States(object):
 class MainWindow(QtGui.QMainWindow):
     _states = States()
     _current_state = State()
+    _git = git.Git()
 
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -183,6 +184,10 @@ class MainWindow(QtGui.QMainWindow):
         self._merge_action.setText("Merge...")
         self._merge_action.triggered.connect(self.merge)
 
+        self._abort_merge_action = QtGui.QAction(self)
+        self._abort_merge_action.setText("Abort merge")
+        self._abort_merge_action.triggered.connect(self.abort_merge)
+
         self._menu_bar = QtGui.QMenuBar(self)
         super(MainWindow, self).setMenuBar(self._menu_bar)
 
@@ -196,6 +201,7 @@ class MainWindow(QtGui.QMainWindow):
         self._actions_menu = QtGui.QMenu(self)
         self._actions_menu.setTitle("Actions")
         self._actions_menu.addAction(self._merge_action)
+        self._actions_menu.addAction(self._abort_merge_action)
         self._menu_bar.addMenu(self._actions_menu)
 
         exit_action = QtGui.QAction(self)
@@ -364,3 +370,13 @@ class MainWindow(QtGui.QMainWindow):
     def merge(self):
         d = merge_dialog.MergeDialog(self)
         d.exec_()
+
+    def abort_merge(self):
+        result = QtGui.QMessageBox.question(
+            self,
+            "Are you sure?",
+            "Abort merge",
+            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
+
+        if result == QtGui.QMessageBox.Ok:
+            self._git.abort_merge()
