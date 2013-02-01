@@ -58,11 +58,30 @@ class MergeDialog(QtGui.QDialog):
         options_layout.addWidget(self._squash_option)
         options_group.setLayout(options_layout)
 
+        buttons = QtGui.QDialogButtonBox(QtCore.Qt.Horizontal,
+                                         self)
+        self._merge_button = QtGui.QPushButton(self)
+        self._merge_button.setEnabled(False)
+        self._merge_button.setText("Merge")
+        self._source_target_edit.textChanged.connect(
+            lambda: self._merge_button.setEnabled(
+                len(self._source_target_edit.text()) > 0
+            )
+        )
+
+        buttons.addButton(self._merge_button,
+                          QtGui.QDialogButtonBox.AcceptRole)
+        buttons.addButton(QtGui.QDialogButtonBox.Cancel)
+
+        buttons.accepted.connect(super(MergeDialog, self).accept)
+        buttons.rejected.connect(super(MergeDialog, self).reject)
+
         layout = QtGui.QVBoxLayout()
         layout.addWidget(self._sources_tabs)
         layout.addWidget(self._source_view)
         layout.addLayout(source_target_layout)
         layout.addWidget(options_group)
+        layout.addWidget(buttons)
 
         super(MergeDialog, self).setLayout(layout)
 
