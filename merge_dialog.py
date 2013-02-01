@@ -48,6 +48,7 @@ class MergeDialog(QtGui.QDialog):
         self._squash_option = QtGui.QCheckBox(self)
         self._squash_option.setText("Squash")
         self._squash_option.setChecked(False)
+        self._squash_option.stateChanged.connect(self._option_changed)
 
         options_group = QtGui.QGroupBox(self)
         options_group.setTitle("Merge options")
@@ -113,3 +114,10 @@ class MergeDialog(QtGui.QDialog):
             merge_options.squash = self._squash_option.isChecked()
             self._git.merge(merge_options)
             super(MergeDialog, self).accept()
+
+    def _option_changed(self):
+        is_squash = self._squash_option.isChecked()
+
+        self._fast_forward_option.setEnabled(not is_squash)
+        if is_squash and self._fast_forward_option.isChecked():
+            self._fast_forward_option.setChecked(False)
