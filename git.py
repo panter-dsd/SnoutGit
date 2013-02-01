@@ -15,6 +15,16 @@ class Stash():
         self.description = description
 
 
+class MergeOptions():
+    source_target = str()
+    commit = True
+    fast_forward = False
+    squash = False
+
+    def __init__(self, source_target):
+        self.source_target = source_target
+
+
 class Git(object):
     git_path = "git"
     log_view = None
@@ -181,3 +191,13 @@ class Git(object):
     def tags(self):
         command = ["tag"]
         return self.execute_command(command, True)
+
+    def merge(self, merge_options):
+        command = [
+            "merge",
+            ["--no-commit", "--commit"][merge_options.commit],
+            ["--no-ff", "--ff"][merge_options.fast_forward],
+            ["--no-squash", "--squash"][merge_options.squash],
+            merge_options.source_target
+        ]
+        self.execute_command(command, True)
