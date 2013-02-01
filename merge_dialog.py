@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PyQt4 import QtGui
+from PyQt4 import QtCore, QtGui
 import git
 
 
@@ -24,9 +24,24 @@ class MergeDialog(QtGui.QDialog):
         self._source_view = QtGui.QListView(self)
         self._source_view.setModel(self._source_model)
 
+        self._source_target_label = QtGui.QLabel("Source target",
+                                                 self)
+        self._source_target_edit = QtGui.QLineEdit(self)
+        self._source_view.clicked.connect(
+            lambda index: self._source_target_edit.setText(
+                index.data(QtCore.Qt.DisplayRole)
+            )
+        )
+
+        source_target_layout = QtGui.QHBoxLayout()
+        source_target_layout.addWidget(self._source_target_label)
+        source_target_layout.addWidget(self._source_target_edit)
+
         layout = QtGui.QVBoxLayout()
         layout.addWidget(self._sources_tabs)
         layout.addWidget(self._source_view)
+        layout.addLayout(source_target_layout)
+
 
         super(MergeDialog, self).setLayout(layout)
 
