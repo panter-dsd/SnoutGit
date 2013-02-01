@@ -37,11 +37,32 @@ class MergeDialog(QtGui.QDialog):
         source_target_layout.addWidget(self._source_target_label)
         source_target_layout.addWidget(self._source_target_edit)
 
+        self._commit_option = QtGui.QCheckBox(self)
+        self._commit_option.setText("Commit")
+        self._commit_option.setChecked(True)
+
+        self._fast_forward_option = QtGui.QCheckBox(self)
+        self._fast_forward_option.setText("Fast-forward")
+        self._fast_forward_option.setChecked(False)
+
+        self._squash_option = QtGui.QCheckBox(self)
+        self._squash_option.setText("Squash")
+        self._squash_option.setChecked(False)
+
+        options_group = QtGui.QGroupBox(self)
+        options_group.setTitle("Merge options")
+
+        options_layout = QtGui.QHBoxLayout()
+        options_layout.addWidget(self._commit_option)
+        options_layout.addWidget(self._fast_forward_option)
+        options_layout.addWidget(self._squash_option)
+        options_group.setLayout(options_layout)
+
         layout = QtGui.QVBoxLayout()
         layout.addWidget(self._sources_tabs)
         layout.addWidget(self._source_view)
         layout.addLayout(source_target_layout)
-
+        layout.addWidget(options_group)
 
         super(MergeDialog, self).setLayout(layout)
 
