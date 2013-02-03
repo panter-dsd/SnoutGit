@@ -5,6 +5,7 @@ from PyQt4 import QtCore, QtGui
 import create_branch_dialog
 import git
 import rename_branch_dialog
+import delete_branch_dialog
 
 class BranchesWidget(QtGui.QWidget):
     _git = git.Git()
@@ -29,10 +30,14 @@ class BranchesWidget(QtGui.QWidget):
         self._rename_button = QtGui.QPushButton("Rename", self)
         self._rename_button.clicked.connect(self._rename)
 
+        self._delete_button = QtGui.QPushButton("Delete", self)
+        self._delete_button.clicked.connect(self._delete)
+
         buttons_layout = QtGui.QVBoxLayout()
         buttons_layout.addWidget(self._checkout_button)
         buttons_layout.addWidget(self._create_button)
         buttons_layout.addWidget(self._rename_button)
+        buttons_layout.addWidget(self._delete_button)
         buttons_layout.addSpacerItem(QtGui.QSpacerItem(0,
                                                        0,
                                                        QtGui.QSizePolicy.Preferred,
@@ -96,3 +101,11 @@ class BranchesWidget(QtGui.QWidget):
         if d.exec_():
             self._git.rename_branch(d.old_name(), d.new_name())
             self._update_lists()
+
+    def _delete(self):
+        item = self._local_branches_list.currentItem()
+        d = delete_branch_dialog.DeleteBranchDialog(
+            item and item.text() or str(),
+            self
+        )
+        d.exec_()
