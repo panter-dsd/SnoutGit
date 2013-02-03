@@ -108,4 +108,6 @@ class BranchesWidget(QtGui.QWidget):
             item and item.text() or str(),
             self
         )
-        d.exec_()
+
+        if d.exec_():
+            self._update_lists()
