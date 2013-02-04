@@ -118,7 +118,7 @@ class DeleteBranchDialog(QtGui.QDialog):
             if len(check_branch) == 0:
                 check_branch = self._git.current_branch()
 
-            if self._git.merged(branch).count(check_branch) == 0:
+            if self._git.merged(check_branch).count(branch) == 0:
                 QtGui.QMessageBox.critical(
                     self,
                     "Delete branch",
