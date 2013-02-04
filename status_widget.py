@@ -158,6 +158,10 @@ class StatusWidget(QtGui.QWidget):
         self._revert_selected_action.setText("Revert selected")
         self._revert_selected_action.triggered.connect(self._revert_selected)
 
+        self._remove_selected_action = QtGui.QAction(self)
+        self._remove_selected_action.setText("Remove selected")
+        self._remove_selected_action.triggered.connect(self._remove_selected)
+
         if self.is_in_item_list(self._unstaged, items):
             if self._unstaged.childCount() > 0:
                 menu.addAction(self._stage_all_action)
@@ -178,14 +182,18 @@ class StatusWidget(QtGui.QWidget):
                 if not self._stage_selected_action in menu.actions():
                     menu.addAction(self._stage_selected_action)
                     menu.addAction(self._revert_selected_action)
+                    menu.addAction(self._remove_selected_action)
 
             if item.parent() is self._staged:
                 if not self._unstage_selected_action in menu.actions():
                     menu.addAction(self._unstage_selected_action)
+                    menu.addAction(self._remove_selected_action)
 
             if item.parent() is self._untracked:
                 if not self._add_selected_action in menu.actions():
                     menu.addAction(self._add_selected_action)
+                    menu.addAction(self._remove_selected_action)
+
 
         if len(menu.actions()) > 0:
             menu.exec_(self.mapToGlobal(point))
@@ -254,5 +262,12 @@ class StatusWidget(QtGui.QWidget):
                 files_list.append(item.text(0))
 
         git.Git().revert_files(files_list)
+
+        self._update_file_list()
+
+    def _remove_selected(self):
+        for item in self._files_view.selectedItems():
+            if item.parent():
+                QtCore.QFile.remove(item.text(0))
 
         self._update_file_list()
