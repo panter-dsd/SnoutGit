@@ -6,6 +6,7 @@ import git
 
 
 class ActionsWidget(QtGui.QWidget):
+    _git = git.Git()
     state_changed = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
@@ -46,14 +47,34 @@ class ActionsWidget(QtGui.QWidget):
         super(ActionsWidget, self).setLayout(layout)
 
     def push(self):
-        git.Git().push()
+        self._git.push()
         self.state_changed.emit()
+        self.show_dialog("Push")
 
     def pull(self):
-        git.Git().pull()
+        self._git.pull()
+        self.show_dialog("Pull")
 
     def _svn_rebase(self):
-        git.Git().svn_rebase()
+        self._git.svn_rebase()
+        self.show_dialog("SVN rebase")
 
     def _svn_dcommit(self):
-        git.Git().svn_dcommit()
+        self._git.svn_dcommit()
+        self.show_dialog("SVN dcommit")
+
+    def show_dialog(self, command):
+        text = [self._git._last_error,
+                self._git._last_output]
+
+        dialog = QtGui.QMessageBox(self)
+        dialog.setWindowTitle(command)
+
+        if len(text[0]) > 0:
+            dialog.setText("\n".join(text[0]))
+            dialog.setIcon(QtGui.QMessageBox.Critical)
+        else:
+            dialog.setText("\n".join(text[1]))
+            dialog.setIcon(QtGui.QMessageBox.Information)
+
+        dialog.exec_()
