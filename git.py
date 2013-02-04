@@ -28,11 +28,16 @@ class MergeOptions():
 class Git(object):
     git_path = "git"
     log_view = None
+    _last_output = []
+    _last_error = []
 
     def __init__(self):
         pass
 
     def execute_command(self, command, show_log=True):
+        self._last_output = []
+        self._last_error = []
+
         if type(command) != type([]):
             command = command.split()
         try:
@@ -44,33 +49,35 @@ class Git(object):
             print(self.git_path, command, error)
             return []
 
-        output = []
         for line in process.stdout:
             line = line.rstrip()
             if len(line) > 0:
                 try:
-                    output.append(line.decode())
+                    self._last_output.append(line.decode())
                 except UnicodeDecodeError:
-                    output.append(line.decode("CP1251"))
+                    self._last_output.append(line.decode("CP1251"))
 
-        error = []
         for line in process.stderr:
             line = line.rstrip()
             if len(line) > 0:
-                error.append(line.decode())
+                self._last_error.append(line.decode())
 
         if show_log:
             if self.log_view:
                 self.log_view.append_command(" ".join(command))
-                self.log_view.append_output("\n".join(output))
-                self.log_view.append_error("\n".join(error))
+                self.log_view.append_output(
+                    "\n".join(self._last_output)
+                )
+                self.log_view.append_error(
+                    "\n".join(self._last_error)
+                )
             else:
                 print(command)
-                print(output)
-                print(error)
+                print(self._last_output)
+                print(self._last_error)
 
         del process
-        return output
+        return self._last_output
 
     def push(self):
         self.execute_command("push")
@@ -230,3 +237,9 @@ class Git(object):
                    branch]
 
         self.execute_command(command, True)
+
+    def last_output(self):
+        return self._last_output
+
+    def last_error(self):
+        return self._last_error
