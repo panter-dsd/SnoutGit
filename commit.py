@@ -46,7 +46,7 @@ class Commit(object):
 
     def timestamp(self):
         if len(self._timestamp) == 0:
-            self._timestamp = self._commit_info("%aD")[0]
+            self._timestamp = self._commit_info("%at")[0]
         return self._timestamp
 
     def diff(self, lines_count=3):
