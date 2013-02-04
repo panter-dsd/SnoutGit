@@ -5,6 +5,13 @@ from PyQt4 import QtCore
 import git
 
 
+def commit_date(commit):
+    timestamp = int(commit.timestamp())
+    return QtCore.QDateTime.fromTime_t(timestamp).toString(
+        "yyyy-MM-dd hh:mm:ss"
+    )
+
+
 class CommitesModel(QtCore.QAbstractItemModel):
     """CommitesModel"""
 
@@ -32,16 +39,18 @@ class CommitesModel(QtCore.QAbstractItemModel):
 
         if old_size != new_size:
             if old_size < new_size:
-                QtCore.QAbstractItemModel.beginInsertRows(self,
-                                                          QtCore.QModelIndex(),
-                                                          old_size,
-                                                          new_size - 1)
+                QtCore.QAbstractItemModel.beginInsertRows(
+                    self,
+                    QtCore.QModelIndex(),
+                    old_size,
+                    new_size - 1)
                 QtCore.QAbstractItemModel.endInsertRows(self)
             else:
-                QtCore.QAbstractItemModel.beginRemoveRows(self,
-                                                          QtCore.QModelIndex(),
-                                                          new_size,
-                                                          old_size - 1)
+                QtCore.QAbstractItemModel.beginRemoveRows(
+                    self,
+                    QtCore.QModelIndex(),
+                    new_size,
+                    old_size - 1)
                 QtCore.QAbstractItemModel.endRemoveRows(self)
 
         for i in range(min(old_size, new_size)):
@@ -78,7 +87,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
             elif index.column() == 2:
                 return self._commits_list[index.row()].author()
             elif index.column() == 3:
-                return self._commits_list[index.row()].timestamp()
+                return commit_date(self._commits_list[index.row()])
         elif role == QtCore.Qt.ToolTipRole:
             if index.column() == 0:
                 return self._commits_list[index.row()].id()
@@ -93,15 +102,21 @@ class CommitesModel(QtCore.QAbstractItemModel):
             elif index.column() == 2:
                 return self._commits_list[index.row()].author()
             elif index.column() == 3:
-                return self._commits_list[index.row()].timestamp()
+                return commit_date(self._commits_list[index.row()])
 
         return None
 
     def parent(self, index):
         return QtCore.QModelIndex()
 
-    def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
-        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
-            return self._headers[section]
+    def headerData(self,
+                   section,
+                   orientation,
+                   role=QtCore.Qt.DisplayRole):
+        if orientation == QtCore.Qt.Horizontal:
+            if role == QtCore.Qt.DisplayRole:
+                return self._headers[section]
 
-        return super(CommitesModel, self).headerData(section, orientation, role)
+        return super(CommitesModel, self).headerData(section,
+                                                     orientation,
+                                                     role)

@@ -205,3 +205,28 @@ class Git(object):
     def abort_merge(self):
         command = ["merge", "--abort"]
         self.execute_command(command, True)
+
+    def rename_branch(self, old_name, new_name):
+        command = ["branch", "-m", old_name, new_name]
+        self.execute_command(command, True)
+
+    def merged(self, branch):
+        command = ["branch", "--merged", branch]
+
+        branch_re = re.compile(r"^[\*, ]? (\S*)$")
+
+        result = []
+
+        for line in self.execute_command(command, True):
+            match = branch_re.match(line)
+            if match:
+                result.append(match.group(1))
+
+        return result
+
+    def delete_branch(self, branch, force=False):
+        command = ["branch",
+                   force and "-D" or "-d",
+                   branch]
+
+        self.execute_command(command, True)

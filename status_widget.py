@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PyQt4 import QtCore, QtGui
-import git
 import os
+
+from PyQt4 import QtCore, QtGui
+
+import git
+
 
 class StatusWidget(QtGui.QWidget):
     current_file_changed = QtCore.pyqtSignal(str, bool)
@@ -17,11 +20,21 @@ class StatusWidget(QtGui.QWidget):
 
         self._files_view = QtGui.QTreeWidget(self)
         self._files_view.setHeaderHidden(True)
-        self._files_view.itemDoubleClicked.connect(self._change_item_status)
-        self._files_view.currentItemChanged.connect(self._current_item_changed)
-        self._files_view.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self._files_view.customContextMenuRequested.connect(self._show_menu)
-        self._files_view.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
+        self._files_view.itemDoubleClicked.connect(
+            self._change_item_status
+        )
+        self._files_view.currentItemChanged.connect(
+            self._current_item_changed
+        )
+        self._files_view.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu
+        )
+        self._files_view.customContextMenuRequested.connect(
+            self._show_menu
+        )
+        self._files_view.setSelectionMode(
+            QtGui.QAbstractItemView.ExtendedSelection
+        )
 
         self._unstaged = QtGui.QTreeWidgetItem(self._files_view)
         self._unstaged.setText(0, "Unstaged")
@@ -114,8 +127,10 @@ class StatusWidget(QtGui.QWidget):
 
     def _current_item_changed(self, current, _prev):
         if current and current.parent():
-            self.current_file_changed.emit(current.text(0),
-                                           current.parent() is self._staged)
+            self.current_file_changed.emit(
+                current.text(0),
+                current.parent() is self._staged
+            )
 
     def is_in_item_list(self, item, item_list):
         result = False
@@ -144,19 +159,33 @@ class StatusWidget(QtGui.QWidget):
 
         self._stage_selected_action = QtGui.QAction(self)
         self._stage_selected_action.setText("Stage selected")
-        self._stage_selected_action.triggered.connect(self._stage_selected)
+        self._stage_selected_action.triggered.connect(
+            self._stage_selected
+        )
 
         self._unstage_selected_action = QtGui.QAction(self)
         self._unstage_selected_action.setText("Unstage selected")
-        self._unstage_selected_action.triggered.connect(self._unstage_selected)
+        self._unstage_selected_action.triggered.connect(
+            self._unstage_selected
+        )
 
         self._add_selected_action = QtGui.QAction(self)
         self._add_selected_action.setText("Add selected")
-        self._add_selected_action.triggered.connect(self._add_selected)
+        self._add_selected_action.triggered.connect(
+            self._add_selected
+        )
 
         self._revert_selected_action = QtGui.QAction(self)
         self._revert_selected_action.setText("Revert selected")
-        self._revert_selected_action.triggered.connect(self._revert_selected)
+        self._revert_selected_action.triggered.connect(
+            self._revert_selected
+        )
+
+        self._remove_selected_action = QtGui.QAction(self)
+        self._remove_selected_action.setText("Remove selected")
+        self._remove_selected_action.triggered.connect(
+            self._remove_selected
+        )
 
         if self.is_in_item_list(self._unstaged, items):
             if self._unstaged.childCount() > 0:
@@ -178,14 +207,17 @@ class StatusWidget(QtGui.QWidget):
                 if not self._stage_selected_action in menu.actions():
                     menu.addAction(self._stage_selected_action)
                     menu.addAction(self._revert_selected_action)
+                    menu.addAction(self._remove_selected_action)
 
             if item.parent() is self._staged:
                 if not self._unstage_selected_action in menu.actions():
                     menu.addAction(self._unstage_selected_action)
+                    menu.addAction(self._remove_selected_action)
 
             if item.parent() is self._untracked:
                 if not self._add_selected_action in menu.actions():
                     menu.addAction(self._add_selected_action)
+                    menu.addAction(self._remove_selected_action)
 
         if len(menu.actions()) > 0:
             menu.exec_(self.mapToGlobal(point))
@@ -254,5 +286,12 @@ class StatusWidget(QtGui.QWidget):
                 files_list.append(item.text(0))
 
         git.Git().revert_files(files_list)
+
+        self._update_file_list()
+
+    def _remove_selected(self):
+        for item in self._files_view.selectedItems():
+            if item.parent():
+                QtCore.QFile.remove(item.text(0))
 
         self._update_file_list()
