@@ -38,4 +38,6 @@ class DiffFileWidget(QtGui.QWidget):
         if diff_with_index:
             command.insert(1, "--staged")
 
-        self._diff_veiw.setPlainText("\n".join(git.Git().execute_command(command, False)))
+        self._diff_veiw.setPlainText(
+            "\n".join(git.Git().execute_command(command, False))
+        )

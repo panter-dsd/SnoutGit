@@ -7,17 +7,20 @@ import git
 import rename_branch_dialog
 import delete_branch_dialog
 
+
 class BranchesWidget(QtGui.QWidget):
     _git = git.Git()
 
     def __init__(self, parent=None):
         super(BranchesWidget, self).__init__(parent)
 
-        self._local_branches_label = QtGui.QLabel("Local branches", self)
+        self._local_branches_label = QtGui.QLabel("Local branches",
+                                                  self)
 
         self._local_branches_list = QtGui.QListWidget(self)
 
-        self._remote_branches_label = QtGui.QLabel("Remote branches", self)
+        self._remote_branches_label = QtGui.QLabel("Remote branches",
+                                                   self)
 
         self._remote_branches_list = QtGui.QListWidget(self)
 
@@ -38,10 +41,11 @@ class BranchesWidget(QtGui.QWidget):
         buttons_layout.addWidget(self._create_button)
         buttons_layout.addWidget(self._rename_button)
         buttons_layout.addWidget(self._delete_button)
-        buttons_layout.addSpacerItem(QtGui.QSpacerItem(0,
-                                                       0,
-                                                       QtGui.QSizePolicy.Preferred,
-                                                       QtGui.QSizePolicy.Expanding))
+        buttons_layout.addSpacerItem(
+            QtGui.QSpacerItem(0,
+                              0,
+                              QtGui.QSizePolicy.Preferred,
+                              QtGui.QSizePolicy.Expanding))
 
         tables_layout = QtGui.QVBoxLayout()
         tables_layout.addWidget(self._local_branches_label)
@@ -63,8 +67,10 @@ class BranchesWidget(QtGui.QWidget):
         current_branch = self._git.current_branch()
 
         for branch in self._git.local_branches():
-            item = QtGui.QListWidgetItem(branch, self._local_branches_list)
-            item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            item = QtGui.QListWidgetItem(branch,
+                                         self._local_branches_list)
+            item.setFlags(QtCore.Qt.ItemIsSelectable
+                          | QtCore.Qt.ItemIsEnabled)
 
             self._local_branches_list.addItem(item)
             if current_branch == branch:
@@ -73,8 +79,10 @@ class BranchesWidget(QtGui.QWidget):
                 item.setCheckState(QtCore.Qt.Unchecked)
 
         for branch in self._git.remote_branches():
-            item = QtGui.QListWidgetItem(branch, self._remote_branches_list)
-            item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            item = QtGui.QListWidgetItem(branch,
+                                         self._remote_branches_list)
+            item.setFlags(QtCore.Qt.ItemIsSelectable
+                          | QtCore.Qt.ItemIsEnabled)
             self._remote_branches_list.addItem(item)
 
     def _create(self):

@@ -13,6 +13,8 @@ import git
 import branches_widget
 import stashes_widget
 import merge_dialog
+
+
 class State(object):
     _name = str()
     _data = None
@@ -112,7 +114,8 @@ class MainWindow(QtGui.QMainWindow):
         diff_file_dock.setWindowTitle("Diff")
         diff_file = diff_file_widget.DiffFileWidget(diff_file_dock)
         diff_file_dock.setWidget(diff_file)
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea, diff_file_dock)
+        self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
+                           diff_file_dock)
 
         status.current_file_changed.connect(diff_file.set_file)
         status.status_changed.connect(diff_file.clear)
@@ -122,7 +125,8 @@ class MainWindow(QtGui.QMainWindow):
         commit_widget_dock.setWindowTitle("Commit")
         commit = commit_widget.CommitWidget(commit_widget_dock)
         commit_widget_dock.setWidget(commit)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, commit_widget_dock)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           commit_widget_dock)
 
         commit.commited.connect(commites.update_commites_list)
 
@@ -131,7 +135,8 @@ class MainWindow(QtGui.QMainWindow):
         actions_widget_dock.setWindowTitle("Actions")
         actions = actions_widget.ActionsWidget(actions_widget_dock)
         actions_widget_dock.setWidget(actions)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, actions_widget_dock)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           actions_widget_dock)
 
         actions.state_changed.connect(commites.update_commites_list)
 
@@ -140,7 +145,8 @@ class MainWindow(QtGui.QMainWindow):
         log_view_dock.setWindowTitle("Log")
         log = log_view.LogView(log_view_dock)
         log_view_dock.setWidget(log)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, log_view_dock)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           log_view_dock)
         git.Git.log_view = log
 
         branches_dock = QtGui.QDockWidget(self)
@@ -148,7 +154,8 @@ class MainWindow(QtGui.QMainWindow):
         branches_dock.setWindowTitle("Branches")
         branches = branches_widget.BranchesWidget(branches_dock)
         branches_dock.setWidget(branches)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, branches_dock)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           branches_dock)
 
         stashes_dock = QtGui.QDockWidget(self)
         stashes_dock.setObjectName("StashesWidget")
@@ -160,7 +167,8 @@ class MainWindow(QtGui.QMainWindow):
         )
         stashes.update_stashes_list()
         stashes_dock.setWidget(stashes)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, stashes_dock)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           stashes_dock)
 
         self._load_settings()
 
@@ -212,7 +220,9 @@ class MainWindow(QtGui.QMainWindow):
         self.update_title()
 
     def update_title(self):
-        super(MainWindow, self).setWindowTitle("Branch: " + git.Git().current_branch())
+        super(MainWindow, self).setWindowTitle(
+            "Branch: " + git.Git().current_branch()
+        )
 
     def save_state(self):
         state_name = QtGui.QInputDialog.getText(self,
@@ -221,7 +231,8 @@ class MainWindow(QtGui.QMainWindow):
         if len(state_name) > 0:
             self._current_state = self._states.append_state(
                 state_name,
-                super(MainWindow, self).saveState())
+                super(MainWindow, self).saveState()
+            )
             self.update_states_menu()
 
     def select_state(self):
@@ -260,7 +271,10 @@ class MainWindow(QtGui.QMainWindow):
         state = self.select_state()
 
         if len(state.name()) > 0:
-            self._states.update_state(state.name(), super(MainWindow, self).saveState())
+            self._states.update_state(
+                state.name(),
+                super(MainWindow, self).saveState()
+            )
             self.update_states_menu()
 
 
@@ -291,7 +305,9 @@ class MainWindow(QtGui.QMainWindow):
         state_name = self.sender().text()
         print(state_name)
         self._current_state = self._states.state_for_name(state_name)
-        super(MainWindow, self).restoreState(self._current_state.data())
+        super(MainWindow, self).restoreState(
+            self._current_state.data()
+        )
         self.update_states_menu()
 
     def closeEvent(self, event):
@@ -318,7 +334,9 @@ class MainWindow(QtGui.QMainWindow):
         isMaximized = settings.value("IsMaximized", False) == "true"
 
         if isMaximized:
-            super(MainWindow, self).setWindowState(QtCore.Qt.WindowMaximized)
+            super(MainWindow, self).setWindowState(
+                QtCore.Qt.WindowMaximized
+            )
 
         settings.endGroup()
 
@@ -333,7 +351,9 @@ class MainWindow(QtGui.QMainWindow):
         state_name = settings.value("CurrentState", str())
         if len(state_name) > 0:
             self._current_state = self._states.state_for_name(state_name)
-            super(MainWindow, self).restoreState(self._current_state.data())
+            super(MainWindow, self).restoreState(
+                self._current_state.data()
+            )
 
         settings.endGroup()
 
@@ -361,7 +381,8 @@ class MainWindow(QtGui.QMainWindow):
         settings.endArray()
 
         if not self._current_state.empty():
-            settings.setValue("CurrentState", self._current_state.name())
+            settings.setValue("CurrentState",
+                              self._current_state.name())
         else:
             settings.remove("CurrentState")
 

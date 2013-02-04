@@ -12,7 +12,6 @@ def commit_date(commit):
     )
 
 
-
 class CommitesModel(QtCore.QAbstractItemModel):
     """CommitesModel"""
 
@@ -40,16 +39,18 @@ class CommitesModel(QtCore.QAbstractItemModel):
 
         if old_size != new_size:
             if old_size < new_size:
-                QtCore.QAbstractItemModel.beginInsertRows(self,
-                                                          QtCore.QModelIndex(),
-                                                          old_size,
-                                                          new_size - 1)
+                QtCore.QAbstractItemModel.beginInsertRows(
+                    self,
+                    QtCore.QModelIndex(),
+                    old_size,
+                    new_size - 1)
                 QtCore.QAbstractItemModel.endInsertRows(self)
             else:
-                QtCore.QAbstractItemModel.beginRemoveRows(self,
-                                                          QtCore.QModelIndex(),
-                                                          new_size,
-                                                          old_size - 1)
+                QtCore.QAbstractItemModel.beginRemoveRows(
+                    self,
+                    QtCore.QModelIndex(),
+                    new_size,
+                    old_size - 1)
                 QtCore.QAbstractItemModel.endRemoveRows(self)
 
         for i in range(min(old_size, new_size)):
@@ -108,8 +109,14 @@ class CommitesModel(QtCore.QAbstractItemModel):
     def parent(self, index):
         return QtCore.QModelIndex()
 
-    def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
-        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
-            return self._headers[section]
+    def headerData(self,
+                   section,
+                   orientation,
+                   role=QtCore.Qt.DisplayRole):
+        if orientation == QtCore.Qt.Horizontal:
+            if role == QtCore.Qt.DisplayRole:
+                return self._headers[section]
 
-        return super(CommitesModel, self).headerData(section, orientation, role)
+        return super(CommitesModel, self).headerData(section,
+                                                     orientation,
+                                                     role)
