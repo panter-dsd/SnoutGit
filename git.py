@@ -38,8 +38,9 @@ class Git(object):
         self._last_output = []
         self._last_error = []
 
-        if type(command) != type([]):
+        if not isinstance(command, list):
             command = command.split()
+
         try:
             process = subprocess.Popen([self.git_path] + command,
                                        shell=False,
