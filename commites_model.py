@@ -5,6 +5,14 @@ from PyQt4 import QtCore
 import git
 
 
+def commit_date(commit):
+    timestamp = int(commit.timestamp())
+    return QtCore.QDateTime.fromTime_t(timestamp).toString(
+        "yyyy-MM-dd hh:mm:ss"
+    )
+
+
+
 class CommitesModel(QtCore.QAbstractItemModel):
     """CommitesModel"""
 
@@ -78,7 +86,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
             elif index.column() == 2:
                 return self._commits_list[index.row()].author()
             elif index.column() == 3:
-                return self._commits_list[index.row()].timestamp()
+                return commit_date(self._commits_list[index.row()])
         elif role == QtCore.Qt.ToolTipRole:
             if index.column() == 0:
                 return self._commits_list[index.row()].id()
@@ -93,7 +101,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
             elif index.column() == 2:
                 return self._commits_list[index.row()].author()
             elif index.column() == 3:
-                return self._commits_list[index.row()].timestamp()
+                return commit_date(self._commits_list[index.row()])
 
         return None
 
