@@ -80,7 +80,8 @@ class Git(object):
         return self._last_output
 
     def push(self):
-        self.execute_command("push")
+        command = ["push", "--porcelain"]
+        self.execute_command(command, True)
 
     def pull(self):
         self.execute_command("pull")
