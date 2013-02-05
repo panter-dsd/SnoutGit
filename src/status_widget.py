@@ -54,7 +54,7 @@ class StatusWidget(QtGui.QWidget):
         self.update_timer.start(1000)
 
     def _update_file_list(self):
-        images_path = os.path.dirname(__file__) + "/share/images/"
+        images_path = os.path.dirname(__file__) + "/../share/images/"
 
         new_icon = QtGui.QIcon(images_path + "add.png")
         changed_icon = QtGui.QIcon(images_path + "edit.png")
