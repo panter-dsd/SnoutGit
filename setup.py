@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='SnoutGit',
     version='0.0.0.0',
-    packages=[''],
+    packages=['src'],
     url='https://github.com/panter-dsd/SnoutGit',
     license='GPLv3',
     author='PanteR',
