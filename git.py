@@ -156,7 +156,7 @@ class Git(object):
     def commites(self):
         result = []
         for line in self.execute_command(["log", "--pretty=%H"], False):
-            result.append(commit.Commit(line))
+            result.append(commit.Commit(self, line))
         return result
 
     def revert_files(self, files):
