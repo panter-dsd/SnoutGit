@@ -25,7 +25,7 @@ def main():
     os.chdir(path)
 
     app = QtGui.QApplication(sys.argv)
-    app.setApplicationName("PyGitGui")
+    app.setApplicationName("SnoutGit")
     app.setApplicationVersion("0.0.0.0")
     app.setOrganizationName("PanteR")
 
