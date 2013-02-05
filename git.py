@@ -25,6 +25,17 @@ class MergeOptions():
         self.source_target = source_target
 
 
+class PushOptions():
+    branch = str()
+    remote = str()
+    force = False
+    include_tags = True
+
+    def __init__(self, branch, remote):
+        self.branch = branch
+        self.remote = remote
+
+
 class Git(object):
     git_path = "git"
     log_view = None
@@ -80,8 +91,17 @@ class Git(object):
         del process
         return self._last_output
 
-    def push(self):
+    def push(self, push_options):
         command = ["push", "--porcelain"]
+        if push_options.force:
+            command.append("-f")
+        if push_options.include_tags:
+            command.append("--tags")
+        if len(push_options.remote) > 0:
+            command.append("-u")
+            command.append(push_options.remote)
+
+        command.append(push_options.branch)
         self.execute_command(command, True)
 
     def pull(self):
@@ -245,3 +265,7 @@ class Git(object):
 
     def last_error(self):
         return self._last_error
+
+    def remote_list(self):
+        command = ["remote"]
+        return self.execute_command(command, True)
