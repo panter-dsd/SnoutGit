@@ -3,6 +3,7 @@ __author__ = 'panter.dsd@gmail.com'
 
 from PyQt4 import QtCore, QtGui
 import git
+import push_dialog
 
 
 class ActionsWidget(QtGui.QWidget):
@@ -47,9 +48,8 @@ class ActionsWidget(QtGui.QWidget):
         super(ActionsWidget, self).setLayout(layout)
 
     def push(self):
-        self._git.push()
-        self.state_changed.emit()
-        self.show_dialog("Push")
+        d = push_dialog.PushDialog(self)
+        d.exec_()
 
     def pull(self):
         self._git.pull()

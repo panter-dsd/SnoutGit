@@ -1,24 +1,25 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-import git
-
-
 DEFAULT_ABBREV = 7
 
 
 class Commit(object):
-    def __init__(self, id):
+    _git = None
+    _id = None
+    _name = str()
+    _author = str()
+    _timestamp = str()
+
+    def __init__(self, git, id):
         super(Commit, self).__init__()
 
+        self._git = git
         self._id = id
-        self._name = str()
-        self._author = str()
-        self._timestamp = str()
 
     def _commit_info(self, format_id):
-        command = "show -s --pretty=" + format_id + " " + self._id
-        return git.Git().execute_command(command, False)
+        command = ["show", "-s", "--pretty=" + format_id, self._id]
+        return self._git.execute_command(command, False)
 
     def id(self):
         return self._id
@@ -50,19 +51,22 @@ class Commit(object):
         return self._timestamp
 
     def diff(self, lines_count=3):
-        cmd_template = "show --pretty=fuller --unified={0} {1}"
-        command = cmd_template.format(lines_count, self._id)
+        command = ["show",
+                   "--pretty=fuller",
+                   "--unified={0}".format(lines_count),
+                   self._id]
 
-        return "\n".join(git.Git().execute_command(command, False))
+        return "\n".join(self._git.execute_command(command, False))
 
     def changed_files(self):
-        cmd_template = "show --pretty=format: --name-only {0}"
-        command = cmd_template.format(self._id)
+        command = ["show",
+                   "--pretty=format:",
+                   "--name-only",
+                   self._id]
 
-        return git.Git().execute_command(command, False)
+        return self._git.execute_command(command, False)
 
     def tags_list(self):
-        cmd_template = "tag --points-at {0}"
-        command = cmd_template.format(self._id)
-        return git.Git().execute_command(command, False)
+        command = ["tag", "--points-at", self._id]
+        return self._git.execute_command(command, False)
 

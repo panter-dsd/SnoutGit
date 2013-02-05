@@ -3,11 +3,13 @@ __author__ = 'panter.dsd@gmail.com'
 
 from PyQt4 import QtCore, QtGui
 import commit
+import git
 import diff_highlighter
 
 
 class DiffWidget(QtGui.QWidget):
     _id = str()
+    _git = git.Git()
 
     def __init__(self, path, parent=None):
         super(DiffWidget, self).__init__(parent)
@@ -57,12 +59,12 @@ class DiffWidget(QtGui.QWidget):
         self._update_diff()
 
     def _update_diff(self):
-        current_commit = commit.Commit(self._id)
+        current_commit = commit.Commit(self._git, self._id)
         diff_text = current_commit.diff(self._diff_lines_count_edit.value())
         self._diff_veiw.setPlainText(diff_text)
 
         self._files_list.clear()
-        for file_name in commit.Commit(self._id).changed_files():
+        for file_name in current_commit.changed_files():
             self._files_list.addItem(QtGui.QListWidgetItem(file_name))
 
     def _select_file(self, item):
