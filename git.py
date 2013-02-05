@@ -245,3 +245,7 @@ class Git(object):
 
     def last_error(self):
         return self._last_error
+
+    def remote_list(self):
+        command = ["remote"]
+        return self.execute_command(command, True)
