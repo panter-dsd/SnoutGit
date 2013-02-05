@@ -1,4 +1,4 @@
-PyGitGui
+SnoutGit
 ========
 
 Git gui client.
