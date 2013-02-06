@@ -4,6 +4,38 @@ __author__ = 'panter.dsd@gmail.com'
 DEFAULT_ABBREV = 7
 
 
+class RefNames():
+    _locals = []
+    _remotes = []
+    _tags = []
+
+    def __init__(self):
+        self._locals = []
+        self._remotes = []
+        self._tags = []
+
+    def locals(self):
+        return self._locals
+
+    def remotes(self):
+        return self._remotes
+
+    def tags(self):
+        return self._tags
+
+    def add_ref(self, ref):
+        locals_start = "refs/heads/"
+        remotes_start = "refs/remotes/"
+        tags_start = "refs/tags/"
+
+        if ref.startswith(locals_start):
+            self._locals.append(ref.replace(locals_start, str()))
+        elif ref.startswith(remotes_start):
+            self._remotes.append(ref.replace(remotes_start, str()))
+        elif ref.startswith(tags_start):
+            self._tags.append(ref.replace(tags_start, str()))
+
+
 class Commit(object):
     _git = None
     _id = None
@@ -18,7 +50,10 @@ class Commit(object):
         self._id = id
 
     def _commit_info(self, format_id):
-        command = ["show", "-s", "--pretty=" + format_id, self._id]
+        command = ["show",
+                   "-s",
+                   "--decorate=full",
+                   "--pretty=" + format_id, self._id]
         return self._git.execute_command(command, False)
 
     def id(self):
@@ -66,7 +101,13 @@ class Commit(object):
 
         return self._git.execute_command(command, False)
 
-    def tags_list(self):
-        command = ["tag", "--points-at", self._id]
-        return self._git.execute_command(command, False)
+    def ref_names(self):
+        text = self._commit_info("%d")
 
+        result = RefNames()
+
+        if len(text) > 0:
+            for name in text[0][2:-1].split(", "):
+                result.add_ref(name)
+
+        return result
