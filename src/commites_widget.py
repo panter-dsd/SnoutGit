@@ -3,7 +3,7 @@ __author__ = 'panter.dsd@gmail.com'
 
 from PyQt4 import QtCore, QtGui
 import commites_model
-
+import add_tag_dialog
 
 DEFAULT_COLUMN_WIDTH = [0, 300, 200, 0]
 
@@ -16,6 +16,7 @@ class CommitesWidget(QtGui.QWidget):
 
         self._table = QtGui.QTreeView(self)
         self._table.setRootIsDecorated(False)
+        self._table.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
 
         self._model = commites_model.CommitesModel(self)
         self._table.setModel(self._model)
@@ -27,6 +28,11 @@ class CommitesWidget(QtGui.QWidget):
 
         selection_model = self._table.selectionModel()
         selection_model.currentChanged.connect(self._current_index_changed)
+
+        self._add_tag_action = QtGui.QAction(self)
+        self._add_tag_action.setText("Add tag")
+        self._add_tag_action.triggered.connect(self._add_tag)
+        self._table.addAction(self._add_tag_action)
 
         layout = QtGui.QHBoxLayout()
         layout.addWidget(self._table)
@@ -40,3 +46,10 @@ class CommitesWidget(QtGui.QWidget):
     @QtCore.pyqtSlot()
     def update_commites_list(self):
         self._model.update_commits_list()
+
+    def _add_tag(self):
+        index = self._model.index(self._table.currentIndex().row(), 0)
+        commit_id = index.data(QtCore.Qt.DisplayRole)
+        d = add_tag_dialog.AddTagDialog(commit_id, self)
+        if d.exec_():
+            self.update_commites_list()
