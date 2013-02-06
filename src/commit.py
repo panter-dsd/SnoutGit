@@ -5,10 +5,6 @@ DEFAULT_ABBREV = 7
 
 
 class RefNames():
-    _locals = []
-    _remotes = []
-    _tags = []
-
     def __init__(self):
         self._locals = []
         self._remotes = []
