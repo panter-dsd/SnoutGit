@@ -95,17 +95,19 @@ class DeleteBranchDialog(QtGui.QDialog):
                 break
 
     def _update_check_merge_model(self, current):
+        merged = set(self._git.merged(self._branch.currentText()))
+
+        def not_merged(branches):
+            return list(set(branches) - set(merged))
+
+        objects = []
+
         if current == 0:
-            branches = self._git.local_branches()
+            objects = self._git.local_branches()
         else:
-            branches = self._git.remote_branches()
+            objects = self._git.remote_branches()
 
-        try:
-            branches.remove(self._branch.currentText())
-        except ValueError:
-            pass
-
-        self._check_merge_model.setStringList(branches)
+        self._check_merge_model.setStringList(not_merged(objects))
 
     def _delete(self):
         branch = self._branch.currentText()
