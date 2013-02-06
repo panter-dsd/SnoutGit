@@ -8,6 +8,21 @@ from PyQt4 import QtGui
 import main_window
 
 
+def is_git_root(path):
+    return os.path.exists(path + "/.git")
+
+
+def get_git_root_path(path):
+    result = path
+    while not is_git_root(result):
+        parent_dir = os.path.dirname(result)
+        if result == parent_dir:
+            break
+        result = parent_dir
+
+    return is_git_root(result) and result or path
+
+
 def main():
     """main"""
 
@@ -16,13 +31,14 @@ def main():
     else:
         path = os.path.abspath(sys.argv[1])
 
-    while not os.path.exists(path + "/.git"):
-        path = os.path.dirname(path)
-        if len(path) == 1:
-            break
-
+    path = get_git_root_path(path)
     print("Use git repository:", path)
-    os.chdir(path)
+
+    try:
+        os.chdir(path)
+    except OSError as error:
+        print(error)
+        return
 
     app = QtGui.QApplication(sys.argv)
     app.setApplicationName("SnoutGit")
