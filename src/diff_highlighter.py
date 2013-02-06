@@ -11,8 +11,6 @@ class DiffHighlighter(QtGui.QSyntaxHighlighter):
         super(DiffHighlighter, self).__init__(parent)
 
     def highlightBlock(self, text):
-        super(DiffHighlighter, self).setFormat(0, len(text), QtCore.Qt.black)
-
         added = re.match("^\+.*$", text)
         if added:
             super(DiffHighlighter, self).setFormat(added.pos,
