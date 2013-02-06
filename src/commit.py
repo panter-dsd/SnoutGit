@@ -70,10 +70,7 @@ class Commit(object):
 
     def name(self):
         name = self.full_name().splitlines()
-        if len(name) == 0:
-            return str()
-        else:
-            return name[0]
+        return len(name) == 0 and str() or name[0]
 
     def author(self):
         if len(self._author) == 0:
