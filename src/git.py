@@ -239,8 +239,11 @@ class Git(object):
         command = ["branch", "-m", old_name, new_name]
         self.execute_command(command, True)
 
-    def merged(self, branch):
-        command = ["branch", "--merged", branch]
+    def _merged_or_no_merged(self, branch, merged=True):
+        command = ["branch",
+                   "--all",
+                   merged and "--merged" or "--no-merged",
+                   branch]
 
         branch_re = re.compile(r"^[\*, ]? (\S*)$")
 
@@ -249,9 +252,15 @@ class Git(object):
         for line in self.execute_command(command, True):
             match = branch_re.match(line)
             if match:
-                result.append(match.group(1))
+                result.append(match.group(1).replace("remotes/", str()))
 
         return result
+
+    def merged(self, branch):
+        return self._merged_or_no_merged(branch, True)
+
+    def no_merged(self, branch):
+        return self._merged_or_no_merged(branch, False)
 
     def delete_branch(self, branch, force=False):
         command = ["branch",
