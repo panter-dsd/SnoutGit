@@ -4,6 +4,7 @@ __author__ = 'panter.dsd@gmail.com'
 import subprocess
 import re
 import commit
+import tempfile
 
 
 class Stash():
@@ -278,3 +279,20 @@ class Git(object):
     def remote_list(self):
         command = ["remote"]
         return self.execute_command(command, True)
+
+    def create_tag(self, commit, name, message):
+        command = ["tag"]
+
+        message_file = None
+        if len(message) > 0:
+            message_file = tempfile.NamedTemporaryFile()
+            message_file.write(message.encode("utf-8"))
+            message_file.flush()
+            command += ["-F", message_file.name]
+
+        command.append(name)
+        command.append(commit)
+
+        self.execute_command(command, True)
+        if message_file:
+            message_file.close()
