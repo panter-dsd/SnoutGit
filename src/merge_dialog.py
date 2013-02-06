@@ -89,14 +89,21 @@ class MergeDialog(QtGui.QDialog):
         self._update_source(self._sources_tabs.currentIndex())
 
     def _update_source(self, current):
-        model = self._source_model
+        merged = set(self._git.merged(self._git.current_branch()))
+
+        def not_merged(branches):
+            return list(set(branches) - set(merged))
+
+        objects = []
 
         if current == 0:
-            model.setStringList(self._git.local_branches())
+            objects = self._git.local_branches()
         elif current == 1:
-            model.setStringList(self._git.remote_branches())
+            objects = self._git.remote_branches()
         else:
-            model.setStringList(self._git.tags())
+            objects = self._git.tags()
+
+        self._source_model.setStringList(not_merged(objects))
 
     def _merge(self):
         target = self._source_target_edit.text()
