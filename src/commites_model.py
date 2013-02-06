@@ -80,10 +80,15 @@ class CommitesModel(QtCore.QAbstractItemModel):
             if index.column() == 0:
                 return self._commits_list[index.row()].abbreviated_id()
             elif index.column() == 1:
-                tags = str()
-                for tag in self._commits_list[index.row()].tags_list():
-                    tags += "[" + tag + "] "
-                return tags + self._commits_list[index.row()].name()
+                text = str()
+                ref_names = self._commits_list[index.row()].ref_names()
+                for tag in ref_names.tags():
+                    text += "<" + tag + ">"
+                for local in ref_names.locals():
+                    text += "[" + local + "]"
+                for remote in ref_names.remotes():
+                    text += "[remote/" + remote + "]"
+                return text + self._commits_list[index.row()].name()
             elif index.column() == 2:
                 return self._commits_list[index.row()].author()
             elif index.column() == 3:
@@ -94,7 +99,8 @@ class CommitesModel(QtCore.QAbstractItemModel):
             elif index.column() == 1:
                 tags = str()
                 _git = git.Git()
-                for tag in self._commits_list[index.row()].tags_list():
+                ref_names = self._commits_list[index.row()].ref_names()
+                for tag in ref_names.tags():
                     tag_info = _git.tag_info(tag)
                     if len(tag_info) > 0:
                         tags += "\n".join(tag_info) + "\n\n"
