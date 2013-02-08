@@ -199,7 +199,7 @@ class StatusWidget(QtGui.QWidget):
             if self._untracked.childCount() > 0:
                 menu.addAction(self._add_all_action)
 
-        if len(menu.actions()) > 0:
+        if menu.actions():
             menu.addSeparator()
 
         for item in items:
@@ -219,7 +219,7 @@ class StatusWidget(QtGui.QWidget):
                     menu.addAction(self._add_selected_action)
                     menu.addAction(self._remove_selected_action)
 
-        if len(menu.actions()) > 0:
+        if menu.actions():
             menu.exec_(self.mapToGlobal(point))
 
     def _stage_all(self):

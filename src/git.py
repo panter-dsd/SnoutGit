@@ -65,7 +65,7 @@ class Git(object):
 
         for line in process.stdout:
             line = line.rstrip()
-            if len(line) > 0:
+            if line:
                 try:
                     self._last_output.append(line.decode())
                 except UnicodeDecodeError:
@@ -73,7 +73,7 @@ class Git(object):
 
         for line in process.stderr:
             line = line.rstrip()
-            if len(line) > 0:
+            if line:
                 self._last_error.append(line.decode())
 
         if show_log:
@@ -99,7 +99,7 @@ class Git(object):
             command.append("-f")
         if push_options.include_tags:
             command.append("--tags")
-        if len(push_options.remote) > 0:
+        if push_options.remote:
             command.append("-u")
             command.append(push_options.remote)
 
@@ -285,7 +285,7 @@ class Git(object):
         command = ["tag"]
 
         message_file = None
-        if len(message) > 0:
+        if message:
             message_file = tempfile.NamedTemporaryFile()
             message_file.write(message.encode("utf-8"))
             message_file.flush()

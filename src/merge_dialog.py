@@ -66,7 +66,7 @@ class MergeDialog(QtGui.QDialog):
         self._merge_button.setText("Merge")
         self._source_target_edit.textChanged.connect(
             lambda: self._merge_button.setEnabled(
-                len(self._source_target_edit.text()) > 0
+                bool(self._source_target_edit.text())
             )
         )
 
