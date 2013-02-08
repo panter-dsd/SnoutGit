@@ -3,8 +3,9 @@ __author__ = 'panter.dsd@gmail.com'
 
 import subprocess
 import re
-import commit
 import tempfile
+
+import commit
 
 
 class Stash():
