@@ -281,7 +281,7 @@ class Git(object):
         command = ["remote"]
         return self.execute_command(command, True)
 
-    def create_tag(self, commit, name, message):
+    def create_tag(self, commit, name, message=None):
         command = ["tag"]
 
         message_file = None
