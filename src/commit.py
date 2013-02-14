@@ -66,7 +66,7 @@ class Commit(object):
 
     def name(self):
         name = self.full_name().splitlines()
-        return len(name) == 0 and str() or name[0]
+        return name and name[0] or str()
 
     def author(self):
         if len(self._author) == 0:
