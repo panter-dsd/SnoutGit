@@ -88,6 +88,7 @@ class CommitWidget(QtGui.QWidget):
         menu.addAction(self.ammend_action)
 
         self._menu_button.setMenu(menu)
+        self.load_commit_message()
 
     def set_old_message(self):
         id = self.sender().objectName()
@@ -95,4 +96,10 @@ class CommitWidget(QtGui.QWidget):
         self._commit_name_edit.setText(text.splitlines()[0])
         self._commit_description_edit.setPlainText(
             "\n".join(text.splitlines()[1:])
+        )
+
+    def load_commit_message(self):
+        if not self._commit_name_edit.text():
+            self._commit_description_edit.setPlainText(
+            self._git.commit_message()
         )
