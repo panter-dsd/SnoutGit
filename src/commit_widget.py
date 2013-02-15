@@ -53,8 +53,8 @@ class CommitWidget(QtGui.QWidget):
         self.refresh()
 
     def _commit(self):
-        commit_name = self._commit_name_edit.text()
-        if commit_name:
+        if not self._message_empty():
+            commit_name = self._commit_name_edit.text()
             description = self._commit_description_edit.toPlainText()
             if self._git.commit(commit_name, description):
                 self._commit_name_edit.clear()
@@ -99,7 +99,13 @@ class CommitWidget(QtGui.QWidget):
         )
 
     def load_commit_message(self):
-        if not self._commit_name_edit.text():
+        if self._message_empty():
             self._commit_description_edit.setPlainText(
-            self._git.commit_message()
+                self._git.commit_message()
+            )
+
+    def _message_empty(self):
+        return not (
+            self._commit_name_edit.text()
+            + self._commit_description_edit.toPlainText()
         )
