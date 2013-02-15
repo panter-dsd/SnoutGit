@@ -4,6 +4,7 @@ __author__ = 'panter.dsd@gmail.com'
 import subprocess
 import re
 import tempfile
+import fileinput
 
 import commit
 
@@ -40,6 +41,7 @@ class PushOptions():
 
 class Git(object):
     git_path = "git"
+    repo_path = str()
     log_view = None
     _last_output = []
     _last_error = []
@@ -297,3 +299,16 @@ class Git(object):
         self.execute_command(command, True)
         if message_file:
             message_file.close()
+
+    def commit_message(self):
+        result = str()
+
+        try:
+            with fileinput.input(self.repo_path + "/MERGE_MSG") as f:
+                for line in f:
+                    if line.rstrip():
+                        result += line + '\n'
+        except IOError:
+            pass
+
+        return result
