@@ -99,7 +99,7 @@ class Commit(object):
 
         result = RefNames()
 
-        if len(text) > 0:
+        if text:
             for name in text[0][2:-1].split(", "):
                 result.add_ref(name)
 

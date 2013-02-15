@@ -3,6 +3,9 @@ __author__ = 'panter.dsd@gmail.com'
 
 import subprocess
 import re
+import tempfile
+import fileinput
+
 import commit
 
 
@@ -38,6 +41,7 @@ class PushOptions():
 
 class Git(object):
     git_path = "git"
+    repo_path = str()
     log_view = None
     _last_output = []
     _last_error = []
@@ -63,7 +67,7 @@ class Git(object):
 
         for line in process.stdout:
             line = line.rstrip()
-            if len(line) > 0:
+            if line:
                 try:
                     self._last_output.append(line.decode())
                 except UnicodeDecodeError:
@@ -71,7 +75,7 @@ class Git(object):
 
         for line in process.stderr:
             line = line.rstrip()
-            if len(line) > 0:
+            if line:
                 self._last_error.append(line.decode())
 
         if show_log:
@@ -97,7 +101,7 @@ class Git(object):
             command.append("-f")
         if push_options.include_tags:
             command.append("--tags")
-        if len(push_options.remote) > 0:
+        if push_options.remote:
             command.append("-u")
             command.append(push_options.remote)
 
@@ -278,3 +282,33 @@ class Git(object):
     def remote_list(self):
         command = ["remote"]
         return self.execute_command(command, True)
+
+    def create_tag(self, commit, name, message=None):
+        command = ["tag"]
+
+        message_file = None
+        if message:
+            message_file = tempfile.NamedTemporaryFile()
+            message_file.write(message.encode("utf-8"))
+            message_file.flush()
+            command += ["-F", message_file.name]
+
+        command.append(name)
+        command.append(commit)
+
+        self.execute_command(command, True)
+        if message_file:
+            message_file.close()
+
+    def commit_message(self):
+        result = str()
+
+        try:
+            with fileinput.input(self.repo_path + "/MERGE_MSG") as f:
+                for line in f:
+                    if line.rstrip():
+                        result += line + '\n'
+        except IOError:
+            pass
+
+        return result

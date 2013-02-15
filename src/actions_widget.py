@@ -70,7 +70,7 @@ class ActionsWidget(QtGui.QWidget):
         dialog = QtGui.QMessageBox(self)
         dialog.setWindowTitle(command)
 
-        if len(text[0]) > 0:
+        if text[0]:
             dialog.setText("\n".join(text[0]))
             dialog.setIcon(QtGui.QMessageBox.Critical)
         else:

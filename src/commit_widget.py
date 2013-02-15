@@ -7,6 +7,7 @@ import commit
 
 
 class CommitWidget(QtGui.QWidget):
+    _git = git.Git()
     commited = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
@@ -52,10 +53,10 @@ class CommitWidget(QtGui.QWidget):
         self.refresh()
 
     def _commit(self):
-        commit_name = self._commit_name_edit.text()
-        if len(commit_name) > 0:
+        if not self._message_empty():
+            commit_name = self._commit_name_edit.text()
             description = self._commit_description_edit.toPlainText()
-            if git.Git().commit(commit_name, description):
+            if self._git.commit(commit_name, description):
                 self._commit_name_edit.clear()
                 self._commit_description_edit.clear()
                 self.commited.emit()
@@ -70,7 +71,7 @@ class CommitWidget(QtGui.QWidget):
         menu = QtGui.QMenu(self._menu_button)
 
         count = 10
-        for commit in git.Git().commites():
+        for commit in self._git.commites():
             commit_message_action = QtGui.QAction(self)
             commit_message_action.setText(commit.name())
             commit_message_action.setObjectName(commit.id())
@@ -87,11 +88,24 @@ class CommitWidget(QtGui.QWidget):
         menu.addAction(self.ammend_action)
 
         self._menu_button.setMenu(menu)
+        self.load_commit_message()
 
     def set_old_message(self):
         id = self.sender().objectName()
-        text = commit.Commit(id).full_name()
+        text = commit.Commit(self._git, id).full_name()
         self._commit_name_edit.setText(text.splitlines()[0])
         self._commit_description_edit.setPlainText(
             "\n".join(text.splitlines()[1:])
+        )
+
+    def load_commit_message(self):
+        if self._message_empty():
+            self._commit_description_edit.setPlainText(
+                self._git.commit_message()
+            )
+
+    def _message_empty(self):
+        return not (
+            self._commit_name_edit.text()
+            + self._commit_description_edit.toPlainText()
         )

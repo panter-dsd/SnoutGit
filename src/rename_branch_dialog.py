@@ -18,7 +18,7 @@ class RenameBranchDialog(QtGui.QDialog):
         self._source_branch.addItems(self._git.local_branches())
         self._source_branch.setCurrentIndex(
             self._source_branch.findText(
-                len(branch) > 0 and branch or self._git.current_branch()
+                branch and branch or self._git.current_branch()
             )
         )
 
@@ -37,7 +37,7 @@ class RenameBranchDialog(QtGui.QDialog):
 
         self._target_branch.textChanged.connect(
             lambda: buttons.button(QtGui.QDialogButtonBox.Ok).setEnabled(
-                len(self._target_branch.text()) > 0
+                bool(self._target_branch.text())
             )
         )
         self._target_branch.textChanged.emit(str())

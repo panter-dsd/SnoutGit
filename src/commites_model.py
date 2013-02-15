@@ -102,7 +102,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
                 ref_names = self._commits_list[index.row()].ref_names()
                 for tag in ref_names.tags():
                     tag_info = _git.tag_info(tag)
-                    if len(tag_info) > 0:
+                    if tag_info:
                         tags += "\n".join(tag_info) + "\n\n"
                 return tags + self._commits_list[index.row()].full_name()
             elif index.column() == 2:

@@ -228,7 +228,7 @@ class MainWindow(QtGui.QMainWindow):
         state_name = QtGui.QInputDialog.getText(self,
                                                 "Save state",
                                                 "StateName")[0]
-        if len(state_name) > 0:
+        if state_name:
             self._current_state = self._states.append_state(
                 state_name,
                 super(MainWindow, self).saveState()
@@ -253,24 +253,24 @@ class MainWindow(QtGui.QMainWindow):
 
     def remove_state(self):
         state = self.select_state()
-        if len(state.name()) > 0:
+        if state.name():
             self._states.remove_state(state)
             self.update_states_menu()
 
     def rename_state(self):
         state = self.select_state()
-        if len(state.name()) > 0:
+        if state.name():
             state_name = QtGui.QInputDialog.getText(self,
                                                     "Rename state",
                                                     "State name")[0]
-            if len(state_name) > 0:
+            if state_name:
                 self._states.rename_state(state.name(), state_name)
                 self.update_states_menu()
 
     def update_state(self):
         state = self.select_state()
 
-        if len(state.name()) > 0:
+        if state.name():
             self._states.update_state(
                 state.name(),
                 super(MainWindow, self).saveState()
@@ -349,7 +349,7 @@ class MainWindow(QtGui.QMainWindow):
         settings.endArray()
 
         state_name = settings.value("CurrentState", str())
-        if len(state_name) > 0:
+        if state_name:
             self._current_state = self._states.state_for_name(state_name)
             super(MainWindow, self).restoreState(
                 self._current_state.data()
