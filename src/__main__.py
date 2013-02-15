@@ -6,6 +6,7 @@ import sys
 import os
 from PyQt4 import QtGui
 import main_window
+import git
 
 
 def is_git_root(path):
@@ -39,6 +40,8 @@ def main():
     except OSError as error:
         print(error)
         return
+
+    git.Git.repo_path = path + "/.git"
 
     app = QtGui.QApplication(sys.argv)
     app.setApplicationName("SnoutGit")
