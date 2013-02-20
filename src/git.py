@@ -306,8 +306,7 @@ class Git(object):
         try:
             with fileinput.input(self.repo_path + "/MERGE_MSG") as f:
                 for line in f:
-                    if line.rstrip():
-                        result += line + '\n'
+                    result += line
         except IOError:
             pass
 
