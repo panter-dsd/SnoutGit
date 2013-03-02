@@ -21,6 +21,10 @@ class StashesWidget(QtGui.QWidget):
         self._save_action.setText("Save")
         self._save_action.triggered.connect(self.save)
 
+        self._apply_action = QtGui.QAction(self)
+        self._apply_action.setText("Apply stash")
+        self._apply_action.triggered.connect(self.apply)
+
         self._pop_action = QtGui.QAction(self)
         self._pop_action.setText("Pop stash")
         self._pop_action.triggered.connect(self.pop)
@@ -28,15 +32,20 @@ class StashesWidget(QtGui.QWidget):
         self._drop_action = QtGui.QAction(self)
         self._drop_action.setText("Drop stash")
         self._drop_action.triggered.connect(self.drop)
+
         self._stashes_list.selectionModel().selectionChanged.connect(
-            lambda selected: self._drop_action.setDisabled(
-                selected.isEmpty()
-            )
+            self._update_actions_enabled
         )
 
         layout = QtGui.QVBoxLayout()
         layout.addWidget(self._stashes_list)
         super(StashesWidget, self).setLayout(layout)
+
+    def _update_actions_enabled(self, selected):
+        item_selected = not selected.isEmpty()
+        self._drop_action.setEnabled(item_selected)
+        self._apply_action.setEnabled(item_selected)
+        self._pop_action.setEnabled(self._stashes_list.rowCount() > 0)
 
     def update_stashes_list(self):
         self._stashes_list.clear()
@@ -62,8 +71,9 @@ class StashesWidget(QtGui.QWidget):
         self._stashes_list.resizeColumnsToContents()
         self._stashes_list.resizeRowsToContents()
 
-        self._pop_action.setEnabled(self._stashes_list.rowCount() > 0)
-        self._drop_action.setEnabled(False)
+        self._update_actions_enabled(
+            self._stashes_list.selectionModel().selection()
+        )
         self.state_changed.emit()
 
     def menu(self):
@@ -71,7 +81,10 @@ class StashesWidget(QtGui.QWidget):
         result.setTitle("Stashes")
 
         result.addAction(self._save_action)
+        result.addSeparator()
+        result.addAction(self._apply_action)
         result.addAction(self._pop_action)
+        result.addSeparator()
         result.addAction(self._drop_action)
 
         return result
@@ -84,13 +97,22 @@ class StashesWidget(QtGui.QWidget):
         self._git.pop_stash()
         self.update_stashes_list()
 
-    def drop(self):
+    def _selected_stash(self):
         row = self._stashes_list.currentRow()
+
+        stash_name = str ()
         if row >= 0:
-            self._git.drop_stash(
-                self._stashes_list.item(row, 0).text()
-            )
-            self.update_stashes_list()
+            stash_name = self._stashes_list.item(row, 0).text()
+
+        return stash_name
+
+    def drop(self):
+        self._git.drop_stash(self._selected_stash())
+        self.update_stashes_list()
+
+    def apply(self):
+        self._git.apply_stash(self._selected_stash())
+        self.update_stashes_list()
 
     def count(self):
         return self._stashes_list.rowCount()
