@@ -221,6 +221,10 @@ class Git(object):
         command = ["stash", "drop", stash_name]
         self.execute_command(command, True)
 
+    def apply_stash(self, stash_name):
+        command = ["stash", "apply", stash_name]
+        self.execute_command(command, True)
+
     def tags(self):
         command = ["tag"]
         return self.execute_command(command, True)
