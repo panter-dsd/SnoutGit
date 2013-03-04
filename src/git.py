@@ -57,6 +57,10 @@ class Remote(object):
         command = ["remote", "rm", name]
         self._git.execute_command(command, True)
 
+    def rename_remote(self, name, new_name):
+        command = ["remote", "rename", name, new_name]
+        self._git.execute_command(command, True)
+
 
 class Git(object):
     git_path = "git"
