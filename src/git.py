@@ -53,6 +53,10 @@ class Remote(object):
         command = ["remote", "add", name, url]
         self._git.execute_command(command, True)
 
+    def remove_remote(self, name):
+        command = ["remote", "rm", name]
+        self._git.execute_command(command, True)
+
 
 class Git(object):
     git_path = "git"
