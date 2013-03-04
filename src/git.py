@@ -41,13 +41,18 @@ class PushOptions():
 
 class Remote(object):
     def __init__(self, git):
-        super(Remote, self).__init__ ()
+        super(Remote, self).__init__()
 
         self._git = git
 
     def remotes_list(self):
         command = ["remote"]
         return self._git.execute_command(command, True)
+
+    def add_remote(self, name, url):
+        command = ["remote", "add", name, url]
+        self._git.execute_command(command, True)
+
 
 class Git(object):
     git_path = "git"
