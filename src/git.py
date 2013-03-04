@@ -39,9 +39,9 @@ class PushOptions():
         self.remote = remote
 
 
-class Remotes(object):
+class Remote(object):
     def __init__(self, git):
-        super(Remotes, self).__init__ ()
+        super(Remote, self).__init__ ()
 
         self._git = git
 
