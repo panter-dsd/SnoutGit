@@ -39,6 +39,16 @@ class PushOptions():
         self.remote = remote
 
 
+class Remotes(object):
+    def __init__(self, git):
+        super(Remotes, self).__init__ ()
+
+        self._git = git
+
+    def remotes_list(self):
+        command = ["remote"]
+        return self._git.execute_command(command, True)
+
 class Git(object):
     git_path = "git"
     repo_path = str()
