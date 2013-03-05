@@ -140,7 +140,7 @@ class Git(object):
     def svn_dcommit(self):
         self.execute_command("svn dcommit")
 
-    def commit(self, name, description):
+    def commit(self, name, description=str()):
         command = ["commit", "-m", "{0}".format(name + "\n" + description)]
         self.execute_command(command)
 
