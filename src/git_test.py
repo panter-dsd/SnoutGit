@@ -89,6 +89,25 @@ class RemoteTest(unittest.TestCase):
         remote.remove_remote("some")
         self.assertFalse(remote.remotes_list())
 
+class GitTest(unittest.TestCase):
+    def setUp(self):
+        self.temp_dir = tempfile.TemporaryDirectory()
+        os.chdir(self.temp_dir.name)
+        self._git = git.Git()
+        self._git.execute_command(["init"], False)
+        self._git.repo_path = self.temp_dir.name + "/.git"
+
+    def tearDown(self):
+        del self.temp_dir
+
+    def test_commites(self):
+        self.assertFalse(self._git.commites())
+
+        file = tempfile.mkstemp(dir=self.temp_dir.name)
+        self._git.stage_files([file[1]])
+        self._git.commit("Test commit")
+        self.assertTrue(self._git.commites())
+
 
 def suite():
     suite = unittest.TestSuite()
@@ -96,4 +115,5 @@ def suite():
     suite.addTest(unittest.makeSuite(MergeOptionsTest))
     suite.addTest(unittest.makeSuite(PushOptionsTest))
     suite.addTest(unittest.makeSuite(RemoteTest))
+    suite.addTest(unittest.makeSuite(GitTest))
     return suite
