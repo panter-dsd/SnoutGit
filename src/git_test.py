@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from git import Git, Stash, Remote
 import tempfile
 import os
 import unittest
+
+from git import Git, Stash, MergeOptions, Remote
 
 
 class StashTest(unittest.TestCase):
@@ -13,10 +14,29 @@ class StashTest(unittest.TestCase):
         self.assertFalse(stash.name)
         self.assertFalse(stash.description)
 
-    def test_init(self):
-        stash = Stash("name", "descr")
-        self.assertEqual(stash.name, "name")
-        self.assertEqual(stash.description, "descr")
+    def test_no_empty_data(self):
+        name = "name"
+        descr = "descr"
+        stash = Stash(name, descr)
+        self.assertEqual(stash.name, name)
+        self.assertEqual(stash.description, descr)
+
+
+class MergeOptionsTest(unittest.TestCase):
+    def test_empty_data(self):
+        mo = MergeOptions(str())
+        self.assertFalse(mo.source_target)
+        self.assertTrue(mo.commit)
+        self.assertFalse(mo.fast_forward)
+        self.assertFalse(mo.squash)
+
+    def test_no_empty_data(self):
+        source_target = "test"
+        mo = MergeOptions(source_target)
+        self.assertEqual(mo.source_target, source_target)
+        self.assertTrue(mo.commit)
+        self.assertFalse(mo.fast_forward)
+        self.assertFalse(mo.squash)
 
 
 class RemoteTest(unittest.TestCase):
@@ -56,5 +76,6 @@ class RemoteTest(unittest.TestCase):
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(StashTest))
+    suite.addTest(unittest.makeSuite(MergeOptionsTest))
     suite.addTest(unittest.makeSuite(RemoteTest))
     return suite
