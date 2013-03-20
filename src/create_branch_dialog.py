@@ -19,6 +19,9 @@ class CreateBranchDialog(QtGui.QDialog):
 
         self._parent_branch = QtGui.QComboBox(self)
         self._parent_branch.setEditable(False)
+        self._parent_branch.currentIndexChanged.connect(
+            lambda: self._parent_branch_changed()
+        )
 
         self._can_checkout = QtGui.QCheckBox("Checkout into branch", self)
         self._can_checkout.setChecked(True)
@@ -44,8 +47,11 @@ class CreateBranchDialog(QtGui.QDialog):
     def _update_parent_branches(self):
         self._parent_branch.clear()
 
-        for name in self._git.local_branches() + self._git.remote_branches():
-            self._parent_branch.addItem(name)
+        for name in self._git.local_branches():
+            self._parent_branch.addItem(name, "local")
+
+        for name in self._git.remote_branches():
+            self._parent_branch.addItem(name, "remote")
 
         self.set_parent_branch(self._git.current_branch())
 
@@ -66,3 +72,19 @@ class CreateBranchDialog(QtGui.QDialog):
 
     def can_checkout(self):
         return self._can_checkout.isChecked()
+
+    def _parent_branch_changed(self):
+        if self._branch_name.isModified():
+            return
+
+        name = self._parent_branch.currentText()
+        is_local = self._parent_branch.itemData(
+            self._parent_branch.currentIndex()
+        ) == "local"
+
+        self._branch_name.setText(
+            is_local and name or name[name.find('/') + 1:]
+        )
+
+    def _extract_branch_name_from_parent(self, parent):
+        return
