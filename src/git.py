@@ -39,6 +39,16 @@ class PushOptions():
         self.remote = remote
 
 
+class PullOptions():
+    remote = str()
+    force = False
+    no_tags = False
+    prune = True
+
+    def __init__(self, remote):
+        self.remote = remote
+
+
 class Remote(object):
     def __init__(self, git):
         super(Remote, self).__init__()
@@ -131,8 +141,18 @@ class Git(object):
         command.append(push_options.branch)
         self.execute_command(command, True)
 
-    def pull(self):
-        self.execute_command("pull")
+    def pull(self, pull_options):
+        command = ["pull"]
+        if pull_options.force:
+            command.append("-f")
+        if pull_options.no_tags:
+            command.append("--no-tags")
+        if pull_options.prune:
+            command.append("--prune")
+
+        command.append(pull_options.remote)
+        self.execute_command(command, True)
+
 
     def svn_rebase(self):
         self.execute_command("svn rebase")
