@@ -89,6 +89,7 @@ class RemoteTest(unittest.TestCase):
         remote.remove_remote("some")
         self.assertFalse(remote.remotes_list())
 
+
 class GitTest(unittest.TestCase):
     def setUp(self):
         self.temp_dir = tempfile.TemporaryDirectory()
