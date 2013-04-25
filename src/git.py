@@ -170,7 +170,6 @@ class Git(object):
         command = ["status", "-u", "--porcelain"]
         return self.execute_command(command, False)
 
-
     def stage_files(self, files):
         command = ["add"] + files
         self.execute_command(command)
