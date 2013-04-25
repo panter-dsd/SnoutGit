@@ -3,7 +3,7 @@ __author__ = 'panter.dsd@gmail.com'
 
 from PyQt4 import QtCore, QtGui
 
-from git import Remote
+from git import Remote, Git
 
 
 class AddRemoteDialog(QtGui.QDialog):
@@ -21,9 +21,9 @@ class AddRemoteDialog(QtGui.QDialog):
         self._url_edit = QtGui.QLineEdit(self)
 
         buttons = QtGui.QDialogButtonBox(
+            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel,
             QtCore.Qt.Horizontal,
-            self,
-            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel
+            self
         )
 
         buttons.accepted.connect(self._add_remote)
@@ -31,7 +31,7 @@ class AddRemoteDialog(QtGui.QDialog):
 
         layout = QtGui.QVBoxLayout()
         layout.addWidget(self._name_label)
-        layout.addWidget(self._name)
+        layout.addWidget(self._name_edit)
         layout.addWidget(self._url_label)
         layout.addWidget(self._url_edit)
         layout.addWidget(buttons)
@@ -50,6 +50,6 @@ class AddRemoteDialog(QtGui.QDialog):
             QtGui.QMessageBox.critical(self, "Error", "Url is empty")
             return
 
-        remote = Remote()
+        remote = Remote(Git())
         remote.add_remote(name, url)
         self.accept()
