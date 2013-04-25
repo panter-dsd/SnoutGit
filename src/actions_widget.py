@@ -4,6 +4,7 @@ __author__ = 'panter.dsd@gmail.com'
 from PyQt4 import QtCore, QtGui
 import git
 import push_dialog
+import pull_dialog
 
 
 class ActionsWidget(QtGui.QWidget):
@@ -52,8 +53,8 @@ class ActionsWidget(QtGui.QWidget):
         d.exec_()
 
     def pull(self):
-        self._git.pull()
-        self.show_dialog("Pull")
+        d = pull_dialog.PullDialog(self)
+        d.exec_()
 
     def _svn_rebase(self):
         self._git.svn_rebase()

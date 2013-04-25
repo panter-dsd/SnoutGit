@@ -13,6 +13,7 @@ import git
 import branches_widget
 import stashes_widget
 import merge_dialog
+import add_remote_dialog
 
 
 class State(object):
@@ -196,6 +197,10 @@ class MainWindow(QtGui.QMainWindow):
         self._abort_merge_action.setText("Abort merge")
         self._abort_merge_action.triggered.connect(self.abort_merge)
 
+        self._add_remote_action = QtGui.QAction(self)
+        self._add_remote_action.setText("Add remote")
+        self._add_remote_action.triggered.connect(self.add_remote)
+
         self._menu_bar = QtGui.QMenuBar(self)
         super(MainWindow, self).setMenuBar(self._menu_bar)
 
@@ -211,6 +216,11 @@ class MainWindow(QtGui.QMainWindow):
         self._actions_menu.addAction(self._merge_action)
         self._actions_menu.addAction(self._abort_merge_action)
         self._menu_bar.addMenu(self._actions_menu)
+
+        self._remote_menu = QtGui.QMenu(self)
+        self._remote_menu.setTitle("Remote")
+        self._remote_menu.addAction(self._add_remote_action)
+        self._menu_bar.addMenu(self._remote_menu)
 
         exit_action = QtGui.QAction(self)
         exit_action.setShortcut(QtCore.Qt.CTRL | QtCore.Qt.Key_Q)
@@ -401,3 +411,7 @@ class MainWindow(QtGui.QMainWindow):
 
         if result == QtGui.QMessageBox.Ok:
             self._git.abort_merge()
+
+    def add_remote(self):
+        d = add_remote_dialog.AddRemoteDialog(self)
+        d.exec_()

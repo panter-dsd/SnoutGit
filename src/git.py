@@ -39,6 +39,39 @@ class PushOptions():
         self.remote = remote
 
 
+class PullOptions():
+    remote = str()
+    force = False
+    no_tags = False
+    prune = True
+
+    def __init__(self, remote):
+        self.remote = remote
+
+
+class Remote(object):
+    def __init__(self, git):
+        super(Remote, self).__init__()
+
+        self._git = git
+
+    def remotes_list(self):
+        command = ["remote"]
+        return self._git.execute_command(command, True)
+
+    def add_remote(self, name, url):
+        command = ["remote", "add", name, url]
+        self._git.execute_command(command, True)
+
+    def remove_remote(self, name):
+        command = ["remote", "rm", name]
+        self._git.execute_command(command, True)
+
+    def rename_remote(self, name, new_name):
+        command = ["remote", "rename", name, new_name]
+        self._git.execute_command(command, True)
+
+
 class Git(object):
     git_path = "git"
     repo_path = str()
@@ -108,8 +141,18 @@ class Git(object):
         command.append(push_options.branch)
         self.execute_command(command, True)
 
-    def pull(self):
-        self.execute_command("pull")
+    def pull(self, pull_options):
+        command = ["pull"]
+        if pull_options.force:
+            command.append("-f")
+        if pull_options.no_tags:
+            command.append("--no-tags")
+        if pull_options.prune:
+            command.append("--prune")
+
+        command.append(pull_options.remote)
+        self.execute_command(command, True)
+
 
     def svn_rebase(self):
         self.execute_command("svn rebase")
@@ -117,7 +160,7 @@ class Git(object):
     def svn_dcommit(self):
         self.execute_command("svn dcommit")
 
-    def commit(self, name, description):
+    def commit(self, name, description=str()):
         command = ["commit", "-m", "{0}".format(name + "\n" + description)]
         self.execute_command(command)
 
@@ -126,7 +169,6 @@ class Git(object):
     def get_status(self):
         command = ["status", "-u", "--porcelain"]
         return self.execute_command(command, False)
-
 
     def stage_files(self, files):
         command = ["add"] + files
