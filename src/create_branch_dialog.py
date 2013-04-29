@@ -20,7 +20,7 @@ class CreateBranchDialog(QtGui.QDialog):
         self._parent_branch = QtGui.QComboBox(self)
         self._parent_branch.setEditable(False)
         self._parent_branch.currentIndexChanged.connect(
-            lambda: self._parent_branch_changed()
+            self._parent_branch_changed
         )
 
         self._can_checkout = QtGui.QCheckBox("Checkout into branch", self)
