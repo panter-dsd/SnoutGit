@@ -61,6 +61,13 @@ class CommitWidget(QtGui.QWidget):
                 self._commit_description_edit.clear()
                 self.commited.emit()
                 self.refresh()
+            else:
+                error_text = self._git.last_error()
+                if not error_text:
+                    error_text = self._git.last_output()
+                QtGui.QMessageBox.critical(self,
+                                           "Error",
+                                           "\n".join(error_text))
         else:
             QtGui.QMessageBox.critical(self,
                                        "Error",

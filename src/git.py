@@ -94,6 +94,7 @@ class Git(object):
                                        shell=False,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)
+            process.wait()
         except subprocess.CalledProcessError as error:
             print(self.git_path, command, error)
             return []
@@ -125,8 +126,13 @@ class Git(object):
                 print(self._last_output)
                 print(self._last_error)
 
+        self._last_result = process.returncode
+
         del process
         return self._last_output
+
+    def last_result(self):
+        return self._last_result
 
     def push(self, push_options):
         command = ["push", "--porcelain"]
@@ -164,7 +170,7 @@ class Git(object):
         command = ["commit", "-m", "{0}".format(name + "\n" + description)]
         self.execute_command(command)
 
-        return True
+        return self._last_result == 0
 
     def get_status(self):
         command = ["status", "-u", "--porcelain"]
