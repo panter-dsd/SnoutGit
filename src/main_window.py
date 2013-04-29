@@ -16,6 +16,7 @@ import merge_dialog
 import add_remote_dialog
 import remove_remote_dialog
 import pull_dialog
+import push_dialog
 
 
 class State(object):
@@ -207,6 +208,10 @@ class MainWindow(QtGui.QMainWindow):
         self._pull_remote_action.setText("Pull remote")
         self._pull_remote_action.triggered.connect(self.pull_remote)
 
+        self._push_remote_action = QtGui.QAction(self)
+        self._push_remote_action.setText("Push to remote")
+        self._push_remote_action.triggered.connect(self.push_remote)
+
         self._remove_remote_action = QtGui.QAction(self)
         self._remove_remote_action.setText("Remove remote")
         self._remove_remote_action.triggered.connect(self.remove_remote)
@@ -231,6 +236,7 @@ class MainWindow(QtGui.QMainWindow):
         self._remote_menu.setTitle("Remote")
         self._remote_menu.addAction(self._add_remote_action)
         self._remote_menu.addAction(self._pull_remote_action)
+        self._remote_menu.addAction(self._push_remote_action)
         self._remote_menu.addAction(self._remove_remote_action)
         self._menu_bar.addMenu(self._remote_menu)
 
@@ -434,4 +440,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def pull_remote(self):
         d = pull_dialog.PullDialog(self)
+        d.exec_()
+
+    def push_remote(self):
+        d = push_dialog.PushDialog(self)
         d.exec_()
