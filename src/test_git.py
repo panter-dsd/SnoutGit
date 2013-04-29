@@ -109,6 +109,20 @@ class TestGit(unittest.TestCase):
         self._git.commit("Test commit")
         self.assertTrue(self._git.commites())
 
+    def test_commit_without_files_added(self):
+        self.assertFalse(self._git.commit("some_text"))
+
+    def test_commit_with_empty_name(self):
+        file = tempfile.mkstemp(dir=self.temp_dir.name)
+        self._git.stage_files([file[1]])
+        self.assertFalse(self._git.commit(str()))
+
+    def test_commit(self):
+        file = tempfile.mkstemp(dir=self.temp_dir.name)
+        self._git.stage_files([file[1]])
+        self.assertTrue(self._git.commit("Test commit"))
+
+
 
 def suite():
     suite = unittest.TestSuite()
