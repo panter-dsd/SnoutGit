@@ -103,7 +103,7 @@ class BranchesWidget(QtGui.QWidget):
     def _rename(self):
         item = self._local_branches_list.currentItem()
         d = rename_branch_dialog.RenameBranchDialog(
-            item and item.text() or str(),
+            item and item.text() or self._git.current_branch(),
             self
         )
         if d.exec_():
