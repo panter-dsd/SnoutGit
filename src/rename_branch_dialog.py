@@ -16,6 +16,9 @@ class RenameBranchDialog(QtGui.QDialog):
 
         self._source_branch = QtGui.QComboBox(self)
         self._source_branch.addItems(self._git.local_branches())
+        self._source_branch.currentIndexChanged.connect(
+            self._source_branch_changed
+        )
 
         self._target_branch_label = QtGui.QLabel(self)
         self._target_branch_label.setText("New name")
@@ -58,3 +61,12 @@ class RenameBranchDialog(QtGui.QDialog):
         self._source_branch.setCurrentIndex(
             self._source_branch.findText(branch)
         )
+
+    def _source_branch_changed(self):
+        if not self._target_branch.isModified():
+            self._target_branch.setText(
+                self._source_branch.currentText()
+            )
+
+            self._target_branch.selectAll()
+            self._target_branch.setFocus()
