@@ -118,8 +118,7 @@ class MainWindow(QtGui.QMainWindow):
         diff_file_dock.setWindowTitle("Diff")
         diff_file = diff_file_widget.DiffFileWidget(diff_file_dock)
         diff_file_dock.setWidget(diff_file)
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
-                           diff_file_dock)
+        self.addDockWidget(QtCore.Qt.TopDockWidgetArea, diff_file_dock)
 
         status.current_file_changed.connect(diff_file.set_file)
         status.status_changed.connect(diff_file.clear)
@@ -129,8 +128,7 @@ class MainWindow(QtGui.QMainWindow):
         commit_widget_dock.setWindowTitle("Commit")
         commit = commit_widget.CommitWidget(commit_widget_dock)
         commit_widget_dock.setWidget(commit)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           commit_widget_dock)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, commit_widget_dock)
 
         commit.commited.connect(commites.update_commites_list)
 
@@ -139,8 +137,7 @@ class MainWindow(QtGui.QMainWindow):
         actions_widget_dock.setWindowTitle("Actions")
         actions = actions_widget.ActionsWidget(actions_widget_dock)
         actions_widget_dock.setWidget(actions)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           actions_widget_dock)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, actions_widget_dock)
 
         actions.state_changed.connect(commites.update_commites_list)
 
@@ -149,8 +146,7 @@ class MainWindow(QtGui.QMainWindow):
         log_view_dock.setWindowTitle("Log")
         log = log_view.LogView(log_view_dock)
         log_view_dock.setWidget(log)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           log_view_dock)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, log_view_dock)
         git.Git.log_view = log
 
         branches_dock = QtGui.QDockWidget(self)
@@ -158,8 +154,7 @@ class MainWindow(QtGui.QMainWindow):
         branches_dock.setWindowTitle("Branches")
         branches = branches_widget.BranchesWidget(branches_dock)
         branches_dock.setWidget(branches)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           branches_dock)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, branches_dock)
 
         stashes_dock = QtGui.QDockWidget(self)
         stashes_dock.setObjectName("StashesWidget")
@@ -171,8 +166,7 @@ class MainWindow(QtGui.QMainWindow):
         )
         stashes.update_stashes_list()
         stashes_dock.setWidget(stashes)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           stashes_dock)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, stashes_dock)
 
         self._load_settings()
 
@@ -200,21 +194,7 @@ class MainWindow(QtGui.QMainWindow):
         self._abort_merge_action.setText("Abort merge")
         self._abort_merge_action.triggered.connect(self.abort_merge)
 
-        self._add_remote_action = QtGui.QAction(self)
-        self._add_remote_action.setText("Add remote")
-        self._add_remote_action.triggered.connect(self.add_remote)
-
-        self._pull_remote_action = QtGui.QAction(self)
-        self._pull_remote_action.setText("Pull remote")
-        self._pull_remote_action.triggered.connect(self.pull_remote)
-
-        self._push_remote_action = QtGui.QAction(self)
-        self._push_remote_action.setText("Push to remote")
-        self._push_remote_action.triggered.connect(self.push_remote)
-
-        self._remove_remote_action = QtGui.QAction(self)
-        self._remove_remote_action.setText("Remove remote")
-        self._remove_remote_action.triggered.connect(self.remove_remote)
+        self.make_remote_menu()
 
         self._menu_bar = QtGui.QMenuBar(self)
         super(MainWindow, self).setMenuBar(self._menu_bar)
@@ -232,13 +212,7 @@ class MainWindow(QtGui.QMainWindow):
         self._actions_menu.addAction(self._abort_merge_action)
         self._menu_bar.addMenu(self._actions_menu)
 
-        self._remote_menu = QtGui.QMenu(self)
-        self._remote_menu.setTitle("Remote")
-        self._remote_menu.addAction(self._add_remote_action)
-        self._remote_menu.addAction(self._pull_remote_action)
-        self._remote_menu.addAction(self._push_remote_action)
-        self._remote_menu.addAction(self._remove_remote_action)
-        self._menu_bar.addMenu(self._remote_menu)
+        self._menu_bar.addMenu(self.make_remote_menu())
 
         exit_action = QtGui.QAction(self)
         exit_action.setShortcut(QtCore.Qt.CTRL | QtCore.Qt.Key_Q)
@@ -445,3 +419,29 @@ class MainWindow(QtGui.QMainWindow):
     def push_remote(self):
         d = push_dialog.PushDialog(self)
         d.exec_()
+
+    def make_remote_menu(self):
+        self._add_remote_action = QtGui.QAction(self)
+        self._add_remote_action.setText("Add remote")
+        self._add_remote_action.triggered.connect(self.add_remote)
+
+        self._pull_remote_action = QtGui.QAction(self)
+        self._pull_remote_action.setText("Pull remote")
+        self._pull_remote_action.triggered.connect(self.pull_remote)
+
+        self._push_remote_action = QtGui.QAction(self)
+        self._push_remote_action.setText("Push to remote")
+        self._push_remote_action.triggered.connect(self.push_remote)
+
+        self._remove_remote_action = QtGui.QAction(self)
+        self._remove_remote_action.setText("Remove remote")
+        self._remove_remote_action.triggered.connect(self.remove_remote)
+
+        self._remote_menu = QtGui.QMenu(self)
+        self._remote_menu.setTitle("Remote")
+        self._remote_menu.addAction(self._add_remote_action)
+        self._remote_menu.addAction(self._pull_remote_action)
+        self._remote_menu.addAction(self._push_remote_action)
+        self._remote_menu.addAction(self._remove_remote_action)
+
+        return self._remote_menu
