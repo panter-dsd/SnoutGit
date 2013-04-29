@@ -170,22 +170,6 @@ class MainWindow(QtGui.QMainWindow):
 
         self._load_settings()
 
-        self._save_state_action = QtGui.QAction(self)
-        self._save_state_action.setText("Save state")
-        self._save_state_action.triggered.connect(self.save_state)
-
-        self._update_state_action = QtGui.QAction(self)
-        self._update_state_action.setText("Update state")
-        self._update_state_action.triggered.connect(self.update_state)
-
-        self._rename_state_action = QtGui.QAction(self)
-        self._rename_state_action.setText("Rename state")
-        self._rename_state_action.triggered.connect(self.rename_state)
-
-        self._remove_state_action = QtGui.QAction(self)
-        self._remove_state_action.setText("Remove state")
-        self._remove_state_action.triggered.connect(self.remove_state)
-
         self._merge_action = QtGui.QAction(self)
         self._merge_action.setText("Merge...")
         self._merge_action.triggered.connect(self.merge)
@@ -194,17 +178,12 @@ class MainWindow(QtGui.QMainWindow):
         self._abort_merge_action.setText("Abort merge")
         self._abort_merge_action.triggered.connect(self.abort_merge)
 
-        self.make_remote_menu()
-
         self._menu_bar = QtGui.QMenuBar(self)
         super(MainWindow, self).setMenuBar(self._menu_bar)
 
         self._menu_bar.addMenu(stashes.menu())
 
-        self._states_menu = QtGui.QMenu(self)
-        self._states_menu.setTitle("States")
-        self._menu_bar.addMenu(self._states_menu)
-        self.update_states_menu()
+        self._menu_bar.addMenu(self.make_states_menu())
 
         self._actions_menu = QtGui.QMenu(self)
         self._actions_menu.setTitle("Actions")
@@ -445,3 +424,26 @@ class MainWindow(QtGui.QMainWindow):
         self._remote_menu.addAction(self._remove_remote_action)
 
         return self._remote_menu
+
+    def make_states_menu(self):
+        self._save_state_action = QtGui.QAction(self)
+        self._save_state_action.setText("Save state")
+        self._save_state_action.triggered.connect(self.save_state)
+
+        self._update_state_action = QtGui.QAction(self)
+        self._update_state_action.setText("Update state")
+        self._update_state_action.triggered.connect(self.update_state)
+
+        self._rename_state_action = QtGui.QAction(self)
+        self._rename_state_action.setText("Rename state")
+        self._rename_state_action.triggered.connect(self.rename_state)
+
+        self._remove_state_action = QtGui.QAction(self)
+        self._remove_state_action.setText("Remove state")
+        self._remove_state_action.triggered.connect(self.remove_state)
+
+        self._states_menu = QtGui.QMenu(self)
+        self._states_menu.setTitle("States")
+        self.update_states_menu()
+
+        return self._states_menu
