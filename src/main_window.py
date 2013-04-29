@@ -15,6 +15,7 @@ import stashes_widget
 import merge_dialog
 import add_remote_dialog
 import remove_remote_dialog
+import pull_dialog
 
 
 class State(object):
@@ -202,6 +203,10 @@ class MainWindow(QtGui.QMainWindow):
         self._add_remote_action.setText("Add remote")
         self._add_remote_action.triggered.connect(self.add_remote)
 
+        self._pull_remote_action = QtGui.QAction(self)
+        self._pull_remote_action.setText("Pull remote")
+        self._pull_remote_action.triggered.connect(self.pull_remote)
+
         self._remove_remote_action = QtGui.QAction(self)
         self._remove_remote_action.setText("Remove remote")
         self._remove_remote_action.triggered.connect(self.remove_remote)
@@ -225,6 +230,7 @@ class MainWindow(QtGui.QMainWindow):
         self._remote_menu = QtGui.QMenu(self)
         self._remote_menu.setTitle("Remote")
         self._remote_menu.addAction(self._add_remote_action)
+        self._remote_menu.addAction(self._pull_remote_action)
         self._remote_menu.addAction(self._remove_remote_action)
         self._menu_bar.addMenu(self._remote_menu)
 
@@ -424,4 +430,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def remove_remote(self):
         d = remove_remote_dialog.RemoveRemoteDialog(self)
+        d.exec_()
+
+    def pull_remote(self):
+        d = pull_dialog.PullDialog(self)
         d.exec_()
