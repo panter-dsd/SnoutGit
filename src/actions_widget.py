@@ -14,14 +14,6 @@ class ActionsWidget(QtGui.QWidget):
     def __init__(self, parent=None):
         super(ActionsWidget, self).__init__(parent)
 
-        _push_button = QtGui.QPushButton(self)
-        _push_button.setText("Push")
-        _push_button.clicked.connect(self.push)
-
-        _pull_button = QtGui.QPushButton(self)
-        _pull_button.setText("Pull")
-        _pull_button.clicked.connect(self.pull)
-
         _svn_button = QtGui.QToolButton(self)
         _svn_button.setText("Svn")
         _svn_button.setSizePolicy(QtGui.QSizePolicy.Preferred,
@@ -39,22 +31,12 @@ class ActionsWidget(QtGui.QWidget):
         _svn_button.addAction(dcommit_action)
 
         layout = QtGui.QVBoxLayout()
-        layout.addWidget(_push_button)
-        layout.addWidget(_pull_button)
         layout.addWidget(_svn_button)
         layout.addSpacerItem(QtGui.QSpacerItem(0,
                                                0,
                                                QtGui.QSizePolicy.Preferred,
                                                QtGui.QSizePolicy.Expanding))
         super(ActionsWidget, self).setLayout(layout)
-
-    def push(self):
-        d = push_dialog.PushDialog(self)
-        d.exec_()
-
-    def pull(self):
-        d = pull_dialog.PullDialog(self)
-        d.exec_()
 
     def _svn_rebase(self):
         self._git.svn_rebase()
