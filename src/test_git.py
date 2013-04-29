@@ -7,7 +7,7 @@ import unittest
 import git
 
 
-class StashTest(unittest.TestCase):
+class TestStash(unittest.TestCase):
     def test_empty_data(self):
         stash = git.Stash(str(), str())
         self.assertFalse(stash.name)
@@ -21,7 +21,7 @@ class StashTest(unittest.TestCase):
         self.assertEqual(stash.description, descr)
 
 
-class MergeOptionsTest(unittest.TestCase):
+class TestMergeOptions(unittest.TestCase):
     def test_empty_data(self):
         mo = git.MergeOptions(str())
         self.assertFalse(mo.source_target)
@@ -38,7 +38,7 @@ class MergeOptionsTest(unittest.TestCase):
         self.assertFalse(mo.squash)
 
 
-class PushOptionsTest(unittest.TestCase):
+class TestPushOptions(unittest.TestCase):
     def test_empty_data(self):
         po = git.PushOptions(str(), str())
         self.assertFalse(po.branch)
@@ -56,7 +56,7 @@ class PushOptionsTest(unittest.TestCase):
         self.assertTrue(po.include_tags)
 
 
-class RemoteTest(unittest.TestCase):
+class TestRemote(unittest.TestCase):
     def setUp(self):
         self.temp_dir = tempfile.TemporaryDirectory()
         os.chdir(self.temp_dir.name)
@@ -90,7 +90,7 @@ class RemoteTest(unittest.TestCase):
         self.assertFalse(remote.remotes_list())
 
 
-class GitTest(unittest.TestCase):
+class TestGit(unittest.TestCase):
     def setUp(self):
         self.temp_dir = tempfile.TemporaryDirectory()
         os.chdir(self.temp_dir.name)
@@ -112,9 +112,9 @@ class GitTest(unittest.TestCase):
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(StashTest))
-    suite.addTest(unittest.makeSuite(MergeOptionsTest))
-    suite.addTest(unittest.makeSuite(PushOptionsTest))
-    suite.addTest(unittest.makeSuite(RemoteTest))
-    suite.addTest(unittest.makeSuite(GitTest))
+    suite.addTest(unittest.makeSuite(TestStash))
+    suite.addTest(unittest.makeSuite(TestMergeOptions))
+    suite.addTest(unittest.makeSuite(TestPushOptions))
+    suite.addTest(unittest.makeSuite(TestRemote))
+    suite.addTest(unittest.makeSuite(TestGit))
     return suite
