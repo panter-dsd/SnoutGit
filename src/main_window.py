@@ -384,29 +384,19 @@ class MainWindow(QtGui.QMainWindow):
         d = push_dialog.PushDialog(self)
         d.exec_()
 
+    def _make_action(self, caption, slot):
+        action = QtGui.QAction(self)
+        action.setText(caption)
+        action.triggered.connect(slot)
+        return action
+
     def make_remote_menu(self):
-        self._add_remote_action = QtGui.QAction(self)
-        self._add_remote_action.setText("Add remote")
-        self._add_remote_action.triggered.connect(self.add_remote)
-
-        self._pull_remote_action = QtGui.QAction(self)
-        self._pull_remote_action.setText("Pull remote")
-        self._pull_remote_action.triggered.connect(self.pull_remote)
-
-        self._push_remote_action = QtGui.QAction(self)
-        self._push_remote_action.setText("Push to remote")
-        self._push_remote_action.triggered.connect(self.push_remote)
-
-        self._remove_remote_action = QtGui.QAction(self)
-        self._remove_remote_action.setText("Remove remote")
-        self._remove_remote_action.triggered.connect(self.remove_remote)
-
         menu = QtGui.QMenu(self)
         menu.setTitle("Remote")
-        menu.addAction(self._add_remote_action)
-        menu.addAction(self._pull_remote_action)
-        menu.addAction(self._push_remote_action)
-        menu.addAction(self._remove_remote_action)
+        menu.addAction(self._make_action("Add remote", self.add_remote))
+        menu.addAction(self._make_action("Pull remote", self.pull_remote))
+        menu.addAction(self._make_action("Push to remote", self.push_remote))
+        menu.addAction(self._make_action("Remove remote", self.remove_remote))
 
         return menu
 
