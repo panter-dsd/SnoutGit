@@ -2,21 +2,22 @@
 __author__ = 'panter.dsd@gmail.com'
 
 from PyQt4 import QtCore, QtGui
-import commites_widget
-import diff_widget
-import status_widget
-import diff_file_widget
-import commit_widget
-import actions_widget
-import log_view
-import git
-import branches_widget
-import stashes_widget
-import merge_dialog
-import add_remote_dialog
-import remove_remote_dialog
-import pull_dialog
-import push_dialog
+
+from commites_widget import CommitesWidget
+from diff_widget import DiffWidget
+from status_widget import StatusWidget
+from diff_file_widget import DiffFileWidget
+from commit_widget import CommitWidget
+from actions_widget import ActionsWidget
+from log_view import LogView
+from git import Git
+from branches_widget import BranchesWidget
+from stashes_widget import StashesWidget
+from merge_dialog import MergeDialog
+from add_remote_dialog import AddRemoteDialog
+from remove_remote_dialog import RemoveRemoteDialog
+from pull_dialog import PullDialog
+from push_dialog import PushDialog
 
 
 class State(object):
@@ -85,7 +86,7 @@ class States(object):
 class MainWindow(QtGui.QMainWindow):
     _states = States()
     _current_state = State()
-    _git = git.Git()
+    _git = Git()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -137,48 +138,48 @@ class MainWindow(QtGui.QMainWindow):
         return dock
 
     def create_commites_dock(self):
-        self._commites_widget = commites_widget.CommitesWidget(self)
+        self._commites_widget = CommitesWidget(self)
         return self._create_dock(self._commites_widget,
                                  "CommitesDock",
                                  "Commites tree")
 
     def create_diff_dock(self):
-        self._diff_widget = diff_widget.DiffWidget(self)
+        self._diff_widget = DiffWidget(self)
         return self._create_dock(self._diff_widget, "DiffDock", "Commit info")
 
     def create_status_dock(self):
-        self._status_widget = status_widget.StatusWidget(self)
+        self._status_widget = StatusWidget(self)
         return self._create_dock(self._status_widget, "StatusDock", "Status")
 
     def create_diff_file_widget_dock(self):
-        self._diff_file_widget = diff_file_widget.DiffFileWidget(self)
+        self._diff_file_widget = DiffFileWidget(self)
         return self._create_dock(self._diff_file_widget,
                                  "DiffFileDock",
                                  "Diff")
 
     def create_commit_widget_dock(self):
-        self._commit_widget = commit_widget.CommitWidget(self)
+        self._commit_widget = CommitWidget(self)
         return self._create_dock(self._commit_widget, "CommitDock", "Commit")
 
     def create_actions_widget_dock(self):
-        self._actions_widget = actions_widget.ActionsWidget(self)
+        self._actions_widget = ActionsWidget(self)
         return self._create_dock(self._actions_widget,
                                  "ActionsDock",
                                  "Actions")
 
     def create_log_view_dock(self):
-        self._log_view = log_view.LogView(self)
-        git.Git.log_view = self._log_view
+        self._log_view = LogView(self)
+        Git.log_view = self._log_view
         return self._create_dock(self._log_view, "LogView", "Log")
 
     def create_branches_widget_dock(self):
-        self._branches_widget = branches_widget.BranchesWidget(self)
+        self._branches_widget = BranchesWidget(self)
         return self._create_dock(self._branches_widget,
                                  "BranchesWidget",
                                  "Branches")
 
     def create_stashes_widget_dock(self):
-        self._stashes_widget = stashes_widget.StashesWidget(self)
+        self._stashes_widget = StashesWidget(self)
 
         stashes_dock = self._create_dock(self._stashes_widget, "StashesWidget")
         self._stashes_widget.state_changed.connect(
@@ -205,7 +206,7 @@ class MainWindow(QtGui.QMainWindow):
         self.addAction(exit_action)
 
     def update_title(self):
-        self.setWindowTitle("Branch: " + git.Git().current_branch())
+        self.setWindowTitle("Branch: " + Git().current_branch())
 
     def save_state(self):
         state_name = QtGui.QInputDialog.getText(self,
@@ -358,7 +359,7 @@ class MainWindow(QtGui.QMainWindow):
         settings.endGroup()
 
     def merge(self):
-        d = merge_dialog.MergeDialog(self)
+        d = MergeDialog(self)
         d.exec_()
 
     def abort_merge(self):
@@ -372,19 +373,19 @@ class MainWindow(QtGui.QMainWindow):
             self._git.abort_merge()
 
     def add_remote(self):
-        d = add_remote_dialog.AddRemoteDialog(self)
+        d = AddRemoteDialog(self)
         d.exec_()
 
     def remove_remote(self):
-        d = remove_remote_dialog.RemoveRemoteDialog(self)
+        d = RemoveRemoteDialog(self)
         d.exec_()
 
     def pull_remote(self):
-        d = pull_dialog.PullDialog(self)
+        d = PullDialog(self)
         d.exec_()
 
     def push_remote(self):
-        d = push_dialog.PushDialog(self)
+        d = PushDialog(self)
         d.exec_()
 
     def _make_action(self, caption, slot):
