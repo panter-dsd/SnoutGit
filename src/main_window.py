@@ -170,27 +170,12 @@ class MainWindow(QtGui.QMainWindow):
 
         self._load_settings()
 
-        self._merge_action = QtGui.QAction(self)
-        self._merge_action.setText("Merge...")
-        self._merge_action.triggered.connect(self.merge)
-
-        self._abort_merge_action = QtGui.QAction(self)
-        self._abort_merge_action.setText("Abort merge")
-        self._abort_merge_action.triggered.connect(self.abort_merge)
-
         self._menu_bar = QtGui.QMenuBar(self)
         super(MainWindow, self).setMenuBar(self._menu_bar)
 
         self._menu_bar.addMenu(stashes.menu())
-
         self._menu_bar.addMenu(self.make_states_menu())
-
-        self._actions_menu = QtGui.QMenu(self)
-        self._actions_menu.setTitle("Actions")
-        self._actions_menu.addAction(self._merge_action)
-        self._actions_menu.addAction(self._abort_merge_action)
-        self._menu_bar.addMenu(self._actions_menu)
-
+        self._menu_bar.addMenu(self.make_actions_menu())
         self._menu_bar.addMenu(self.make_remote_menu())
 
         exit_action = QtGui.QAction(self)
@@ -447,3 +432,18 @@ class MainWindow(QtGui.QMainWindow):
         self.update_states_menu()
 
         return self._states_menu
+
+    def make_actions_menu(self):
+        self._merge_action = QtGui.QAction(self)
+        self._merge_action.setText("Merge...")
+        self._merge_action.triggered.connect(self.merge)
+        self._abort_merge_action = QtGui.QAction(self)
+        self._abort_merge_action.setText("Abort merge")
+        self._abort_merge_action.triggered.connect(self.abort_merge)
+
+        self._actions_menu = QtGui.QMenu(self)
+        self._actions_menu.setTitle("Actions")
+        self._actions_menu.addAction(self._merge_action)
+        self._actions_menu.addAction(self._abort_merge_action)
+
+        return self._actions_menu
