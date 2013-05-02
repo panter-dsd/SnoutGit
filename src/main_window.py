@@ -400,31 +400,28 @@ class MainWindow(QtGui.QMainWindow):
         return menu
 
     def make_remote_menu(self):
-        return self._make_menu("Remote",
-                               [
-                                   ("Add remote", self.add_remote),
-                                   ("Pull remote", self.pull_remote),
-                                   ("Push to remote", self.push_remote),
-                                   ("Remove remote", self.remove_remote)
-                               ]
+        return self._make_menu(
+            "Remote",
+            [
+                ("Add remote", self.add_remote),
+                ("Pull remote", self.pull_remote),
+                ("Push to remote", self.push_remote),
+                ("Remove remote", self.remove_remote)
+            ]
         )
 
     def make_states_menu(self):
-        self._save_state_action = QtGui.QAction(self)
-        self._save_state_action.setText("Save state")
-        self._save_state_action.triggered.connect(self.save_state)
+        self._save_state_action = self._make_action("Save state",
+                                                    self.save_state)
 
-        self._update_state_action = QtGui.QAction(self)
-        self._update_state_action.setText("Update state")
-        self._update_state_action.triggered.connect(self.update_state)
+        self._update_state_action = self._make_action("Update state",
+                                                      self.update_state)
 
-        self._rename_state_action = QtGui.QAction(self)
-        self._rename_state_action.setText("Rename state")
-        self._rename_state_action.triggered.connect(self.rename_state)
+        self._rename_state_action = self._make_action("Rename state",
+                                                      self.rename_state)
 
-        self._remove_state_action = QtGui.QAction(self)
-        self._remove_state_action.setText("Remove state")
-        self._remove_state_action.triggered.connect(self.remove_state)
+        self._remove_state_action = self._make_action("Remove state",
+                                                      self.remove_state)
 
         self._states_menu = QtGui.QMenu(self)
         self._states_menu.setTitle("States")
@@ -433,9 +430,10 @@ class MainWindow(QtGui.QMainWindow):
         return self._states_menu
 
     def make_actions_menu(self):
-        return self._make_menu("Actions",
-                               [
-                                   ("Merge...", self.merge),
-                                   ("Abort merge", self.abort_merge)
-                               ]
+        return self._make_menu(
+            "Actions",
+            [
+                ("Merge...", self.merge),
+                ("Abort merge", self.abort_merge)
+            ]
         )
