@@ -158,25 +158,19 @@ class MainWindow(QtGui.QMainWindow):
 
         stashes_dock = QtGui.QDockWidget(self)
         stashes_dock.setObjectName("StashesWidget")
-        stashes = stashes_widget.StashesWidget(stashes_dock)
-        stashes.state_changed.connect(
+        self._stashes = stashes_widget.StashesWidget(stashes_dock)
+        self._stashes.state_changed.connect(
             lambda: stashes_dock.setWindowTitle(
-                "Stashes ({0})".format(stashes.count())
+                "Stashes ({0})".format(self._stashes.count())
             )
         )
-        stashes.update_stashes_list()
-        stashes_dock.setWidget(stashes)
+        self._stashes.update_stashes_list()
+        stashes_dock.setWidget(self._stashes)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, stashes_dock)
 
         self._load_settings()
 
-        self._menu_bar = QtGui.QMenuBar(self)
-        self.setMenuBar(self._menu_bar)
-
-        self._menu_bar.addMenu(stashes.menu())
-        self._menu_bar.addMenu(self.make_states_menu())
-        self._menu_bar.addMenu(self.make_actions_menu())
-        self._menu_bar.addMenu(self.make_remote_menu())
+        self.create_main_menu()
 
         exit_action = QtGui.QAction(self)
         exit_action.setShortcut(QtCore.Qt.CTRL | QtCore.Qt.Key_Q)
@@ -184,6 +178,14 @@ class MainWindow(QtGui.QMainWindow):
         self.addAction(exit_action)
 
         self.update_title()
+
+    def create_main_menu(self):
+        self._menu_bar = QtGui.QMenuBar(self)
+        self.setMenuBar(self._menu_bar)
+        self._menu_bar.addMenu(self._stashes.menu())
+        self._menu_bar.addMenu(self.make_states_menu())
+        self._menu_bar.addMenu(self.make_actions_menu())
+        self._menu_bar.addMenu(self.make_remote_menu())
 
     def update_title(self):
         self.setWindowTitle("Branch: " + git.Git().current_branch())
