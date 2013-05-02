@@ -433,16 +433,9 @@ class MainWindow(QtGui.QMainWindow):
         return self._states_menu
 
     def make_actions_menu(self):
-        self._merge_action = QtGui.QAction(self)
-        self._merge_action.setText("Merge...")
-        self._merge_action.triggered.connect(self.merge)
-        self._abort_merge_action = QtGui.QAction(self)
-        self._abort_merge_action.setText("Abort merge")
-        self._abort_merge_action.triggered.connect(self.abort_merge)
-
-        menu = QtGui.QMenu(self)
-        menu.setTitle("Actions")
-        menu.addAction(self._merge_action)
-        menu.addAction(self._abort_merge_action)
-
-        return menu
+        return self._make_menu("Actions",
+                               [
+                                   ("Merge...", self.merge),
+                                   ("Abort merge", self.abort_merge)
+                               ]
+        )
