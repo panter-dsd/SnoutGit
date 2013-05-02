@@ -87,15 +87,19 @@ class MainWindow(QtGui.QMainWindow):
     _current_state = State()
     _git = git.Git()
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
+    def create_commites_dock(self):
         commitesDock = QtGui.QDockWidget(self)
         commitesDock.setObjectName("CommitesDock")
         commitesDock.setWindowTitle("Commites tree")
-        commites = commites_widget.CommitesWidget(commitesDock)
-        commitesDock.setWidget(commites)
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea, commitesDock)
+        self._commites_widget = commites_widget.CommitesWidget(commitesDock)
+        commitesDock.setWidget(self._commites_widget)
+        return commitesDock
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
+                           self.create_commites_dock())
 
         diffDock = QtGui.QDockWidget(self)
         diffDock.setObjectName("DiffDock")
@@ -104,7 +108,7 @@ class MainWindow(QtGui.QMainWindow):
         diffDock.setWidget(diff)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, diffDock)
 
-        commites.current_commit_changed.connect(diff.set_commit)
+        self._commites_widget.current_commit_changed.connect(diff.set_commit)
 
         status_dock = QtGui.QDockWidget(self)
         status_dock.setObjectName("StatusDock")
@@ -130,7 +134,7 @@ class MainWindow(QtGui.QMainWindow):
         commit_widget_dock.setWidget(commit)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, commit_widget_dock)
 
-        commit.commited.connect(commites.update_commites_list)
+        commit.commited.connect(self._commites_widget.update_commites_list)
 
         actions_widget_dock = QtGui.QDockWidget(self)
         actions_widget_dock.setObjectName("ActionsDock")
@@ -139,7 +143,7 @@ class MainWindow(QtGui.QMainWindow):
         actions_widget_dock.setWidget(actions)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, actions_widget_dock)
 
-        actions.state_changed.connect(commites.update_commites_list)
+        actions.state_changed.connect(self._commites_widget.update_commites_list)
 
         log_view_dock = QtGui.QDockWidget(self)
         log_view_dock.setObjectName("LogView")
