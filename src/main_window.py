@@ -87,90 +87,51 @@ class MainWindow(QtGui.QMainWindow):
     _current_state = State()
     _git = git.Git()
 
-    def create_commites_dock(self):
-        commitesDock = QtGui.QDockWidget(self)
-        commitesDock.setObjectName("CommitesDock")
-        commitesDock.setWindowTitle("Commites tree")
-        self._commites_widget = commites_widget.CommitesWidget(commitesDock)
-        commitesDock.setWidget(self._commites_widget)
-        return commitesDock
-
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
                            self.create_commites_dock())
 
-        diffDock = QtGui.QDockWidget(self)
-        diffDock.setObjectName("DiffDock")
-        diffDock.setWindowTitle("Commit info")
-        diff = diff_widget.DiffWidget(diffDock)
-        diffDock.setWidget(diff)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, diffDock)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           self.create_diff_dock())
 
-        self._commites_widget.current_commit_changed.connect(diff.set_commit)
-
-        status_dock = QtGui.QDockWidget(self)
-        status_dock.setObjectName("StatusDock")
-        status_dock.setWindowTitle("Status")
-        status = status_widget.StatusWidget(status_dock)
-        status_dock.setWidget(status)
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea, status_dock)
-
-        diff_file_dock = QtGui.QDockWidget(self)
-        diff_file_dock.setObjectName("DiffFileDock")
-        diff_file_dock.setWindowTitle("Diff")
-        diff_file = diff_file_widget.DiffFileWidget(diff_file_dock)
-        diff_file_dock.setWidget(diff_file)
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea, diff_file_dock)
-
-        status.current_file_changed.connect(diff_file.set_file)
-        status.status_changed.connect(diff_file.clear)
-
-        commit_widget_dock = QtGui.QDockWidget(self)
-        commit_widget_dock.setObjectName("CommitDock")
-        commit_widget_dock.setWindowTitle("Commit")
-        commit = commit_widget.CommitWidget(commit_widget_dock)
-        commit_widget_dock.setWidget(commit)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, commit_widget_dock)
-
-        commit.commited.connect(self._commites_widget.update_commites_list)
-
-        actions_widget_dock = QtGui.QDockWidget(self)
-        actions_widget_dock.setObjectName("ActionsDock")
-        actions_widget_dock.setWindowTitle("Actions")
-        actions = actions_widget.ActionsWidget(actions_widget_dock)
-        actions_widget_dock.setWidget(actions)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, actions_widget_dock)
-
-        actions.state_changed.connect(self._commites_widget.update_commites_list)
-
-        log_view_dock = QtGui.QDockWidget(self)
-        log_view_dock.setObjectName("LogView")
-        log_view_dock.setWindowTitle("Log")
-        log = log_view.LogView(log_view_dock)
-        log_view_dock.setWidget(log)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, log_view_dock)
-        git.Git.log_view = log
-
-        branches_dock = QtGui.QDockWidget(self)
-        branches_dock.setObjectName("BranchesWidget")
-        branches_dock.setWindowTitle("Branches")
-        branches = branches_widget.BranchesWidget(branches_dock)
-        branches_dock.setWidget(branches)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, branches_dock)
-
-        stashes_dock = QtGui.QDockWidget(self)
-        stashes_dock.setObjectName("StashesWidget")
-        self._stashes = stashes_widget.StashesWidget(stashes_dock)
-        self._stashes.state_changed.connect(
-            lambda: stashes_dock.setWindowTitle(
-                "Stashes ({0})".format(self._stashes.count())
-            )
+        self._commites_widget.current_commit_changed.connect(
+            self._diff_widget.set_commit
         )
-        self._stashes.update_stashes_list()
-        stashes_dock.setWidget(self._stashes)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, stashes_dock)
+
+        self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
+                           self.create_status_dock())
+
+        self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
+                           self.create_diff_file_widget_dock())
+
+        self._status_widget.current_file_changed.connect(
+            self._diff_file_widget.set_file)
+        self._status_widget.status_changed.connect(
+            self._diff_file_widget.clear)
+
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           self.create_commit_widget_dock())
+
+        self._commit_widget.commited.connect(
+            self._commites_widget.update_commites_list)
+
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           self.create_actions_widget_dock())
+
+        self._actions_widget.state_changed.connect(
+            self._commites_widget.update_commites_list)
+
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           self.create_log_view_dock())
+        git.Git.log_view = self._log_view
+
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           self.create_branches_widget_dock())
+
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           self.create_stashes_widget_dock())
 
         self._load_settings()
 
@@ -182,6 +143,88 @@ class MainWindow(QtGui.QMainWindow):
         self.addAction(exit_action)
 
         self.update_title()
+
+    def create_commites_dock(self):
+        commitesDock = QtGui.QDockWidget(self)
+        commitesDock.setObjectName("CommitesDock")
+        commitesDock.setWindowTitle("Commites tree")
+        self._commites_widget = commites_widget.CommitesWidget(
+            commitesDock)
+        commitesDock.setWidget(self._commites_widget)
+        return commitesDock
+
+    def create_diff_dock(self):
+        diffDock = QtGui.QDockWidget(self)
+        diffDock.setObjectName("DiffDock")
+        diffDock.setWindowTitle("Commit info")
+        self._diff_widget = diff_widget.DiffWidget(diffDock)
+        diffDock.setWidget(self._diff_widget)
+        return diffDock
+
+    def create_status_dock(self):
+        status_dock = QtGui.QDockWidget(self)
+        status_dock.setObjectName("StatusDock")
+        status_dock.setWindowTitle("Status")
+        self._status_widget = status_widget.StatusWidget(status_dock)
+        status_dock.setWidget(self._status_widget)
+        return status_dock
+
+    def create_diff_file_widget_dock(self):
+        diff_file_dock = QtGui.QDockWidget(self)
+        diff_file_dock.setObjectName("DiffFileDock")
+        diff_file_dock.setWindowTitle("Diff")
+        self._diff_file_widget = diff_file_widget.DiffFileWidget(
+            diff_file_dock)
+        diff_file_dock.setWidget(self._diff_file_widget)
+        return diff_file_dock
+
+    def create_commit_widget_dock(self):
+        commit_widget_dock = QtGui.QDockWidget(self)
+        commit_widget_dock.setObjectName("CommitDock")
+        commit_widget_dock.setWindowTitle("Commit")
+        self._commit_widget = commit_widget.CommitWidget(
+            commit_widget_dock)
+        commit_widget_dock.setWidget(self._commit_widget)
+        return commit_widget_dock
+
+    def create_actions_widget_dock(self):
+        actions_widget_dock = QtGui.QDockWidget(self)
+        actions_widget_dock.setObjectName("ActionsDock")
+        actions_widget_dock.setWindowTitle("Actions")
+        self._actions_widget = actions_widget.ActionsWidget(
+            actions_widget_dock)
+        actions_widget_dock.setWidget(self._actions_widget)
+        return actions_widget_dock
+
+    def create_log_view_dock(self):
+        log_view_dock = QtGui.QDockWidget(self)
+        log_view_dock.setObjectName("LogView")
+        log_view_dock.setWindowTitle("Log")
+        self._log_view = log_view.LogView(log_view_dock)
+        log_view_dock.setWidget(self._log_view)
+        return log_view_dock
+
+    def create_branches_widget_dock(self):
+        branches_dock = QtGui.QDockWidget(self)
+        branches_dock.setObjectName("BranchesWidget")
+        branches_dock.setWindowTitle("Branches")
+        self._branches_widget = branches_widget.BranchesWidget(
+            branches_dock)
+        branches_dock.setWidget(self._branches_widget)
+        return branches_dock
+
+    def create_stashes_widget_dock(self):
+        stashes_dock = QtGui.QDockWidget(self)
+        stashes_dock.setObjectName("StashesWidget")
+        self._stashes = stashes_widget.StashesWidget(stashes_dock)
+        self._stashes.state_changed.connect(
+            lambda: stashes_dock.setWindowTitle(
+                "Stashes ({0})".format(self._stashes.count())
+            )
+        )
+        self._stashes.update_stashes_list()
+        stashes_dock.setWidget(self._stashes)
+        return stashes_dock
 
     def create_main_menu(self):
         self._menu_bar = QtGui.QMenuBar(self)
