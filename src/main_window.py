@@ -24,7 +24,7 @@ class State(object):
     _data = None
 
     def __init__(self, name=str(), data=None):
-        super(State, self).__init__()
+        super().__init__()
 
         self._name = name
         self._data = data
@@ -43,7 +43,7 @@ class States(object):
     _states = []
 
     def __init__(self):
-        super(States, self).__init__()
+        super().__init__()
 
     def states_count(self):
         return len(self._states)
@@ -88,7 +88,7 @@ class MainWindow(QtGui.QMainWindow):
     _git = git.Git()
 
     def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)
+        super().__init__(parent)
 
         commitesDock = QtGui.QDockWidget(self)
         commitesDock.setObjectName("CommitesDock")
@@ -171,7 +171,7 @@ class MainWindow(QtGui.QMainWindow):
         self._load_settings()
 
         self._menu_bar = QtGui.QMenuBar(self)
-        super(MainWindow, self).setMenuBar(self._menu_bar)
+        self.setMenuBar(self._menu_bar)
 
         self._menu_bar.addMenu(stashes.menu())
         self._menu_bar.addMenu(self.make_states_menu())
@@ -181,14 +181,12 @@ class MainWindow(QtGui.QMainWindow):
         exit_action = QtGui.QAction(self)
         exit_action.setShortcut(QtCore.Qt.CTRL | QtCore.Qt.Key_Q)
         exit_action.triggered.connect(self.close)
-        super(MainWindow, self).addAction(exit_action)
+        self.addAction(exit_action)
 
         self.update_title()
 
     def update_title(self):
-        super(MainWindow, self).setWindowTitle(
-            "Branch: " + git.Git().current_branch()
-        )
+        self.setWindowTitle("Branch: " + git.Git().current_branch())
 
     def save_state(self):
         state_name = QtGui.QInputDialog.getText(self,
@@ -197,7 +195,7 @@ class MainWindow(QtGui.QMainWindow):
         if state_name:
             self._current_state = self._states.append_state(
                 state_name,
-                super(MainWindow, self).saveState()
+                self.saveState()
             )
             self.update_states_menu()
 
@@ -237,10 +235,7 @@ class MainWindow(QtGui.QMainWindow):
         state = self.select_state()
 
         if state.name():
-            self._states.update_state(
-                state.name(),
-                super(MainWindow, self).saveState()
-            )
+            self._states.update_state(state.name(), self.saveState())
             self.update_states_menu()
 
     def update_states_menu(self):
@@ -268,9 +263,7 @@ class MainWindow(QtGui.QMainWindow):
         state_name = self.sender().text()
         print(state_name)
         self._current_state = self._states.state_for_name(state_name)
-        super(MainWindow, self).restoreState(
-            self._current_state.data()
-        )
+        self.restoreState(self._current_state.data())
         self.update_states_menu()
 
     def closeEvent(self, event):
@@ -283,23 +276,19 @@ class MainWindow(QtGui.QMainWindow):
         settings.beginGroup("GUI")
         settings.beginGroup("MainWindow")
 
-        super(MainWindow, self).restoreState(
-            settings.value("State",
-                           QtCore.QByteArray()))
+        self.restoreState(settings.value("State", QtCore.QByteArray()))
 
         if settings.contains("pos"):
-            super(MainWindow, self).move(settings.value("pos"))
+            self.move(settings.value("pos"))
 
         size = settings.value("size", QtCore.QSize(1024, 768))
 
-        super(MainWindow, self).resize(size)
+        self.resize(size)
 
         isMaximized = settings.value("IsMaximized", False) == "true"
 
         if isMaximized:
-            super(MainWindow, self).setWindowState(
-                QtCore.Qt.WindowMaximized
-            )
+            self.setWindowState(QtCore.Qt.WindowMaximized)
 
         settings.endGroup()
 
@@ -314,9 +303,7 @@ class MainWindow(QtGui.QMainWindow):
         state_name = settings.value("CurrentState", str())
         if state_name:
             self._current_state = self._states.state_for_name(state_name)
-            super(MainWindow, self).restoreState(
-                self._current_state.data()
-            )
+            self.restoreState(self._current_state.data())
 
         settings.endGroup()
 
@@ -326,9 +313,9 @@ class MainWindow(QtGui.QMainWindow):
         settings.beginGroup("GUI")
         settings.beginGroup("MainWindow")
 
-        if super(MainWindow, self).windowState() != QtCore.Qt.WindowMaximized:
-            settings.setValue("pos", super(MainWindow, self).pos())
-            settings.setValue("size", super(MainWindow, self).size())
+        if self.windowState() != QtCore.Qt.WindowMaximized:
+            settings.setValue("pos", self.pos())
+            settings.setValue("size", self.size())
             settings.setValue("IsMaximized", False)
         else:
             settings.setValue("IsMaximized", True)
