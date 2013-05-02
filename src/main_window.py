@@ -390,15 +390,24 @@ class MainWindow(QtGui.QMainWindow):
         action.triggered.connect(slot)
         return action
 
-    def make_remote_menu(self):
+    def _make_menu(self, title, actions):
         menu = QtGui.QMenu(self)
-        menu.setTitle("Remote")
-        menu.addAction(self._make_action("Add remote", self.add_remote))
-        menu.addAction(self._make_action("Pull remote", self.pull_remote))
-        menu.addAction(self._make_action("Push to remote", self.push_remote))
-        menu.addAction(self._make_action("Remove remote", self.remove_remote))
+        menu.setTitle(title)
+
+        for action in actions:
+            menu.addAction(self._make_action(action[0], action[1]))
 
         return menu
+
+    def make_remote_menu(self):
+        return self._make_menu("Remote",
+                               [
+                                   ("Add remote", self.add_remote),
+                                   ("Pull remote", self.pull_remote),
+                                   ("Push to remote", self.push_remote),
+                                   ("Remove remote", self.remove_remote)
+                               ]
+        )
 
     def make_states_menu(self):
         self._save_state_action = QtGui.QAction(self)
