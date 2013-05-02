@@ -401,14 +401,14 @@ class MainWindow(QtGui.QMainWindow):
         self._remove_remote_action.setText("Remove remote")
         self._remove_remote_action.triggered.connect(self.remove_remote)
 
-        self._remote_menu = QtGui.QMenu(self)
-        self._remote_menu.setTitle("Remote")
-        self._remote_menu.addAction(self._add_remote_action)
-        self._remote_menu.addAction(self._pull_remote_action)
-        self._remote_menu.addAction(self._push_remote_action)
-        self._remote_menu.addAction(self._remove_remote_action)
+        menu = QtGui.QMenu(self)
+        menu.setTitle("Remote")
+        menu.addAction(self._add_remote_action)
+        menu.addAction(self._pull_remote_action)
+        menu.addAction(self._push_remote_action)
+        menu.addAction(self._remove_remote_action)
 
-        return self._remote_menu
+        return menu
 
     def make_states_menu(self):
         self._save_state_action = QtGui.QAction(self)
@@ -441,9 +441,9 @@ class MainWindow(QtGui.QMainWindow):
         self._abort_merge_action.setText("Abort merge")
         self._abort_merge_action.triggered.connect(self.abort_merge)
 
-        self._actions_menu = QtGui.QMenu(self)
-        self._actions_menu.setTitle("Actions")
-        self._actions_menu.addAction(self._merge_action)
-        self._actions_menu.addAction(self._abort_merge_action)
+        menu = QtGui.QMenu(self)
+        menu.setTitle("Actions")
+        menu.addAction(self._merge_action)
+        menu.addAction(self._abort_merge_action)
 
-        return self._actions_menu
+        return menu
