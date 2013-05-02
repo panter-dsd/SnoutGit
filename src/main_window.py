@@ -243,7 +243,6 @@ class MainWindow(QtGui.QMainWindow):
             )
             self.update_states_menu()
 
-
     def update_states_menu(self):
         self._states_menu.clear()
         self._states_menu.addAction(self._save_state_action)
@@ -258,10 +257,8 @@ class MainWindow(QtGui.QMainWindow):
         self._remove_state_action.setEnabled(enabled)
 
         for i in range(self._states.states_count()):
-            action = QtGui.QAction(self)
             state = self._states.state(i)
-            action.setText(state.name())
-            action.triggered.connect(self.restore_state)
+            action = self._make_action(state.name(), self.restore_state)
             action.setCheckable(True)
             self._states_menu.addAction(action)
             if state.name() == self._current_state.name():
