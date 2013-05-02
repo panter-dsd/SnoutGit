@@ -117,24 +117,17 @@ class MainWindow(QtGui.QMainWindow):
         self.update_title()
 
     def create_docks(self):
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           self.create_log_view_dock())
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
-                           self.create_commites_dock())
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           self.create_diff_dock())
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
-                           self.create_status_dock())
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
-                           self.create_diff_file_widget_dock())
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           self.create_commit_widget_dock())
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           self.create_actions_widget_dock())
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           self.create_branches_widget_dock())
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           self.create_stashes_widget_dock())
+        top_area = QtCore.Qt.TopDockWidgetArea
+        bottom_area = QtCore.Qt.BottomDockWidgetArea
+        self.addDockWidget(bottom_area, self.create_log_view_dock())
+        self.addDockWidget(top_area, self.create_commites_dock())
+        self.addDockWidget(bottom_area, self.create_diff_dock())
+        self.addDockWidget(top_area, self.create_status_dock())
+        self.addDockWidget(top_area, self.create_diff_file_widget_dock())
+        self.addDockWidget(bottom_area, self.create_commit_widget_dock())
+        self.addDockWidget(bottom_area, self.create_actions_widget_dock())
+        self.addDockWidget(bottom_area, self.create_branches_widget_dock())
+        self.addDockWidget(bottom_area, self.create_stashes_widget_dock())
 
     def _create_dock(self, widget, object_name, title=str()):
         dock = QtGui.QDockWidget(self)
