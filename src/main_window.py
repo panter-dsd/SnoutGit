@@ -90,59 +90,51 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
-                           self.create_commites_dock())
-
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           self.create_diff_dock())
+        self.create_docks()
 
         self._commites_widget.current_commit_changed.connect(
             self._diff_widget.set_commit
         )
 
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
-                           self.create_status_dock())
-
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
-                           self.create_diff_file_widget_dock())
-
         self._status_widget.current_file_changed.connect(
-            self._diff_file_widget.set_file)
+            self._diff_file_widget.set_file
+        )
         self._status_widget.status_changed.connect(
-            self._diff_file_widget.clear)
-
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           self.create_commit_widget_dock())
+            self._diff_file_widget.clear
+        )
 
         self._commit_widget.commited.connect(
-            self._commites_widget.update_commites_list)
-
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           self.create_actions_widget_dock())
+            self._commites_widget.update_commites_list
+        )
 
         self._actions_widget.state_changed.connect(
-            self._commites_widget.update_commites_list)
-
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           self.create_log_view_dock())
-        git.Git.log_view = self._log_view
-
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           self.create_branches_widget_dock())
-
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           self.create_stashes_widget_dock())
+            self._commites_widget.update_commites_list
+        )
 
         self._load_settings()
-
         self.create_main_menu()
-
-        exit_action = QtGui.QAction(self)
-        exit_action.setShortcut(QtCore.Qt.CTRL | QtCore.Qt.Key_Q)
-        exit_action.triggered.connect(self.close)
-        self.addAction(exit_action)
-
+        self.create_exit_action()
         self.update_title()
+
+    def create_docks(self):
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           self.create_log_view_dock())
+        self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
+                           self.create_commites_dock())
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           self.create_diff_dock())
+        self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
+                           self.create_status_dock())
+        self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
+                           self.create_diff_file_widget_dock())
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           self.create_commit_widget_dock())
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           self.create_actions_widget_dock())
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           self.create_branches_widget_dock())
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
+                           self.create_stashes_widget_dock())
 
     def create_commites_dock(self):
         commitesDock = QtGui.QDockWidget(self)
@@ -201,6 +193,9 @@ class MainWindow(QtGui.QMainWindow):
         log_view_dock.setObjectName("LogView")
         log_view_dock.setWindowTitle("Log")
         self._log_view = log_view.LogView(log_view_dock)
+
+        git.Git.log_view = self._log_view
+
         log_view_dock.setWidget(self._log_view)
         return log_view_dock
 
@@ -233,6 +228,12 @@ class MainWindow(QtGui.QMainWindow):
         self._menu_bar.addMenu(self.make_states_menu())
         self._menu_bar.addMenu(self.make_actions_menu())
         self._menu_bar.addMenu(self.make_remote_menu())
+
+    def create_exit_action(self):
+        exit_action = QtGui.QAction(self)
+        exit_action.setShortcut(QtCore.Qt.CTRL | QtCore.Qt.Key_Q)
+        exit_action.triggered.connect(self.close)
+        self.addAction(exit_action)
 
     def update_title(self):
         self.setWindowTitle("Branch: " + git.Git().current_branch())
