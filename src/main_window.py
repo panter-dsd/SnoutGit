@@ -2,21 +2,22 @@
 __author__ = 'panter.dsd@gmail.com'
 
 from PyQt4 import QtCore, QtGui
-import commites_widget
-import diff_widget
-import status_widget
-import diff_file_widget
-import commit_widget
-import actions_widget
-import log_view
-import git
-import branches_widget
-import stashes_widget
-import merge_dialog
-import add_remote_dialog
-import remove_remote_dialog
-import pull_dialog
-import push_dialog
+
+from commites_widget import CommitesWidget
+from diff_widget import DiffWidget
+from status_widget import StatusWidget
+from diff_file_widget import DiffFileWidget
+from commit_widget import CommitWidget
+from actions_widget import ActionsWidget
+from log_view import LogView
+from git import Git
+from branches_widget import BranchesWidget
+from stashes_widget import StashesWidget
+from merge_dialog import MergeDialog
+from add_remote_dialog import AddRemoteDialog
+from remove_remote_dialog import RemoveRemoteDialog
+from pull_dialog import PullDialog
+from push_dialog import PushDialog
 
 
 class State(object):
@@ -24,7 +25,7 @@ class State(object):
     _data = None
 
     def __init__(self, name=str(), data=None):
-        super(State, self).__init__()
+        super().__init__()
 
         self._name = name
         self._data = data
@@ -43,7 +44,7 @@ class States(object):
     _states = []
 
     def __init__(self):
-        super(States, self).__init__()
+        super().__init__()
 
     def states_count(self):
         return len(self._states)
@@ -85,172 +86,127 @@ class States(object):
 class MainWindow(QtGui.QMainWindow):
     _states = States()
     _current_state = State()
-    _git = git.Git()
+    _git = Git()
 
     def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)
+        super().__init__(parent)
 
-        commitesDock = QtGui.QDockWidget(self)
-        commitesDock.setObjectName("CommitesDock")
-        commitesDock.setWindowTitle("Commites tree")
-        commites = commites_widget.CommitesWidget(commitesDock)
-        commitesDock.setWidget(commites)
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea, commitesDock)
+        self.create_docks()
 
-        diffDock = QtGui.QDockWidget(self)
-        diffDock.setObjectName("DiffDock")
-        diffDock.setWindowTitle("Commit info")
-        diff = diff_widget.DiffWidget(diffDock)
-        diffDock.setWidget(diff)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, diffDock)
-
-        commites.current_commit_changed.connect(diff.set_commit)
-
-        status_dock = QtGui.QDockWidget(self)
-        status_dock.setObjectName("StatusDock")
-        status_dock.setWindowTitle("Status")
-        status = status_widget.StatusWidget(status_dock)
-        status_dock.setWidget(status)
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea, status_dock)
-
-        diff_file_dock = QtGui.QDockWidget(self)
-        diff_file_dock.setObjectName("DiffFileDock")
-        diff_file_dock.setWindowTitle("Diff")
-        diff_file = diff_file_widget.DiffFileWidget(diff_file_dock)
-        diff_file_dock.setWidget(diff_file)
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea,
-                           diff_file_dock)
-
-        status.current_file_changed.connect(diff_file.set_file)
-        status.status_changed.connect(diff_file.clear)
-
-        commit_widget_dock = QtGui.QDockWidget(self)
-        commit_widget_dock.setObjectName("CommitDock")
-        commit_widget_dock.setWindowTitle("Commit")
-        commit = commit_widget.CommitWidget(commit_widget_dock)
-        commit_widget_dock.setWidget(commit)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           commit_widget_dock)
-
-        commit.commited.connect(commites.update_commites_list)
-
-        actions_widget_dock = QtGui.QDockWidget(self)
-        actions_widget_dock.setObjectName("ActionsDock")
-        actions_widget_dock.setWindowTitle("Actions")
-        actions = actions_widget.ActionsWidget(actions_widget_dock)
-        actions_widget_dock.setWidget(actions)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           actions_widget_dock)
-
-        actions.state_changed.connect(commites.update_commites_list)
-
-        log_view_dock = QtGui.QDockWidget(self)
-        log_view_dock.setObjectName("LogView")
-        log_view_dock.setWindowTitle("Log")
-        log = log_view.LogView(log_view_dock)
-        log_view_dock.setWidget(log)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           log_view_dock)
-        git.Git.log_view = log
-
-        branches_dock = QtGui.QDockWidget(self)
-        branches_dock.setObjectName("BranchesWidget")
-        branches_dock.setWindowTitle("Branches")
-        branches = branches_widget.BranchesWidget(branches_dock)
-        branches_dock.setWidget(branches)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           branches_dock)
-
-        stashes_dock = QtGui.QDockWidget(self)
-        stashes_dock.setObjectName("StashesWidget")
-        stashes = stashes_widget.StashesWidget(stashes_dock)
-        stashes.state_changed.connect(
-            lambda: stashes_dock.setWindowTitle(
-                "Stashes ({0})".format(stashes.count())
-            )
+        self._commites_widget.current_commit_changed.connect(
+            self._diff_widget.set_commit
         )
-        stashes.update_stashes_list()
-        stashes_dock.setWidget(stashes)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea,
-                           stashes_dock)
+
+        self._status_widget.current_file_changed.connect(
+            self._diff_file_widget.set_file
+        )
+        self._status_widget.status_changed.connect(
+            self._diff_file_widget.clear
+        )
+
+        self._commit_widget.commited.connect(
+            self._commites_widget.update_commites_list
+        )
+
+        self._actions_widget.state_changed.connect(
+            self._commites_widget.update_commites_list
+        )
 
         self._load_settings()
+        self.create_main_menu()
+        self.create_exit_action()
+        self.update_title()
 
-        self._save_state_action = QtGui.QAction(self)
-        self._save_state_action.setText("Save state")
-        self._save_state_action.triggered.connect(self.save_state)
+    def create_docks(self):
+        top_area = QtCore.Qt.TopDockWidgetArea
+        bottom_area = QtCore.Qt.BottomDockWidgetArea
+        self.addDockWidget(bottom_area, self.create_log_view_dock())
+        self.addDockWidget(top_area, self.create_commites_dock())
+        self.addDockWidget(bottom_area, self.create_diff_dock())
+        self.addDockWidget(top_area, self.create_status_dock())
+        self.addDockWidget(top_area, self.create_diff_file_widget_dock())
+        self.addDockWidget(bottom_area, self.create_commit_widget_dock())
+        self.addDockWidget(bottom_area, self.create_actions_widget_dock())
+        self.addDockWidget(bottom_area, self.create_branches_widget_dock())
+        self.addDockWidget(bottom_area, self.create_stashes_widget_dock())
 
-        self._update_state_action = QtGui.QAction(self)
-        self._update_state_action.setText("Update state")
-        self._update_state_action.triggered.connect(self.update_state)
+    def _create_dock(self, widget, object_name, title=str()):
+        dock = QtGui.QDockWidget(self)
+        dock.setObjectName(object_name)
+        dock.setWindowTitle(title)
+        dock.setWidget(widget)
+        return dock
 
-        self._rename_state_action = QtGui.QAction(self)
-        self._rename_state_action.setText("Rename state")
-        self._rename_state_action.triggered.connect(self.rename_state)
+    def create_commites_dock(self):
+        self._commites_widget = CommitesWidget(self)
+        return self._create_dock(self._commites_widget,
+                                 "CommitesDock",
+                                 "Commites tree")
 
-        self._remove_state_action = QtGui.QAction(self)
-        self._remove_state_action.setText("Remove state")
-        self._remove_state_action.triggered.connect(self.remove_state)
+    def create_diff_dock(self):
+        self._diff_widget = DiffWidget(self)
+        return self._create_dock(self._diff_widget, "DiffDock", "Commit info")
 
-        self._merge_action = QtGui.QAction(self)
-        self._merge_action.setText("Merge...")
-        self._merge_action.triggered.connect(self.merge)
+    def create_status_dock(self):
+        self._status_widget = StatusWidget(self)
+        return self._create_dock(self._status_widget, "StatusDock", "Status")
 
-        self._abort_merge_action = QtGui.QAction(self)
-        self._abort_merge_action.setText("Abort merge")
-        self._abort_merge_action.triggered.connect(self.abort_merge)
+    def create_diff_file_widget_dock(self):
+        self._diff_file_widget = DiffFileWidget(self)
+        return self._create_dock(self._diff_file_widget,
+                                 "DiffFileDock",
+                                 "Diff")
 
-        self._add_remote_action = QtGui.QAction(self)
-        self._add_remote_action.setText("Add remote")
-        self._add_remote_action.triggered.connect(self.add_remote)
+    def create_commit_widget_dock(self):
+        self._commit_widget = CommitWidget(self)
+        return self._create_dock(self._commit_widget, "CommitDock", "Commit")
 
-        self._pull_remote_action = QtGui.QAction(self)
-        self._pull_remote_action.setText("Pull remote")
-        self._pull_remote_action.triggered.connect(self.pull_remote)
+    def create_actions_widget_dock(self):
+        self._actions_widget = ActionsWidget(self)
+        return self._create_dock(self._actions_widget,
+                                 "ActionsDock",
+                                 "Actions")
 
-        self._push_remote_action = QtGui.QAction(self)
-        self._push_remote_action.setText("Push to remote")
-        self._push_remote_action.triggered.connect(self.push_remote)
+    def create_log_view_dock(self):
+        self._log_view = LogView(self)
+        Git.log_view = self._log_view
+        return self._create_dock(self._log_view, "LogView", "Log")
 
-        self._remove_remote_action = QtGui.QAction(self)
-        self._remove_remote_action.setText("Remove remote")
-        self._remove_remote_action.triggered.connect(self.remove_remote)
+    def create_branches_widget_dock(self):
+        self._branches_widget = BranchesWidget(self)
+        return self._create_dock(self._branches_widget,
+                                 "BranchesWidget",
+                                 "Branches")
 
+    def create_stashes_widget_dock(self):
+        self._stashes_widget = StashesWidget(self)
+
+        stashes_dock = self._create_dock(self._stashes_widget, "StashesWidget")
+        self._stashes_widget.state_changed.connect(
+            lambda: stashes_dock.setWindowTitle(
+                "Stashes ({0})".format(self._stashes_widget.count())
+            )
+        )
+        self._stashes_widget.update_stashes_list()
+
+        return stashes_dock
+
+    def create_main_menu(self):
         self._menu_bar = QtGui.QMenuBar(self)
-        super(MainWindow, self).setMenuBar(self._menu_bar)
+        self.setMenuBar(self._menu_bar)
+        self._menu_bar.addMenu(self._stashes_widget.menu())
+        self._menu_bar.addMenu(self.make_states_menu())
+        self._menu_bar.addMenu(self.make_actions_menu())
+        self._menu_bar.addMenu(self.make_remote_menu())
 
-        self._menu_bar.addMenu(stashes.menu())
-
-        self._states_menu = QtGui.QMenu(self)
-        self._states_menu.setTitle("States")
-        self._menu_bar.addMenu(self._states_menu)
-        self.update_states_menu()
-
-        self._actions_menu = QtGui.QMenu(self)
-        self._actions_menu.setTitle("Actions")
-        self._actions_menu.addAction(self._merge_action)
-        self._actions_menu.addAction(self._abort_merge_action)
-        self._menu_bar.addMenu(self._actions_menu)
-
-        self._remote_menu = QtGui.QMenu(self)
-        self._remote_menu.setTitle("Remote")
-        self._remote_menu.addAction(self._add_remote_action)
-        self._remote_menu.addAction(self._pull_remote_action)
-        self._remote_menu.addAction(self._push_remote_action)
-        self._remote_menu.addAction(self._remove_remote_action)
-        self._menu_bar.addMenu(self._remote_menu)
-
+    def create_exit_action(self):
         exit_action = QtGui.QAction(self)
         exit_action.setShortcut(QtCore.Qt.CTRL | QtCore.Qt.Key_Q)
         exit_action.triggered.connect(self.close)
-        super(MainWindow, self).addAction(exit_action)
-
-        self.update_title()
+        self.addAction(exit_action)
 
     def update_title(self):
-        super(MainWindow, self).setWindowTitle(
-            "Branch: " + git.Git().current_branch()
-        )
+        self.setWindowTitle("Branch: " + Git().current_branch())
 
     def save_state(self):
         state_name = QtGui.QInputDialog.getText(self,
@@ -259,7 +215,7 @@ class MainWindow(QtGui.QMainWindow):
         if state_name:
             self._current_state = self._states.append_state(
                 state_name,
-                super(MainWindow, self).saveState()
+                self.saveState()
             )
             self.update_states_menu()
 
@@ -299,12 +255,8 @@ class MainWindow(QtGui.QMainWindow):
         state = self.select_state()
 
         if state.name():
-            self._states.update_state(
-                state.name(),
-                super(MainWindow, self).saveState()
-            )
+            self._states.update_state(state.name(), self.saveState())
             self.update_states_menu()
-
 
     def update_states_menu(self):
         self._states_menu.clear()
@@ -320,10 +272,8 @@ class MainWindow(QtGui.QMainWindow):
         self._remove_state_action.setEnabled(enabled)
 
         for i in range(self._states.states_count()):
-            action = QtGui.QAction(self)
             state = self._states.state(i)
-            action.setText(state.name())
-            action.triggered.connect(self.restore_state)
+            action = self._make_action(state.name(), self.restore_state)
             action.setCheckable(True)
             self._states_menu.addAction(action)
             if state.name() == self._current_state.name():
@@ -333,9 +283,7 @@ class MainWindow(QtGui.QMainWindow):
         state_name = self.sender().text()
         print(state_name)
         self._current_state = self._states.state_for_name(state_name)
-        super(MainWindow, self).restoreState(
-            self._current_state.data()
-        )
+        self.restoreState(self._current_state.data())
         self.update_states_menu()
 
     def closeEvent(self, event):
@@ -348,23 +296,19 @@ class MainWindow(QtGui.QMainWindow):
         settings.beginGroup("GUI")
         settings.beginGroup("MainWindow")
 
-        super(MainWindow, self).restoreState(
-            settings.value("State",
-                           QtCore.QByteArray()))
+        self.restoreState(settings.value("State", QtCore.QByteArray()))
 
         if settings.contains("pos"):
-            super(MainWindow, self).move(settings.value("pos"))
+            self.move(settings.value("pos"))
 
         size = settings.value("size", QtCore.QSize(1024, 768))
 
-        super(MainWindow, self).resize(size)
+        self.resize(size)
 
         isMaximized = settings.value("IsMaximized", False) == "true"
 
         if isMaximized:
-            super(MainWindow, self).setWindowState(
-                QtCore.Qt.WindowMaximized
-            )
+            self.setWindowState(QtCore.Qt.WindowMaximized)
 
         settings.endGroup()
 
@@ -379,9 +323,7 @@ class MainWindow(QtGui.QMainWindow):
         state_name = settings.value("CurrentState", str())
         if state_name:
             self._current_state = self._states.state_for_name(state_name)
-            super(MainWindow, self).restoreState(
-                self._current_state.data()
-            )
+            self.restoreState(self._current_state.data())
 
         settings.endGroup()
 
@@ -391,9 +333,9 @@ class MainWindow(QtGui.QMainWindow):
         settings.beginGroup("GUI")
         settings.beginGroup("MainWindow")
 
-        if super(MainWindow, self).windowState() != QtCore.Qt.WindowMaximized:
-            settings.setValue("pos", super(MainWindow, self).pos())
-            settings.setValue("size", super(MainWindow, self).size())
+        if self.windowState() != QtCore.Qt.WindowMaximized:
+            settings.setValue("pos", self.pos())
+            settings.setValue("size", self.size())
             settings.setValue("IsMaximized", False)
         else:
             settings.setValue("IsMaximized", True)
@@ -417,7 +359,7 @@ class MainWindow(QtGui.QMainWindow):
         settings.endGroup()
 
     def merge(self):
-        d = merge_dialog.MergeDialog(self)
+        d = MergeDialog(self)
         d.exec_()
 
     def abort_merge(self):
@@ -431,17 +373,71 @@ class MainWindow(QtGui.QMainWindow):
             self._git.abort_merge()
 
     def add_remote(self):
-        d = add_remote_dialog.AddRemoteDialog(self)
+        d = AddRemoteDialog(self)
         d.exec_()
 
     def remove_remote(self):
-        d = remove_remote_dialog.RemoveRemoteDialog(self)
+        d = RemoveRemoteDialog(self)
         d.exec_()
 
     def pull_remote(self):
-        d = pull_dialog.PullDialog(self)
+        d = PullDialog(self)
         d.exec_()
 
     def push_remote(self):
-        d = push_dialog.PushDialog(self)
+        d = PushDialog(self)
         d.exec_()
+
+    def _make_action(self, caption, slot):
+        action = QtGui.QAction(self)
+        action.setText(caption)
+        action.triggered.connect(slot)
+        return action
+
+    def _make_menu(self, title, actions):
+        menu = QtGui.QMenu(self)
+        menu.setTitle(title)
+
+        for action in actions:
+            menu.addAction(self._make_action(action[0], action[1]))
+
+        return menu
+
+    def make_remote_menu(self):
+        return self._make_menu(
+            "Remote",
+            [
+                ("Add remote", self.add_remote),
+                ("Pull remote", self.pull_remote),
+                ("Push to remote", self.push_remote),
+                ("Remove remote", self.remove_remote)
+            ]
+        )
+
+    def make_states_menu(self):
+        self._save_state_action = self._make_action("Save state",
+                                                    self.save_state)
+
+        self._update_state_action = self._make_action("Update state",
+                                                      self.update_state)
+
+        self._rename_state_action = self._make_action("Rename state",
+                                                      self.rename_state)
+
+        self._remove_state_action = self._make_action("Remove state",
+                                                      self.remove_state)
+
+        self._states_menu = QtGui.QMenu(self)
+        self._states_menu.setTitle("States")
+        self.update_states_menu()
+
+        return self._states_menu
+
+    def make_actions_menu(self):
+        return self._make_menu(
+            "Actions",
+            [
+                ("Merge...", self.merge),
+                ("Abort merge", self.abort_merge)
+            ]
+        )
