@@ -2,7 +2,6 @@
 __author__ = 'panter.dsd@gmail.com'
 
 from PyQt4 import QtCore
-from git import Git
 
 
 def commit_date(commit):
@@ -13,9 +12,6 @@ def commit_date(commit):
 
 
 class CommitesModel(QtCore.QAbstractItemModel):
-    """CommitesModel"""
-
-    _commits_list = []
     _headers = ["Abbreviated id",
                 "Comment",
                 "Author",
@@ -24,6 +20,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
     def __init__(self, git, parent=None):
         super().__init__(parent)
         self._git = git
+        self._commits_list = []
         self.update_commits_list()
 
     def update_commits_list(self):
@@ -58,12 +55,11 @@ class CommitesModel(QtCore.QAbstractItemModel):
                 self.dataChanged.emit(self.index(i, 0),
                                       self.index(i, self.columnCount()))
 
-
     def index(self, row, column, parent=QtCore.QModelIndex()):
         if parent.isValid():
             return QtCore.QModelIndex()
 
-        return super(CommitesModel, self).createIndex(row, column)
+        return self.createIndex(row, column)
 
     def rowCount(self, parent=QtCore.QModelIndex()):
         if parent.isValid():
@@ -73,10 +69,10 @@ class CommitesModel(QtCore.QAbstractItemModel):
     def columnCount(self, parent=QtCore.QModelIndex()):
         if parent.isValid():
             return 0
-        return 4
+        return len(self._headers)
 
     def _is_index_correct(self, index):
-        return index.row() > 0 and index.row() < len(self._commits_list)
+        return index.row() in range(0, len(self._commits_list))
 
     def data(self, index, role=QtCore.Qt.DisplayRole):
         if not self._is_index_correct(index):
@@ -104,7 +100,6 @@ class CommitesModel(QtCore.QAbstractItemModel):
                 return self._commits_list[index.row()].id()
             elif index.column() == 1:
                 tags = str()
-                _git = git.Git()
                 ref_names = self._commits_list[index.row()].ref_names()
                 for tag in ref_names.tags():
                     tag_info = _git.tag_info(tag)
