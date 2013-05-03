@@ -4,6 +4,7 @@ __author__ = 'panter.dsd@gmail.com'
 import tempfile
 import os
 import unittest
+from PyQt4 import QtCore
 
 from git import Git
 from commites_model import CommitesModel
@@ -25,6 +26,11 @@ class TestCommitesModel(unittest.TestCase):
 
     def test_empty_repo(self):
         model = CommitesModel(self._git, None)
+        self.assertEqual(model.rowCount(), 0)
+        self.assertEqual(model.columnCount(), 4)
+        for column in range(model.columnCount()):
+            self.assertFalse(model.data(model.index(0, column),
+                                        QtCore.Qt.DisplayRole))
 
 
 def suite():

@@ -75,7 +75,13 @@ class CommitesModel(QtCore.QAbstractItemModel):
             return 0
         return 4
 
+    def _is_index_correct(self, index):
+        return index.row() > 0 and index.row() < len(self._commits_list)
+
     def data(self, index, role=QtCore.Qt.DisplayRole):
+        if not self._is_index_correct(index):
+            return None
+
         if role == QtCore.Qt.DisplayRole:
             if index.column() == 0:
                 return self._commits_list[index.row()].abbreviated_id()
