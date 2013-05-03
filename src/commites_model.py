@@ -2,7 +2,7 @@
 __author__ = 'panter.dsd@gmail.com'
 
 from PyQt4 import QtCore
-import git
+from git import Git
 
 
 def commit_date(commit):
@@ -21,14 +21,14 @@ class CommitesModel(QtCore.QAbstractItemModel):
                 "Author",
                 "Timestamp"]
 
-    def __init__(self, parent=None):
-        """__init__"""
-        super(CommitesModel, self).__init__(parent)
+    def __init__(self, git, parent=None):
+        super().__init__(parent)
+        self._git = git
         self.update_commits_list()
 
     def update_commits_list(self):
         old_commits_list = self._commits_list
-        new_commits_list = git.Git().commites()
+        new_commits_list = self._git.commites()
         if old_commits_list == new_commits_list:
             return
 
