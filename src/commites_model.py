@@ -102,10 +102,19 @@ class CommitesModel(QtCore.QAbstractItemModel):
                 tags = str()
                 ref_names = self._commits_list[index.row()].ref_names()
                 for tag in ref_names.tags():
-                    tag_info = _git.tag_info(tag)
+                    tag_info = self._git.tag_info(tag)
                     if tag_info:
                         tags += "\n".join(tag_info) + "\n\n"
                 return tags + self._commits_list[index.row()].full_name()
+            elif index.column() == 2:
+                return self._commits_list[index.row()].author()
+            elif index.column() == 3:
+                return commit_date(self._commits_list[index.row()])
+        elif role == QtCore.Qt.EditRole:
+            if index.column() == 0:
+                return self._commits_list[index.row()].id()
+            elif index.column() == 1:
+                return self._commits_list[index.row()].full_name()
             elif index.column() == 2:
                 return self._commits_list[index.row()].author()
             elif index.column() == 3:
