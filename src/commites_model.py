@@ -74,6 +74,15 @@ class AuthorField(AbstractField):
     def data(self, role=QtCore.Qt.DisplayRole):
         return self.commit().author()
 
+
+class TimestampField(AbstractField):
+    def title(self):
+        return "Timestamp"
+
+    def data(self, role=QtCore.Qt.DisplayRole):
+        return commit_date(self.commit())
+
+
 class CommitesModel(QtCore.QAbstractItemModel):
     _headers = ["Abbreviated id",
                 "Comment",
@@ -150,7 +159,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
             elif index.column() == 2:
                 return AuthorField(self._commits_list[index.row()]).data(role)
             elif index.column() == 3:
-                return commit_date(self._commits_list[index.row()])
+                return TimestampField(self._commits_list[index.row()]).data(role)
         elif role == QtCore.Qt.ToolTipRole:
             if index.column() == 0:
                 return AbbreviatedIdField(
@@ -160,7 +169,8 @@ class CommitesModel(QtCore.QAbstractItemModel):
             elif index.column() == 2:
                 return AuthorField(self._commits_list[index.row()]).data(role)
             elif index.column() == 3:
-                return commit_date(self._commits_list[index.row()])
+                return TimestampField(self._commits_list[index.row()]).data(
+                    role)
         elif role == QtCore.Qt.EditRole:
             if index.column() == 0:
                 return AbbreviatedIdField(
@@ -170,7 +180,8 @@ class CommitesModel(QtCore.QAbstractItemModel):
             elif index.column() == 2:
                 return AuthorField(self._commits_list[index.row()]).data(role)
             elif index.column() == 3:
-                return commit_date(self._commits_list[index.row()])
+                return TimestampField(self._commits_list[index.row()]).data(
+                    role)
 
         return None
 
