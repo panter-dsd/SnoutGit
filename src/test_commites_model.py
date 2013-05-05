@@ -68,6 +68,15 @@ class TestCommitesModel(unittest.TestCase):
                          commit)
         self.assertEqual(model.data(model.index(0, 1), QtCore.Qt.EditRole),
                          commit)
+        self.assertTrue(
+            model.data(model.index(0, 0), QtCore.Qt.EditRole).startswith(
+                model.data(model.index(0, 0), QtCore.Qt.DisplayRole)
+            )
+        )
+        self.assertNotEqual(
+            model.data(model.index(0, 0), QtCore.Qt.EditRole),
+            model.data(model.index(0, 0), QtCore.Qt.DisplayRole)
+        )
 
     def test_data_with_tag(self):
         commites = self._generate_repo()
