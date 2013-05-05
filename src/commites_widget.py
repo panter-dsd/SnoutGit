@@ -4,6 +4,7 @@ __author__ = 'panter.dsd@gmail.com'
 from PyQt4 import QtCore, QtGui
 import commites_model
 import add_tag_dialog
+from git import Git
 
 DEFAULT_COLUMN_WIDTH = [0, 300, 200, 0]
 
@@ -18,7 +19,7 @@ class CommitesWidget(QtGui.QWidget):
         self._table.setRootIsDecorated(False)
         self._table.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
 
-        self._model = commites_model.CommitesModel(self)
+        self._model = commites_model.CommitesModel(Git(), self)
         self._table.setModel(self._model)
 
         for i in range(len(DEFAULT_COLUMN_WIDTH)):

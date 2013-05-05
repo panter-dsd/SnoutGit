@@ -114,8 +114,7 @@ class DeleteBranchDialog(QtGui.QDialog):
 
         if self._check_merge_group.isChecked():
             check_branch = self._check_merge_view.currentIndex().data(
-                QtCore.Qt.DisplayRole
-            )
+                QtCore.Qt.DisplayRole)
 
             if len(check_branch) == 0:
                 check_branch = self._git.current_branch()

@@ -123,7 +123,6 @@ class TestGit(unittest.TestCase):
         self.assertTrue(self._git.commit("Test commit"))
 
 
-
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestStash))

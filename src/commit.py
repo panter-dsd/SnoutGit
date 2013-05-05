@@ -45,6 +45,9 @@ class Commit(object):
         self._git = git
         self._id = id
 
+    def git(self):
+        return self._git
+
     def _commit_info(self, format_id):
         command = ["show",
                    "-s",

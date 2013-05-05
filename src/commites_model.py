@@ -2,7 +2,6 @@
 __author__ = 'panter.dsd@gmail.com'
 
 from PyQt4 import QtCore
-import git
 
 
 def commit_date(commit):
@@ -12,23 +11,94 @@ def commit_date(commit):
     )
 
 
+class AbstractField(object):
+    def __init__(self):
+        super(AbstractField, self).__init__()
+
+        self._commit = None
+
+    def commit(self):
+        return self._commit
+
+    def set_commit(self, commit):
+        self._commit = commit
+
+    def title(self):
+        return str()
+
+    def data(self, role):
+        return None
+
+
+class AbbreviatedIdField(AbstractField):
+    def title(self):
+        return "Abbreviated id"
+
+    def data(self, role):
+        if role == QtCore.Qt.DisplayRole:
+            return self.commit().abbreviated_id()
+        else:
+            return self.commit().id()
+
+
+class CommentField(AbstractField):
+    def title(self):
+        return "Comment"
+
+    def data(self, role):
+        if role == QtCore.Qt.DisplayRole:
+            text = str()
+            ref_names = self.commit().ref_names()
+            for tag in ref_names.tags():
+                text += "<" + tag + ">"
+            for local in ref_names.locals():
+                text += "[" + local + "]"
+            for remote in ref_names.remotes():
+                text += "[remote/" + remote + "]"
+            return text + self.commit().name()
+        elif role == QtCore.Qt.ToolTipRole:
+            tags = str()
+            ref_names = self.commit().ref_names()
+            for tag in ref_names.tags():
+                tag_info = self.commit().git().tag_info(tag)
+                if tag_info:
+                    tags += "\n".join(tag_info) + "\n\n"
+            return tags + self.commit().full_name()
+
+        return self.commit().full_name()
+
+
+class AuthorField(AbstractField):
+    def title(self):
+        return "Author"
+
+    def data(self, role):
+        return self.commit().author()
+
+
+class TimestampField(AbstractField):
+    def title(self):
+        return "Timestamp"
+
+    def data(self, role):
+        return commit_date(self.commit())
+
+
 class CommitesModel(QtCore.QAbstractItemModel):
-    """CommitesModel"""
+    _fields = [AbbreviatedIdField(),
+               CommentField(),
+               AuthorField(),
+               TimestampField()]
 
-    _commits_list = []
-    _headers = ["Abbreviated id",
-                "Comment",
-                "Author",
-                "Timestamp"]
-
-    def __init__(self, parent=None):
-        """__init__"""
-        super(CommitesModel, self).__init__(parent)
+    def __init__(self, git, parent=None):
+        super().__init__(parent)
+        self._git = git
+        self._commits_list = []
         self.update_commits_list()
 
     def update_commits_list(self):
         old_commits_list = self._commits_list
-        new_commits_list = git.Git().commites()
+        new_commits_list = self._git.commites()
         if old_commits_list == new_commits_list:
             return
 
@@ -58,12 +128,11 @@ class CommitesModel(QtCore.QAbstractItemModel):
                 self.dataChanged.emit(self.index(i, 0),
                                       self.index(i, self.columnCount()))
 
-
     def index(self, row, column, parent=QtCore.QModelIndex()):
         if parent.isValid():
             return QtCore.QModelIndex()
 
-        return super(CommitesModel, self).createIndex(row, column)
+        return self.createIndex(row, column)
 
     def rowCount(self, parent=QtCore.QModelIndex()):
         if parent.isValid():
@@ -73,44 +142,18 @@ class CommitesModel(QtCore.QAbstractItemModel):
     def columnCount(self, parent=QtCore.QModelIndex()):
         if parent.isValid():
             return 0
-        return 4
+        return len(self._fields)
+
+    def _is_index_correct(self, index):
+        return index.row() in range(0, len(self._commits_list))
 
     def data(self, index, role=QtCore.Qt.DisplayRole):
-        if role == QtCore.Qt.DisplayRole:
-            if index.column() == 0:
-                return self._commits_list[index.row()].abbreviated_id()
-            elif index.column() == 1:
-                text = str()
-                ref_names = self._commits_list[index.row()].ref_names()
-                for tag in ref_names.tags():
-                    text += "<" + tag + ">"
-                for local in ref_names.locals():
-                    text += "[" + local + "]"
-                for remote in ref_names.remotes():
-                    text += "[remote/" + remote + "]"
-                return text + self._commits_list[index.row()].name()
-            elif index.column() == 2:
-                return self._commits_list[index.row()].author()
-            elif index.column() == 3:
-                return commit_date(self._commits_list[index.row()])
-        elif role == QtCore.Qt.ToolTipRole:
-            if index.column() == 0:
-                return self._commits_list[index.row()].id()
-            elif index.column() == 1:
-                tags = str()
-                _git = git.Git()
-                ref_names = self._commits_list[index.row()].ref_names()
-                for tag in ref_names.tags():
-                    tag_info = _git.tag_info(tag)
-                    if tag_info:
-                        tags += "\n".join(tag_info) + "\n\n"
-                return tags + self._commits_list[index.row()].full_name()
-            elif index.column() == 2:
-                return self._commits_list[index.row()].author()
-            elif index.column() == 3:
-                return commit_date(self._commits_list[index.row()])
+        if not self._is_index_correct(index):
+            return None
 
-        return None
+        field = self._fields[index.column()]
+        field.set_commit(self._commits_list[index.row()])
+        return field.data(role)
 
     def parent(self, index):
         return QtCore.QModelIndex()
@@ -121,7 +164,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
                    role=QtCore.Qt.DisplayRole):
         if orientation == QtCore.Qt.Horizontal:
             if role == QtCore.Qt.DisplayRole:
-                return self._headers[section]
+                return self._fields[section].title()
 
         return super(CommitesModel, self).headerData(section,
                                                      orientation,
