@@ -26,7 +26,7 @@ class AbstractField(object):
     def title(self):
         return str()
 
-    def data(self, role=QtCore.Qt.DisplayRole):
+    def data(self, role):
         return None
 
 
@@ -34,7 +34,7 @@ class AbbreviatedIdField(AbstractField):
     def title(self):
         return "Abbreviated id"
 
-    def data(self, role=QtCore.Qt.DisplayRole):
+    def data(self, role):
         if role == QtCore.Qt.DisplayRole:
             return self.commit().abbreviated_id()
         else:
@@ -45,7 +45,7 @@ class CommentField(AbstractField):
     def title(self):
         return "Comment"
 
-    def data(self, role=QtCore.Qt.DisplayRole):
+    def data(self, role):
         if role == QtCore.Qt.DisplayRole:
             text = str()
             ref_names = self.commit().ref_names()
@@ -74,7 +74,7 @@ class AuthorField(AbstractField):
     def title(self):
         return "Author"
 
-    def data(self, role=QtCore.Qt.DisplayRole):
+    def data(self, role):
         return self.commit().author()
 
 
@@ -82,15 +82,15 @@ class TimestampField(AbstractField):
     def title(self):
         return "Timestamp"
 
-    def data(self, role=QtCore.Qt.DisplayRole):
+    def data(self, role):
         return commit_date(self.commit())
 
 
 class CommitesModel(QtCore.QAbstractItemModel):
     _fields = [AbbreviatedIdField(),
-                CommentField(),
-                AuthorField(),
-                TimestampField()]
+               CommentField(),
+               AuthorField(),
+               TimestampField()]
 
     def __init__(self, git, parent=None):
         super().__init__(parent)
