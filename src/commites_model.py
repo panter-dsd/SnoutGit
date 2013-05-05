@@ -64,10 +64,8 @@ class CommentField(AbstractField):
                 if tag_info:
                     tags += "\n".join(tag_info) + "\n\n"
             return tags + self.commit().full_name()
-        elif role == QtCore.Qt.EditRole:
-            return self.commit().full_name()
 
-        return None
+        return self.commit().full_name()
 
 
 class AuthorField(AbstractField):
