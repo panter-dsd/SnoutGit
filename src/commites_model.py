@@ -11,6 +11,33 @@ def commit_date(commit):
     )
 
 
+class AbstractField(object):
+    def __init__(self, commit):
+        super(AbstractField, self).__init__()
+
+        self._commit = commit
+
+    def commit(self):
+        return self._commit
+
+    def title(self):
+        return str()
+
+    def data(self, role=QtCore.Qt.DisplayRole):
+        return None
+
+
+class AbbreviatedIdField(AbstractField):
+    def title(self):
+        return "Abbreviated id"
+
+    def data(self, role=QtCore.Qt.DisplayRole):
+        if role == QtCore.Qt.DisplayRole:
+            return self.commit().abbreviated_id()
+        else:
+            return self.commit().id()
+
+
 class CommitesModel(QtCore.QAbstractItemModel):
     _headers = ["Abbreviated id",
                 "Comment",
@@ -80,7 +107,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
 
         if role == QtCore.Qt.DisplayRole:
             if index.column() == 0:
-                return self._commits_list[index.row()].abbreviated_id()
+                return AbbreviatedIdField(self._commits_list[index.row()]).data(role)
             elif index.column() == 1:
                 text = str()
                 ref_names = self._commits_list[index.row()].ref_names()
@@ -97,7 +124,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
                 return commit_date(self._commits_list[index.row()])
         elif role == QtCore.Qt.ToolTipRole:
             if index.column() == 0:
-                return self._commits_list[index.row()].id()
+                return AbbreviatedIdField(self._commits_list[index.row()]).data(role)
             elif index.column() == 1:
                 tags = str()
                 ref_names = self._commits_list[index.row()].ref_names()
@@ -112,7 +139,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
                 return commit_date(self._commits_list[index.row()])
         elif role == QtCore.Qt.EditRole:
             if index.column() == 0:
-                return self._commits_list[index.row()].id()
+                return AbbreviatedIdField(self._commits_list[index.row()]).data(role)
             elif index.column() == 1:
                 return self._commits_list[index.row()].full_name()
             elif index.column() == 2:
