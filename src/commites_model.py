@@ -38,6 +38,35 @@ class AbbreviatedIdField(AbstractField):
             return self.commit().id()
 
 
+class CommentField(AbstractField):
+    def title(self):
+        return "Comment"
+
+    def data(self, role=QtCore.Qt.DisplayRole):
+        if role == QtCore.Qt.DisplayRole:
+            text = str()
+            ref_names = self.commit().ref_names()
+            for tag in ref_names.tags():
+                text += "<" + tag + ">"
+            for local in ref_names.locals():
+                text += "[" + local + "]"
+            for remote in ref_names.remotes():
+                text += "[remote/" + remote + "]"
+            return text + self.commit().name()
+        elif role == QtCore.Qt.ToolTipRole:
+            tags = str()
+            ref_names = self.commit().ref_names()
+            for tag in ref_names.tags():
+                tag_info = self.commit().git().tag_info(tag)
+                if tag_info:
+                    tags += "\n".join(tag_info) + "\n\n"
+            return tags + self.commit().full_name()
+        elif role == QtCore.Qt.EditRole:
+            return self.commit().full_name()
+
+        return None
+
+
 class CommitesModel(QtCore.QAbstractItemModel):
     _headers = ["Abbreviated id",
                 "Comment",
@@ -107,41 +136,30 @@ class CommitesModel(QtCore.QAbstractItemModel):
 
         if role == QtCore.Qt.DisplayRole:
             if index.column() == 0:
-                return AbbreviatedIdField(self._commits_list[index.row()]).data(role)
+                return AbbreviatedIdField(
+                    self._commits_list[index.row()]).data(role)
             elif index.column() == 1:
-                text = str()
-                ref_names = self._commits_list[index.row()].ref_names()
-                for tag in ref_names.tags():
-                    text += "<" + tag + ">"
-                for local in ref_names.locals():
-                    text += "[" + local + "]"
-                for remote in ref_names.remotes():
-                    text += "[remote/" + remote + "]"
-                return text + self._commits_list[index.row()].name()
+                return CommentField(self._commits_list[index.row()]).data(role)
             elif index.column() == 2:
                 return self._commits_list[index.row()].author()
             elif index.column() == 3:
                 return commit_date(self._commits_list[index.row()])
         elif role == QtCore.Qt.ToolTipRole:
             if index.column() == 0:
-                return AbbreviatedIdField(self._commits_list[index.row()]).data(role)
+                return AbbreviatedIdField(
+                    self._commits_list[index.row()]).data(role)
             elif index.column() == 1:
-                tags = str()
-                ref_names = self._commits_list[index.row()].ref_names()
-                for tag in ref_names.tags():
-                    tag_info = self._git.tag_info(tag)
-                    if tag_info:
-                        tags += "\n".join(tag_info) + "\n\n"
-                return tags + self._commits_list[index.row()].full_name()
+                return CommentField(self._commits_list[index.row()]).data(role)
             elif index.column() == 2:
                 return self._commits_list[index.row()].author()
             elif index.column() == 3:
                 return commit_date(self._commits_list[index.row()])
         elif role == QtCore.Qt.EditRole:
             if index.column() == 0:
-                return AbbreviatedIdField(self._commits_list[index.row()]).data(role)
+                return AbbreviatedIdField(
+                    self._commits_list[index.row()]).data(role)
             elif index.column() == 1:
-                return self._commits_list[index.row()].full_name()
+                return CommentField(self._commits_list[index.row()]).data(role)
             elif index.column() == 2:
                 return self._commits_list[index.row()].author()
             elif index.column() == 3:
