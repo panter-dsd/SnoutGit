@@ -16,6 +16,7 @@ class TestCommitesModel(unittest.TestCase):
         self.init_empty_git_repo()
 
     def tearDown(self):
+        self.temp_dir.cleanup()
         del self.temp_dir
 
     def init_empty_git_repo(self):

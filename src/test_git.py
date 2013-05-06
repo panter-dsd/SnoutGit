@@ -65,6 +65,7 @@ class TestRemote(unittest.TestCase):
         self._git.repo_path = self.temp_dir.name + "/.git"
 
     def tearDown(self):
+        self.temp_dir.cleanup()
         del self.temp_dir
 
     def test_remotes_list(self):
@@ -99,6 +100,7 @@ class TestGit(unittest.TestCase):
         self._git.repo_path = self.temp_dir.name + "/.git"
 
     def tearDown(self):
+        self.temp_dir.cleanup()
         del self.temp_dir
 
     def test_commites(self):
