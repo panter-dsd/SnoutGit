@@ -24,9 +24,19 @@ def get_git_root_path(path):
     return is_git_root(result) and result or path
 
 
-def main():
-    """main"""
+def load_current_state():
+    result = str()
+    try:
+        state_name_index = sys.argv.index("--state") + 1
+        if state_name_index < len(sys.argv):
+            result = sys.argv[state_name_index]
+    except ValueError:
+        pass
 
+    return result
+
+
+def main():
     if len(sys.argv) < 2:
         path = os.path.abspath(os.curdir)
     else:
@@ -49,6 +59,11 @@ def main():
     app.setOrganizationName("PanteR")
 
     window = main_window.MainWindow()
+
+    state = load_current_state()
+    if state:
+        window.set_current_state(state)
+
     window.show()
 
     sys.exit(app.exec_())

@@ -56,7 +56,7 @@ class States(object):
         for state in self._states:
             if state.name() == name:
                 return state
-        return None
+        return State()
 
     def append_state(self, name, data):
         self._states.append(State(name, data))
@@ -113,9 +113,15 @@ class MainWindow(QtGui.QMainWindow):
         )
 
         self._load_settings()
+        if self._states.states_count() == 0:
+            self._init_default_state()
         self.create_main_menu()
         self.create_exit_action()
         self.update_title()
+
+    def _init_default_state(self):
+        self._states.append_state("Default", bytes())
+        self._current_state = self._states.state(0)
 
     def create_docks(self):
         top_area = QtCore.Qt.TopDockWidgetArea
@@ -138,7 +144,7 @@ class MainWindow(QtGui.QMainWindow):
         return dock
 
     def create_commites_dock(self):
-        self._commites_widget = CommitesWidget(self)
+        self._commites_widget = CommitesWidget(self._git, self)
         return self._create_dock(self._commites_widget,
                                  "CommitesDock",
                                  "Commites tree")
@@ -441,3 +447,9 @@ class MainWindow(QtGui.QMainWindow):
                 ("Abort merge", self.abort_merge)
             ]
         )
+
+    def set_current_state(self, state_name):
+        self._current_state = self._states.state_for_name(state_name)
+        if not self._current_state.empty():
+            self.restoreState(self._current_state.data())
+        self.update_states_menu()
