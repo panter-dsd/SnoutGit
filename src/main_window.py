@@ -168,7 +168,7 @@ class MainWindow(QtGui.QMainWindow):
                                  "Diff")
 
     def create_commit_widget_dock(self):
-        self._commit_widget = CommitWidget(self)
+        self._commit_widget = CommitWidget(self._commites_model, parent=self)
         return self._create_dock(self._commit_widget, "CommitDock", "Commit")
 
     def create_actions_widget_dock(self):

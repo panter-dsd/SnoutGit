@@ -11,7 +11,7 @@ class CommitWidget(QtGui.QWidget):
     _git = git.Git()
     commited = QtCore.pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, commites_model, parent=None):
         super(CommitWidget, self).__init__(parent)
 
         self._menu_button = QtGui.QToolButton(self)
@@ -21,7 +21,7 @@ class CommitWidget(QtGui.QWidget):
         )
 
         self._commit_name_edit = QtGui.QLineEdit(self)
-        self._set_completer()
+        self._set_completer(commites_model)
 
         self._save_button = QtGui.QToolButton(self)
         self._save_button.setAutoRaise(True)
@@ -75,10 +75,9 @@ class CommitWidget(QtGui.QWidget):
                                        "Error",
                                        "Commit name is empty.")
 
-    def _set_completer(self):
-        self._commites_model = CommitesModel(self._git, self)
+    def _set_completer(self, commites_model):
         completer = QtGui.QCompleter(self._commit_name_edit)
-        completer.setModel(self._commites_model)
+        completer.setModel(commites_model)
         completer.setCompletionColumn(1)
         completer.setCompletionRole(QtCore.Qt.EditRole)
         self._commit_name_edit.setCompleter(completer)
@@ -106,7 +105,6 @@ class CommitWidget(QtGui.QWidget):
 
         self._menu_button.setMenu(menu)
         self.load_commit_message()
-        self._commites_model.update_commits_list()
 
     def set_old_message(self):
         id = self.sender().objectName()
