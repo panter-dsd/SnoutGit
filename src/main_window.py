@@ -93,6 +93,8 @@ class MainWindow(QtGui.QMainWindow):
         self._git = Git()
         self._commites_model = CommitesModel(self._git, self)
 
+        self._load_commites_list()
+
         self.create_docks()
 
         self._commites_widget.current_commit_changed.connect(
@@ -457,3 +459,16 @@ class MainWindow(QtGui.QMainWindow):
         if not self._current_state.empty():
             self.restoreState(self._current_state.data())
         self.update_states_menu()
+
+    def _load_commites_list(self):
+        progress = QtGui.QProgressDialog(self)
+        progress.setRange(0, self._commites_model.rowCount())
+
+        for row in range(self._commites_model.rowCount()):
+            for column in range(self._commites_model.columnCount()):
+                self._commites_model.data(
+                    self._commites_model.index(row, column)
+                )
+            progress.setValue(row)
+        progress.setValue(progress.maximum())
+        del progress
