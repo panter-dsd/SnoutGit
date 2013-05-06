@@ -144,7 +144,7 @@ class MainWindow(QtGui.QMainWindow):
         return dock
 
     def create_commites_dock(self):
-        self._commites_widget = CommitesWidget(self)
+        self._commites_widget = CommitesWidget(self._git, self)
         return self._create_dock(self._commites_widget,
                                  "CommitesDock",
                                  "Commites tree")
