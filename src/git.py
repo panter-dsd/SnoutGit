@@ -128,6 +128,9 @@ class Git(object):
 
         self._last_result = process.returncode
 
+        process.stdout.close()
+        process.stderr.close()
+
         del process
         return self._last_output
 
