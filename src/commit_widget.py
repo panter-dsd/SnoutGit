@@ -4,6 +4,7 @@ __author__ = 'panter.dsd@gmail.com'
 from PyQt4 import QtCore, QtGui
 import git
 import commit
+from commites_model import CommitesModel
 
 
 class CommitWidget(QtGui.QWidget):
@@ -20,6 +21,7 @@ class CommitWidget(QtGui.QWidget):
         )
 
         self._commit_name_edit = QtGui.QLineEdit(self)
+        self._set_completer()
 
         self._save_button = QtGui.QToolButton(self)
         self._save_button.setAutoRaise(True)
@@ -73,6 +75,14 @@ class CommitWidget(QtGui.QWidget):
                                        "Error",
                                        "Commit name is empty.")
 
+    def _set_completer(self):
+        self._commites_model = CommitesModel(self._git, self)
+        completer = QtGui.QCompleter(self._commit_name_edit)
+        completer.setModel(self._commites_model)
+        completer.setCompletionColumn(1)
+        completer.setCompletionRole(QtCore.Qt.EditRole)
+        self._commit_name_edit.setCompleter(completer)
+
     @QtCore.pyqtSlot()
     def refresh(self):
         menu = QtGui.QMenu(self._menu_button)
@@ -96,6 +106,7 @@ class CommitWidget(QtGui.QWidget):
 
         self._menu_button.setMenu(menu)
         self.load_commit_message()
+        self._commites_model.update_commits_list()
 
     def set_old_message(self):
         id = self.sender().objectName()
