@@ -18,6 +18,7 @@ from add_remote_dialog import AddRemoteDialog
 from remove_remote_dialog import RemoveRemoteDialog
 from pull_dialog import PullDialog
 from push_dialog import PushDialog
+from commites_model import CommitesModel
 
 
 class State(object):
@@ -84,12 +85,13 @@ class States(object):
 
 
 class MainWindow(QtGui.QMainWindow):
-    _states = States()
-    _current_state = State()
-    _git = Git()
-
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        self._states = States()
+        self._current_state = State()
+        self._git = Git()
+        self._commites_model = CommitesModel(self._git, self)
 
         self.create_docks()
 
@@ -105,11 +107,11 @@ class MainWindow(QtGui.QMainWindow):
         )
 
         self._commit_widget.commited.connect(
-            self._commites_widget.update_commites_list
+            self._commites_model.update_commits_list
         )
 
         self._actions_widget.state_changed.connect(
-            self._commites_widget.update_commites_list
+            self._commites_model.update_commits_list
         )
 
         self._load_settings()
@@ -144,7 +146,9 @@ class MainWindow(QtGui.QMainWindow):
         return dock
 
     def create_commites_dock(self):
-        self._commites_widget = CommitesWidget(self._git, self)
+        self._commites_widget = CommitesWidget(self._git,
+                                               self._commites_model,
+                                               self)
         return self._create_dock(self._commites_widget,
                                  "CommitesDock",
                                  "Commites tree")
