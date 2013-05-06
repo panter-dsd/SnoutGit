@@ -27,6 +27,22 @@ class AbstractField(object):
         return str()
 
     def data(self, role):
+        if role == QtCore.Qt.DisplayRole:
+            return self._display_role_data()
+        elif role == QtCore.Qt.ToolTipRole:
+            return self._tool_tip_role_data()
+        elif role == QtCore.Qt.EditRole:
+            return self._edit_role_data()
+        else:
+            return None
+
+    def _display_role_data(self):
+        return None
+
+    def _tool_tip_role_data(self):
+        return None
+
+    def _edit_role_data(self):
         return None
 
 
@@ -34,37 +50,41 @@ class AbbreviatedIdField(AbstractField):
     def title(self):
         return "Abbreviated id"
 
-    def data(self, role):
-        if role == QtCore.Qt.DisplayRole:
-            return self.commit().abbreviated_id()
-        else:
-            return self.commit().id()
+    def _display_role_data(self):
+        return self.commit().abbreviated_id()
+
+    def _edit_role_data(self):
+        return self.commit().id()
+
+    def _tool_tip_role_data(self):
+        return self._edit_role_data()
 
 
 class CommentField(AbstractField):
     def title(self):
         return "Comment"
 
-    def data(self, role):
-        if role == QtCore.Qt.DisplayRole:
-            text = str()
-            ref_names = self.commit().ref_names()
-            for tag in ref_names.tags():
-                text += "<" + tag + ">"
-            for local in ref_names.locals():
-                text += "[" + local + "]"
-            for remote in ref_names.remotes():
-                text += "[remote/" + remote + "]"
-            return text + self.commit().name()
-        elif role == QtCore.Qt.ToolTipRole:
-            tags = str()
-            ref_names = self.commit().ref_names()
-            for tag in ref_names.tags():
-                tag_info = self.commit().git().tag_info(tag)
-                if tag_info:
-                    tags += "\n".join(tag_info) + "\n\n"
-            return tags + self.commit().full_name()
+    def _display_role_data(self):
+        text = str()
+        ref_names = self.commit().ref_names()
+        for tag in ref_names.tags():
+            text += "<" + tag + ">"
+        for local in ref_names.locals():
+            text += "[" + local + "]"
+        for remote in ref_names.remotes():
+            text += "[remote/" + remote + "]"
+        return text + self.commit().name()
 
+    def _tool_tip_role_data(self):
+        tags = str()
+        ref_names = self.commit().ref_names()
+        for tag in ref_names.tags():
+            tag_info = self.commit().git().tag_info(tag)
+            if tag_info:
+                tags += "\n".join(tag_info) + "\n\n"
+        return tags + self.commit().full_name()
+
+    def _edit_role_data(self):
         return self.commit().full_name()
 
 
@@ -72,16 +92,28 @@ class AuthorField(AbstractField):
     def title(self):
         return "Author"
 
-    def data(self, role):
+    def _display_role_data(self):
         return self.commit().author()
+
+    def _tool_tip_role_data(self):
+        return self._display_role_data()
+
+    def _edit_role_data(self):
+        return self._display_role_data()
 
 
 class TimestampField(AbstractField):
     def title(self):
         return "Timestamp"
 
-    def data(self, role):
+    def _display_role_data(self):
         return commit_date(self.commit())
+
+    def _tool_tip_role_data(self):
+        return self._display_role_data()
+
+    def _edit_role_data(self):
+        return self._display_role_data()
 
 
 class CommitesModel(QtCore.QAbstractItemModel):
