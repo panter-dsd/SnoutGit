@@ -82,6 +82,21 @@ class Git(object):
     def __init__(self):
         pass
 
+    def _decode_text(self, text):
+        result = str()
+        try:
+            result = text.decode()
+        except UnicodeDecodeError:
+            result = text.decode("CP1251")
+        return result
+
+    def _convert_output(self, text):
+        lines = [
+            self._decode_text(x.rstrip()) for x in text.split(b'\n')
+        ]
+
+        return [line for line in filter(bool, lines)]
+
     def execute_command(self, command, show_log=True):
         self._last_output = []
         self._last_error = []
@@ -94,23 +109,13 @@ class Git(object):
                                        shell=False,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)
-            process.wait()
         except subprocess.CalledProcessError as error:
             print(self.git_path, command, error)
             return []
 
-        for line in process.stdout:
-            line = line.rstrip()
-            if line:
-                try:
-                    self._last_output.append(line.decode())
-                except UnicodeDecodeError:
-                    self._last_output.append(line.decode("CP1251"))
-
-        for line in process.stderr:
-            line = line.rstrip()
-            if line:
-                self._last_error.append(line.decode())
+        self._last_output, self._last_error = process.communicate()
+        self._last_output = self._convert_output(self._last_output)
+        self._last_error = self._convert_output(self._last_error)
 
         if show_log:
             if self.log_view:
