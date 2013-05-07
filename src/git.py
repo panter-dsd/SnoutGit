@@ -6,7 +6,7 @@ import re
 import tempfile
 import fileinput
 
-import commit
+from commit import Commit
 
 
 class Stash():
@@ -236,7 +236,7 @@ class Git(object):
     def commites(self):
         result = []
         for line in self.execute_command(["log", "--pretty=%H"], False):
-            result.append(commit.Commit(self, line))
+            result.append(Commit(self, line))
         return result
 
     def revert_files(self, files):
