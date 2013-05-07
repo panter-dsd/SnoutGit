@@ -5,7 +5,13 @@ from PyQt4 import QtCore
 
 
 def commit_date(commit):
-    timestamp = int(commit.timestamp())
+    try:
+        timestamp = int(commit.timestamp())
+    except ValueError:
+        print("Error extract unix timestamp for commit: " + commit.id(),
+              " timestamp - " + commit.timestamp())
+        timestamp = 0
+
     return QtCore.QDateTime.fromTime_t(timestamp).toString(
         "yyyy-MM-dd hh:mm:ss"
     )
