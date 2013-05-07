@@ -35,15 +35,15 @@ class RefNames():
 class Commit(object):
     _git = None
     _id = None
-    _name = str()
     _author = str()
     _timestamp = str()
 
-    def __init__(self, git, id):
+    def __init__(self, git, id, commit_name=str()):
         super(Commit, self).__init__()
 
         self._git = git
         self._id = id
+        self._name = commit_name
 
     def git(self):
         return self._git

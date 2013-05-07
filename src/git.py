@@ -5,6 +5,7 @@ import subprocess
 import re
 import tempfile
 import fileinput
+from xml.dom.minidom import parseString
 
 from commit import Commit
 
@@ -234,9 +235,24 @@ class Git(object):
         return result
 
     def commites(self):
+        data = self.execute_command(
+            ["log",
+             "--pretty=<commit><id>%H</id><full_name>%B</full_name></commit>"],
+            False
+        )
+
+        data.insert(0, "<commites>")
+        data.append("</commites>")
+
         result = []
-        for line in self.execute_command(["log", "--pretty=%H"], False):
-            result.append(Commit(self, line))
+
+        dom = parseString("".join(data))
+        top_element = dom.childNodes[0]
+        for node in top_element.childNodes:
+            id = node.getElementsByTagName("id")[0].childNodes[0].data
+            full_name = node.getElementsByTagName("full_name")[0].childNodes[0].data
+            result.append(Commit(self, id, full_name))
+
         return result
 
     def revert_files(self, files):
