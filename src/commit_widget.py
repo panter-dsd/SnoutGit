@@ -3,8 +3,7 @@ __author__ = 'panter.dsd@gmail.com'
 
 from PyQt4 import QtCore, QtGui
 import git
-import commit
-from commites_model import CommitesModel
+from commit import Commit
 
 
 class CommitWidget(QtGui.QWidget):
@@ -20,8 +19,10 @@ class CommitWidget(QtGui.QWidget):
             QtGui.QToolButton.MenuButtonPopup
         )
 
+        self._commites_model = commites_model
+
         self._commit_name_edit = QtGui.QLineEdit(self)
-        self._set_completer(commites_model)
+        self._set_completer(self._commites_model)
 
         self._save_button = QtGui.QToolButton(self)
         self._save_button.setAutoRaise(True)
@@ -82,15 +83,30 @@ class CommitWidget(QtGui.QWidget):
         completer.setCompletionRole(QtCore.Qt.EditRole)
         self._commit_name_edit.setCompleter(completer)
 
+    def _commit_model_data(self, row, column, role=QtCore.Qt.EditRole):
+        return self._commites_model.index(row, column).data(role)
+
     @QtCore.pyqtSlot()
     def refresh(self):
         menu = QtGui.QMenu(self._menu_button)
 
-        count = 10
-        for commit in self._git.commites():
+        count = min(10, self._commites_model.rowCount())
+        for i in range(count):
             commit_message_action = QtGui.QAction(self)
-            commit_message_action.setText(commit.name())
+            commit = Commit(self._git,
+                            self._commit_model_data(i, 0),
+                            self._commit_model_data(i, 1)
+            )
+
             commit_message_action.setObjectName(commit.id())
+
+            commit_message_action.setText(
+                self.fontMetrics().elidedText(
+                    commit.name(),
+                    QtCore.Qt.ElideRight,
+                    500
+                )
+            )
             commit_message_action.triggered.connect(
                 self.set_old_message
             )
