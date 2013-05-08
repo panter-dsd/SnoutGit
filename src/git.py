@@ -252,8 +252,13 @@ class Git(object):
 
         commites_data.append("</commites>")
 
-        node_data = lambda node, name: node.getElementsByTagName(
-            name)[0].childNodes[0].wholeText
+        def node_data(node, name):
+            element = node.getElementsByTagName(name)[0]
+            nodes = element.childNodes
+            if nodes:
+                return nodes[0].wholeText
+            else:
+                return str()
 
         dom = parseString("".join(commites_data))
         top_element = dom.childNodes[0]
