@@ -235,23 +235,38 @@ class Git(object):
         return result
 
     def commites(self):
-        data = self.execute_command(
-            ["log",
-             "--pretty=<commit><id>%H</id><full_name>%B</full_name></commit>"],
+        commites_data = ["<commites>"]
+        commites_data += self.execute_command(
+            [
+                "log",
+                "--pretty="
+                "<commit>"
+                " <id>%H</id>"
+                " <full_name>%B</full_name>"
+                " <author>%ae</author>"
+                " <timestamp>%at</timestamp>"
+                "</commit>"
+            ],
             False
         )
 
-        data.insert(0, "<commites>")
-        data.append("</commites>")
+        commites_data.append("</commites>")
+
+        node_data = lambda node, name: node.getElementsByTagName(
+            name)[0].childNodes[0].data
+
+        dom = parseString("".join(commites_data))
+        top_element = dom.childNodes[0]
 
         result = []
-
-        dom = parseString("".join(data))
-        top_element = dom.childNodes[0]
         for node in top_element.childNodes:
-            id = node.getElementsByTagName("id")[0].childNodes[0].data
-            full_name = node.getElementsByTagName("full_name")[0].childNodes[0].data
-            result.append(Commit(self, id, full_name))
+            result.append(
+                Commit(self,
+                       node_data(node, "id"),
+                       node_data(node, "full_name"),
+                       node_data(node, "author"),
+                       node_data(node, "timestamp"))
+            )
 
         return result
 
