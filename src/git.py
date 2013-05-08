@@ -241,10 +241,10 @@ class Git(object):
                 "log",
                 "--pretty="
                 "<commit>"
-                " <id>%H</id>"
-                " <full_name>%B</full_name>"
-                " <author>%ae</author>"
-                " <timestamp>%at</timestamp>"
+                " <id><![CDATA[%H]]></id>"
+                " <full_name><![CDATA[%B]]></full_name>"
+                " <author><![CDATA[%ae]]></author>"
+                " <timestamp><![CDATA[%at]]></timestamp>"
                 "</commit>"
             ],
             False
@@ -253,7 +253,7 @@ class Git(object):
         commites_data.append("</commites>")
 
         node_data = lambda node, name: node.getElementsByTagName(
-            name)[0].childNodes[0].data
+            name)[0].childNodes[0].wholeText
 
         dom = parseString("".join(commites_data))
         top_element = dom.childNodes[0]
