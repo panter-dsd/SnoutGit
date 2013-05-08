@@ -5,8 +5,9 @@ import subprocess
 import re
 import tempfile
 import fileinput
+from xml.dom.minidom import parseString
 
-import commit
+from commit import Commit
 
 
 class Stash():
@@ -234,9 +235,39 @@ class Git(object):
         return result
 
     def commites(self):
+        commites_data = ["<commites>"]
+        commites_data += self.execute_command(
+            [
+                "log",
+                "--pretty="
+                "<commit>"
+                " <id>%H</id>"
+                " <full_name>%B</full_name>"
+                " <author>%ae</author>"
+                " <timestamp>%at</timestamp>"
+                "</commit>"
+            ],
+            False
+        )
+
+        commites_data.append("</commites>")
+
+        node_data = lambda node, name: node.getElementsByTagName(
+            name)[0].childNodes[0].data
+
+        dom = parseString("".join(commites_data))
+        top_element = dom.childNodes[0]
+
         result = []
-        for line in self.execute_command(["log", "--pretty=%H"], False):
-            result.append(commit.Commit(self, line))
+        for node in top_element.childNodes:
+            result.append(
+                Commit(self,
+                       node_data(node, "id"),
+                       node_data(node, "full_name"),
+                       node_data(node, "author"),
+                       node_data(node, "timestamp"))
+            )
+
         return result
 
     def revert_files(self, files):

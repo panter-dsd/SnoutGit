@@ -106,10 +106,13 @@ class TestGit(unittest.TestCase):
     def test_commites(self):
         self.assertFalse(self._git.commites())
 
+        commit_name = "Test commit"
+
         file = tempfile.mkstemp(dir=self.temp_dir.name)
         self._git.stage_files([file[1]])
-        self._git.commit("Test commit")
+        self._git.commit(commit_name)
         self.assertTrue(self._git.commites())
+        self.assertEqual(self._git.commites()[0].full_name(), commit_name)
 
     def test_commit_without_files_added(self):
         self.assertFalse(self._git.commit("some_text"))
