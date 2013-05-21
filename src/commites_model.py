@@ -150,8 +150,8 @@ class CommitesModel(QtCore.QAbstractItemModel):
                 QtCore.QAbstractItemModel.beginInsertRows(
                     self,
                     QtCore.QModelIndex(),
-                    old_size,
-                    new_size - 1)
+                    0,
+                    new_size - old_size - 1)
                 QtCore.QAbstractItemModel.endInsertRows(self)
             else:
                 QtCore.QAbstractItemModel.beginRemoveRows(
@@ -161,10 +161,12 @@ class CommitesModel(QtCore.QAbstractItemModel):
                     old_size - 1)
                 QtCore.QAbstractItemModel.endRemoveRows(self)
 
-        for i in range(min(old_size, new_size)):
-            if old_commits_list[i] != new_commits_list[i]:
-                self.dataChanged.emit(self.index(i, 0),
-                                      self.index(i, self.columnCount()))
+                for i in range(min(old_size, new_size)):
+                    if old_commits_list[i] != new_commits_list[i]:
+                        self.dataChanged.emit(
+                            self.index(i, 0),
+                            self.index(i, self.columnCount())
+                        )
 
     def index(self, row, column, parent=QtCore.QModelIndex()):
         if parent.isValid():
