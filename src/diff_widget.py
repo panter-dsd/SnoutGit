@@ -17,6 +17,7 @@ class DiffWidget(QtGui.QWidget):
         self._path = path
 
         self._diff_veiw = QtGui.QPlainTextEdit(self)
+        self._diff_veiw.setReadOnly(True)
         self._diff_veiw.setWordWrapMode(QtGui.QTextOption.NoWrap)
         self._diff_veiw.setUndoRedoEnabled(False)
         self._highlighter = diff_highlighter.DiffHighlighter(
