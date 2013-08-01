@@ -35,6 +35,16 @@ def load_current_state():
 
     return result
 
+def get_font():
+    result = str()
+    try:
+        font_name_index = sys.argv.index("--font") + 1
+        if font_name_index < len(sys.argv):
+            result = sys.argv[font_name_index]
+    except ValueError:
+        pass
+
+    return result
 
 def main():
     if len(sys.argv) < 2:
@@ -57,6 +67,12 @@ def main():
     app.setApplicationName("SnoutGit")
     app.setApplicationVersion("0.0.0.0")
     app.setOrganizationName("PanteR")
+
+    font_name = get_font()
+    if font_name:
+        font = app.font()
+        font.setFamily(font_name)
+        app.setFont(font)
 
     window = main_window.MainWindow()
 
