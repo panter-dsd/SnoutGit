@@ -53,6 +53,12 @@ class StatusWidget(QtGui.QWidget):
         self.update_timer.timeout.connect(self._update_file_list)
         self.update_timer.start(1000)
 
+    def _save_status_in_item(self, item, status):
+        item.setData(0, QtCore.Qt.UserRole, status)
+
+    def _extract_status_from_item(self, item):
+        return item.data(0, QtCore.Qt.UserRole)
+
     def _update_file_list(self):
         images_path = os.path.dirname(__file__) + "/../share/images/"
 
@@ -87,6 +93,7 @@ class StatusWidget(QtGui.QWidget):
             file_name = status_line[3:]
 
             item = QtGui.QTreeWidgetItem()
+            self._save_status_in_item(item, status)
             item.setText(0, file_name)
 
             if status[0] == '?' or status[1] == '?':
@@ -105,11 +112,13 @@ class StatusWidget(QtGui.QWidget):
             else:
                 if not status[0] in [' ', 'U']:
                     item = QtGui.QTreeWidgetItem(self._staged)
+                    self._save_status_in_item(item, status)
                     item.setText(0, file_name)
                     item.setIcon(0, icons[status[0]])
 
                 if status[1] != ' ':
                     item = QtGui.QTreeWidgetItem(self._unstaged)
+                    self._save_status_in_item(item, status)
                     item.setText(0, file_name)
                     item.setIcon(0, icons[status[1]])
 
@@ -118,6 +127,12 @@ class StatusWidget(QtGui.QWidget):
 
     def _change_item_status(self, item):
         if item.parent() is self._unstaged:
+            status = self._extract_status_from_item(item)
+            if status[1] == "D":
+                git.Git().remove_files([item.text(0)])
+            else:
+                git.Git().stage_files([item.text(0)])
+
             git.Git().stage_files([item.text(0)])
         elif item.parent() is self._staged:
             git.Git().unstage_files([item.text(0)])
@@ -250,12 +265,18 @@ class StatusWidget(QtGui.QWidget):
         self._update_file_list()
 
     def _stage_selected(self):
-        files_list = []
+        files_to_add = []
+        files_to_remove = []
         for item in self._files_view.selectedItems():
             if item.parent() is self._unstaged:
-                files_list.append(item.text(0))
+                status = self._extract_status_from_item(item)
+                if status[1] == "D":
+                    files_to_remove.append(item.text(0))
+                else:
+                    files_to_add.append(item.text(0))
 
-        git.Git().stage_files(files_list)
+        git.Git().stage_files(files_to_add)
+        git.Git().remove_files(files_to_remove)
 
         self._update_file_list()
 
