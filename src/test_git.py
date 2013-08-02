@@ -127,6 +127,13 @@ class TestGit(unittest.TestCase):
         self._git.stage_files([file[1]])
         self.assertTrue(self._git.commit("Test commit"))
 
+    def test_remove_single_commited_file(self):
+        file = tempfile.mkstemp(dir=self.temp_dir.name)
+        self._git.stage_files([file[1]])
+        self._git.commit("Test commit")
+        self._git.remove_files([file[1]])
+        self.assertEqual(os.listdir(self.temp_dir.name), [".git"])
+
 
 def suite():
     suite = unittest.TestSuite()

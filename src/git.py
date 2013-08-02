@@ -189,8 +189,12 @@ class Git(object):
         command = ["add"] + files
         self.execute_command(command)
 
+    def remove_files(self, files):
+        command = ["rm"] + files
+        self.execute_command(command)
+
     def unstage_files(self, files):
-        command = ["reset"] + files
+        command = ["reset", "--"] + files
         self.execute_command(command)
 
     def current_branch(self):
