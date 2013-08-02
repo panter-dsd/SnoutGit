@@ -231,23 +231,20 @@ class StatusWidget(QtGui.QWidget):
         if menu.actions():
             menu.exec_(self.mapToGlobal(point))
 
-    def _stage_all(self):
+    def _child_items(self, parent):
         items = []
-        for i in range(self._unstaged.childCount()):
-            items.append(self._unstaged.child(i))
-        self._stage_items(items)
+        for i in range(parent.childCount()):
+            items.append(parent.child(i))
+        return items
+
+    def _stage_all(self):
+        self._stage_items(self._child_items(self._unstaged))
 
     def _unstage_all(self):
-        items = []
-        for i in range(self._staged.childCount()):
-            items.append(self._staged.child(i))
-        self._unstage_items(items)
+        self._unstage_items(self._child_items(self._staged))
 
     def _add_all(self):
-        items = []
-        for i in range(self._untracked.childCount()):
-            items.append(self._untracked.child(i))
-        self._add_items(items)
+        self._add_items(self._child_items(self._untracked))
 
     def _stage_selected(self):
         self._stage_items(self._files_view.selectedItems())
@@ -259,21 +256,10 @@ class StatusWidget(QtGui.QWidget):
         self._add_items(self._files_view.selectedItems())
 
     def _revert_selected(self):
-        files_list = []
-        for item in self._files_view.selectedItems():
-            if item.parent() is self._unstaged:
-                files_list.append(item.text(0))
-
-        self._git.revert_files(files_list)
-
-        self._update_file_list()
+        self._revert_items(self._files_view.selectedItems())
 
     def _remove_selected(self):
-        for item in self._files_view.selectedItems():
-            if item.parent():
-                QtCore.QFile.remove(item.text(0))
-
-        self._update_file_list()
+        self._remove_items(self._files_view.selectedItems())
 
     def _stage_items(self, items):
         files_to_add = []
@@ -308,5 +294,22 @@ class StatusWidget(QtGui.QWidget):
                 files_list.append(item.text(0))
 
         self._git.stage_files(files_list)
+
+        self._update_file_list()
+
+    def _revert_items(self, items):
+        files_list = []
+        for item in items:
+            if item.parent() is self._unstaged:
+                files_list.append(item.text(0))
+
+        self._git.revert_files(files_list)
+
+        self._update_file_list()
+
+    def _remove_items(self, items):
+        for item in items:
+            if item.parent():
+                QtCore.QFile.remove(item.text(0))
 
         self._update_file_list()
