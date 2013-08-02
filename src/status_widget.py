@@ -128,18 +128,11 @@ class StatusWidget(QtGui.QWidget):
 
     def _change_item_status(self, item):
         if item.parent() is self._unstaged:
-            status = self._extract_status_from_item(item)
-            if status[1] == "D":
-                self._git.remove_files([item.text(0)])
-            else:
-                self._git.stage_files([item.text(0)])
-
-            self._git.stage_files([item.text(0)])
+            self._stage_items([item])
         elif item.parent() is self._staged:
-            self._git.unstage_files([item.text(0)])
+            self._unstage_items([item])
         elif item.parent() is self._untracked:
-            self._git.stage_files([item.text(0)])
-        self._update_file_list()
+            self._add_items([item])
 
     def _current_item_changed(self, current, _prev):
         if current and current.parent():
@@ -239,67 +232,31 @@ class StatusWidget(QtGui.QWidget):
             menu.exec_(self.mapToGlobal(point))
 
     def _stage_all(self):
-        files_list = []
+        items = []
         for i in range(self._unstaged.childCount()):
-            files_list.append(str(self._unstaged.child(i).text(0)))
-
-        self._git.stage_files(files_list)
-
-        self._update_file_list()
+            items.append(self._unstaged.child(i))
+        self._stage_items(items)
 
     def _unstage_all(self):
-        files_list = []
+        items = []
         for i in range(self._staged.childCount()):
-            files_list.append(self._staged.child(i).text(0))
-
-        self._git.unstage_files(files_list)
-
-        self._update_file_list()
+            items.append(self._staged.child(i))
+        self._unstage_items(items)
 
     def _add_all(self):
-        files_list = []
+        items = []
         for i in range(self._untracked.childCount()):
-            files_list.append(self._untracked.child(i).text(0))
-
-        self._git.stage_files(files_list)
-
-        self._update_file_list()
+            items.append(self._untracked.child(i))
+        self._add_items(items)
 
     def _stage_selected(self):
-        files_to_add = []
-        files_to_remove = []
-        for item in self._files_view.selectedItems():
-            if item.parent() is self._unstaged:
-                status = self._extract_status_from_item(item)
-                if status[1] == "D":
-                    files_to_remove.append(item.text(0))
-                else:
-                    files_to_add.append(item.text(0))
-
-        self._git.stage_files(files_to_add)
-        self._git.remove_files(files_to_remove)
-
-        self._update_file_list()
+        self._stage_items(self._files_view.selectedItems())
 
     def _unstage_selected(self):
-        files_list = []
-        for item in self._files_view.selectedItems():
-            if item.parent() is self._staged:
-                files_list.append(item.text(0))
-
-        self._git.unstage_files(files_list)
-
-        self._update_file_list()
+        self._unstage_items(self._files_view.selectedItems())
 
     def _add_selected(self):
-        files_list = []
-        for item in self._files_view.selectedItems():
-            if item.parent() is self._untracked:
-                files_list.append(item.text(0))
-
-        self._git.stage_files(files_list)
-
-        self._update_file_list()
+        self._add_items(self._files_view.selectedItems())
 
     def _revert_selected(self):
         files_list = []
@@ -315,5 +272,41 @@ class StatusWidget(QtGui.QWidget):
         for item in self._files_view.selectedItems():
             if item.parent():
                 QtCore.QFile.remove(item.text(0))
+
+        self._update_file_list()
+
+    def _stage_items(self, items):
+        files_to_add = []
+        files_to_remove = []
+        for item in items:
+            if item.parent() is self._unstaged:
+                status = self._extract_status_from_item(item)
+                if status[1] == "D":
+                    files_to_remove.append(item.text(0))
+                else:
+                    files_to_add.append(item.text(0))
+
+        self._git.stage_files(files_to_add)
+        self._git.remove_files(files_to_remove)
+
+        self._update_file_list()
+
+    def _unstage_items(self, items):
+        files_list = []
+        for item in items:
+            if item.parent() is self._staged:
+                files_list.append(item.text(0))
+
+        self._git.unstage_files(files_list)
+
+        self._update_file_list()
+
+    def _add_items(self, items):
+        files_list = []
+        for item in items:
+            if item.parent() is self._untracked:
+                files_list.append(item.text(0))
+
+        self._git.stage_files(files_list)
 
         self._update_file_list()
