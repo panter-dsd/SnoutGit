@@ -12,7 +12,7 @@ DEFAULT_COLUMN_WIDTH = [0, 300, 200, 0]
 class CommitesWidget(QtGui.QWidget):
     current_commit_changed = QtCore.pyqtSignal(str)
 
-    def __init__(self, git, commites_model, parent=None):
+    def __init__(self, commites_model, parent=None):
         super(CommitesWidget, self).__init__(parent)
 
         self._table = QtGui.QTreeView(self)
@@ -48,5 +48,4 @@ class CommitesWidget(QtGui.QWidget):
         index = self._commites_model.index(self._table.currentIndex().row(), 0)
         commit_id = index.data(QtCore.Qt.DisplayRole)
         d = add_tag_dialog.AddTagDialog(commit_id, self)
-        if d.exec_():
-            self.update_commites_list()
+        d.exec_()
