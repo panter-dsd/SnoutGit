@@ -6,6 +6,8 @@ import re
 import tempfile
 import fileinput
 from xml.dom.minidom import parseString
+from PyQt4 import QtCore
+
 
 from commit import Commit
 
@@ -73,15 +75,17 @@ class Remote(object):
         self._git.execute_command(command, True)
 
 
-class Git(object):
+class Git(QtCore.QObject):
+    branches_changed = QtCore.pyqtSignal()
+
     git_path = "git"
     repo_path = str()
     log_view = None
     _last_output = []
     _last_error = []
 
-    def __init__(self):
-        pass
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
     def _decode_text(self, text):
         result = str()
