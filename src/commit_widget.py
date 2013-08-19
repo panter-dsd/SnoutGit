@@ -124,7 +124,7 @@ class CommitWidget(QtGui.QWidget):
 
     def set_old_message(self):
         id = self.sender().objectName()
-        text = commit.Commit(self._git, id).full_name()
+        text = Commit(self._git, id).full_name()
         self._commit_name_edit.setText(text.splitlines()[0])
         self._commit_description_edit.setPlainText(
             "\n".join(text.splitlines()[1:])
