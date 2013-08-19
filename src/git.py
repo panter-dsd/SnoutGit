@@ -171,10 +171,11 @@ class Git(QtCore.QObject):
 
         command.append(pull_options.remote)
         self.execute_command(command, True)
-
+        self.branches_changed.emit()
 
     def svn_rebase(self):
         self.execute_command("svn rebase")
+        self.branches_changed.emit()
 
     def svn_dcommit(self):
         self.execute_command("svn dcommit")
@@ -290,10 +291,12 @@ class Git(QtCore.QObject):
     def checkout(self, branch_name):
         command = ["checkout", branch_name]
         self.execute_command(command, True)
+        self.branches_changed.emit()
 
     def create_branch(self, branch_name, parent_branch):
         command = ["branch", branch_name, parent_branch]
         self.execute_command(command, True)
+        self.branches_changed.emit()
         return not self._last_error
 
     def stashes(self):
@@ -347,6 +350,7 @@ class Git(QtCore.QObject):
     def rename_branch(self, old_name, new_name):
         command = ["branch", "-m", old_name, new_name]
         self.execute_command(command, True)
+        self.branches_changed.emit()
 
     def _merged_or_no_merged(self, branch, merged=True):
         command = ["branch",
@@ -377,6 +381,7 @@ class Git(QtCore.QObject):
                    branch]
 
         self.execute_command(command, True)
+        self.branches_changed.emit()
 
     def last_output(self):
         return self._last_output
