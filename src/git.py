@@ -290,6 +290,7 @@ class Git(object):
     def create_branch(self, branch_name, parent_branch):
         command = ["branch", branch_name, parent_branch]
         self.execute_command(command, True)
+        return not self._last_error
 
     def stashes(self):
         command = ["stash", "list"]
