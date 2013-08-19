@@ -57,8 +57,9 @@ class BranchesWidget(QtGui.QWidget):
         main_layout.addLayout(tables_layout)
         main_layout.addLayout(buttons_layout)
 
-        super(BranchesWidget, self).setLayout(main_layout)
+        self.setLayout(main_layout)
         self._update_lists()
+        self._git.branches_changed.connect(self._update_lists)
 
     def _update_lists(self):
         self._local_branches_list.clear()
