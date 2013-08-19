@@ -19,6 +19,7 @@ from remove_remote_dialog import RemoveRemoteDialog
 from pull_dialog import PullDialog
 from push_dialog import PushDialog
 from commites_model import CommitesModel
+from git_flow_menu import GitFlowMenu
 
 
 class State(object):
@@ -206,6 +207,9 @@ class MainWindow(QtGui.QMainWindow):
         self._menu_bar.addMenu(self.make_states_menu())
         self._menu_bar.addMenu(self.make_actions_menu())
         self._menu_bar.addMenu(self.make_remote_menu())
+
+        self._git_flow = GitFlowMenu(self)
+        self._menu_bar.addMenu(self._git_flow)
 
     def create_exit_action(self):
         exit_action = QtGui.QAction(self)
