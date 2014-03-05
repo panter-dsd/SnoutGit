@@ -11,6 +11,7 @@ class SubmoduleDialog(QtGui.QDialog):
 
         self._submodules_list = QtGui.QListWidget(self)
         self._submodules_list.addItems(submodules)
+        self._submodules_list.itemDoubleClicked.connect(self.accept)
 
         self._submodules_list.setCurrentRow(0)
 
