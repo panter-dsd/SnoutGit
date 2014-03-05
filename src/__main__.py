@@ -7,6 +7,7 @@ import os
 from PyQt4 import QtGui
 import main_window
 import git
+from submodule_dialog import SubmoduleDialog
 
 
 def is_git_root(path):
@@ -50,7 +51,7 @@ def main():
     if len(sys.argv) < 2:
         path = os.path.abspath(os.curdir)
     else:
-        path = os.path.abspath(sys.argv[1])
+        path = os.path.abspath(sys.argv[-1])
 
     path = get_git_root_path(path)
     print("Use git repository:", path)
@@ -61,7 +62,7 @@ def main():
         print(error)
         return
 
-    git.Git.repo_path = path + "/.git"
+    git.Git.repo_path = path
 
     app = QtGui.QApplication(sys.argv)
     app.setApplicationName("SnoutGit")
@@ -73,6 +74,14 @@ def main():
         font = app.font()
         font.setFamily(font_name)
         app.setFont(font)
+
+    if "--submodule" in sys.argv:
+        submodules = git.Git().submodules()
+
+        if submodules:
+            submodule_dialog = SubmoduleDialog(submodules)
+            if submodule_dialog.exec():
+                git.Git.repo_path = path + "/" + submodule_dialog.submodule()
 
     window = main_window.MainWindow()
 

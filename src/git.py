@@ -109,7 +109,8 @@ class Git(object):
             process = subprocess.Popen([self.git_path] + command,
                                        shell=False,
                                        stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE)
+                                       stderr=subprocess.PIPE,
+                                       cwd=Git.repo_path)
         except subprocess.CalledProcessError as error:
             print(self.git_path, command, error)
             return []
@@ -405,10 +406,25 @@ class Git(object):
         result = str()
 
         try:
-            with fileinput.input(self.repo_path + "/MERGE_MSG") as f:
+            with fileinput.input(self.repo_path + "/.git/MERGE_MSG") as f:
                 for line in f:
                     result += line
         except IOError:
             pass
 
         return result
+
+    def submodules(self):
+        command = ["submodule", "status"]
+
+        submodules = []
+
+        for submodule_status in self.execute_command(command, True):
+            name_re = re.compile("\S+ (.*) \S+")
+
+            match = name_re.match(submodule_status)
+
+            if match:
+                submodules.append(match.group(1))
+
+        return submodules
