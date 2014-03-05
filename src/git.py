@@ -420,7 +420,7 @@ class Git(object):
         submodules = []
 
         for submodule_status in self.execute_command(command, True):
-            name_re = re.compile("\S+ (.*) \S+")
+            name_re = re.compile(" ?\S+ (.*) .*")
 
             match = name_re.match(submodule_status)
 
