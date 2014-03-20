@@ -5,6 +5,7 @@ import subprocess
 import re
 import tempfile
 import fileinput
+import sys
 from xml.dom.minidom import parseString
 
 from commit import Commit
@@ -106,8 +107,10 @@ class Git(object):
             command = command.split()
 
         try:
-            startupinfo = subprocess.STARTUPINFO()
-            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            startupinfo = None
+            if sys.platform == "win32":
+                startupinfo = subprocess.STARTUPINFO()
+                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
             process = subprocess.Popen([self.git_executable_path] + command,
                                        shell=False,
