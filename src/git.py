@@ -74,7 +74,7 @@ class Remote(object):
 
 
 class Git(object):
-    git_path = "git"
+    git_executable_path = "git"
     repo_path = str()
     log_view = None
     _last_output = []
@@ -106,13 +106,13 @@ class Git(object):
             command = command.split()
 
         try:
-            process = subprocess.Popen([self.git_path] + command,
+            process = subprocess.Popen([self.git_executable_path] + command,
                                        shell=False,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE,
                                        cwd=Git.repo_path)
         except subprocess.CalledProcessError as error:
-            print(self.git_path, command, error)
+            print(self.git_executable_path, command, error)
             return []
 
         self._last_output, self._last_error = process.communicate()

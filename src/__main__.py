@@ -47,11 +47,25 @@ def get_font():
 
     return result
 
+def get_git_executable_path():
+    result = "git"
+    try:
+        git_executable_path_index = sys.argv.index("--git-executable") + 1
+        if git_executable_path_index < len(sys.argv):
+            result = sys.argv[git_executable_path_index]
+    except ValueError:
+        pass
+
+    return result
+
+
 def main():
     if len(sys.argv) < 2:
         path = os.path.abspath(os.curdir)
     else:
         path = os.path.abspath(sys.argv[-1])
+
+    git.Git.git_executable_path = get_git_executable_path()
 
     path = get_git_root_path(path)
     print("Use git repository:", path)
