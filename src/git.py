@@ -106,11 +106,15 @@ class Git(object):
             command = command.split()
 
         try:
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+
             process = subprocess.Popen([self.git_executable_path] + command,
                                        shell=False,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE,
-                                       cwd=Git.repo_path)
+                                       cwd=Git.repo_path,
+                                       startupinfo=startupinfo)
         except subprocess.CalledProcessError as error:
             print(self.git_executable_path, command, error)
             return []
