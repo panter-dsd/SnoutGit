@@ -80,10 +80,12 @@ class PullDialog(QtGui.QDialog):
         dialog.setWindowTitle("Pull")
 
         if text[0]:
-            dialog.setText("\n".join(text[0]))
+            dialog.setText("Failure")
+            dialog.setDetailedText("\n".join(text[0]))
             dialog.setIcon(QtGui.QMessageBox.Critical)
         else:
-            dialog.setText("\n".join(text[1]))
+            dialog.setText("Success")
+            dialog.setDetailedText("\n".join(text[1]))
             dialog.setIcon(QtGui.QMessageBox.Information)
 
         dialog.exec_()
