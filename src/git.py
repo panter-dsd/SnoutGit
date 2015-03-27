@@ -31,13 +31,13 @@ class MergeOptions():
 
 class PushOptions():
     branch = str()
-    remote = str()
+    remotes = str()
     force = False
     include_tags = True
 
-    def __init__(self, branch, remote):
+    def __init__(self, branch: str, remotes: list):
         self.branch = branch
-        self.remote = remote
+        self.remotes = remotes
 
 
 class PullOptions():
@@ -144,18 +144,21 @@ class Git(object):
     def last_result(self):
         return self._last_result
 
-    def push(self, push_options):
+    def push(self, push_options: PushOptions):
         command = ["push", "--porcelain"]
+
         if push_options.force:
             command.append("-f")
+
         if push_options.include_tags:
             command.append("--tags")
-        if push_options.remote:
-            command.append("-u")
-            command.append(push_options.remote)
 
-        command.append(push_options.branch)
-        self.execute_command(command, True)
+        for remote in push_options.remotes:
+            real_command = command.copy()
+            real_command.append("-u")
+            real_command.append(remote)
+            real_command.append(push_options.branch)
+            self.execute_command(real_command, True)
 
     def pull(self, pull_options):
         command = ["pull"]

@@ -5,6 +5,51 @@ from PyQt4 import QtCore, QtGui
 import git
 
 
+class RemotesWidget(QtGui.QWidget):
+    def __init__(self, git_control: git.Git, parent=None):
+        super().__init__(parent)
+
+        self._git_control = git_control
+
+        self._remote_label = None
+        self._remote_list = None
+
+        remotes = self._git_control.remote_list()
+
+        layout = QtGui.QVBoxLayout()
+
+        if len(remotes) > 1:
+            self._remote_list = QtGui.QListWidget(self)
+            self._remote_list.addItems(remotes)
+
+            self._set_list_check_state()
+
+            layout.addWidget(self._remote_list)
+        elif remotes:
+            self._remote_label = QtGui.QLabel(remotes[0], self)
+            layout.addWidget(self._remote_label)
+
+        self.setLayout(layout)
+
+    def remotes(self) -> list:
+        result = []
+
+        if self._remote_label:
+            result = self._remote_label.text()
+        elif self._remote_list:
+            for i in range(0, self._remote_list.count()):
+                item = self._remote_list.item(i)
+                if item.checkState() == QtCore.Qt.Checked:
+                    result.append(item.text())
+
+        return result
+
+
+    def _set_list_check_state(self):
+        for i in range(0, self._remote_list.count()):
+            self._remote_list.item(i).setCheckState(QtCore.Qt.Checked if i == 0 else QtCore.Qt.Unchecked)
+
+
 class PushDialog(QtGui.QDialog):
     _git = git.Git()
 
@@ -18,8 +63,7 @@ class PushDialog(QtGui.QDialog):
 
         self._remote_label = QtGui.QLabel("Remote", self)
 
-        self._remote = QtGui.QComboBox(self)
-        self._remote.setEditable(False)
+        self._remote = RemotesWidget(self._git)
 
         grid = QtGui.QGridLayout()
         grid.addWidget(self._branch_label, 0, 0)
@@ -64,8 +108,6 @@ class PushDialog(QtGui.QDialog):
         self._update_branches_list()
         self.set_branch(self._git.current_branch())
 
-        self._update_remotes_list()
-
     def _update_branches_list(self):
         self._branch.clear()
         self._branch.addItems(self._git.local_branches())
@@ -76,20 +118,19 @@ class PushDialog(QtGui.QDialog):
                 self._branch.setCurrentIndex(i)
                 break
 
-    def _update_remotes_list(self):
-        self._remote.clear()
-        self._remote.addItems(self._git.remote_list())
-
     def _push(self):
-        push_options = git.PushOptions(self._branch.currentText(),
-                                       self._remote.currentText())
+        remotes = self._remote.remotes()
+        if not remotes:
+            super().reject()
+
+        push_options = git.PushOptions(self._branch.currentText(), remotes)
         push_options.force = self._force_option.isChecked()
         push_options.include_tags = self._push_tags_option.isChecked()
 
         self._git.push(push_options)
 
-        text = [self._git._last_error,
-                self._git._last_output]
+        text = [self._git.last_error(),
+                self._git.last_output()]
 
         dialog = QtGui.QMessageBox(self)
         dialog.setWindowTitle("Push")
@@ -105,4 +146,4 @@ class PushDialog(QtGui.QDialog):
 
         dialog.exec_()
 
-        super(PushDialog, self).accept()
+        super().accept()
