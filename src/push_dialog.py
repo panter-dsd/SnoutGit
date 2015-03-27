@@ -2,6 +2,7 @@
 __author__ = 'panter.dsd@gmail.com'
 
 from PyQt4 import QtCore, QtGui
+
 import git
 
 
@@ -43,7 +44,6 @@ class RemotesWidget(QtGui.QWidget):
                     result.append(item.text())
 
         return result
-
 
     def _set_list_check_state(self):
         for i in range(0, self._remote_list.count()):
