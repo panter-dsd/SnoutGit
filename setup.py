@@ -8,5 +8,6 @@ setup(
     license='GPLv3',
     author='PanteR',
     author_email='panter.dsd@gmail.com',
-    description='Git gui client.'
+    description='Git gui client.',
+    requires=['PyQt4']
 )
