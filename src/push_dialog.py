@@ -35,7 +35,7 @@ class RemotesWidget(QtGui.QWidget):
         result = []
 
         if self._remote_label:
-            result = self._remote_label.text()
+            result.append(self._remote_label.text())
         elif self._remote_list:
             for i in range(0, self._remote_list.count()):
                 item = self._remote_list.item(i)
