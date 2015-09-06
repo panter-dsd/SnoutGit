@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt, QByteArray, QSettings, QSize
 
 from commites_widget import CommitesWidget
 from diff_widget import DiffWidget
@@ -85,7 +86,7 @@ class States(object):
                 break
 
 
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -127,8 +128,8 @@ class MainWindow(QtGui.QMainWindow):
         self._current_state = self._states.state(0)
 
     def create_docks(self):
-        top_area = QtCore.Qt.TopDockWidgetArea
-        bottom_area = QtCore.Qt.BottomDockWidgetArea
+        top_area = Qt.TopDockWidgetArea
+        bottom_area = Qt.BottomDockWidgetArea
         self.addDockWidget(bottom_area, self.create_log_view_dock())
         self.addDockWidget(top_area, self.create_commites_dock())
         self.addDockWidget(bottom_area, self.create_diff_dock())
@@ -140,7 +141,7 @@ class MainWindow(QtGui.QMainWindow):
         self.addDockWidget(bottom_area, self.create_stashes_widget_dock())
 
     def _create_dock(self, widget, object_name, title=str()):
-        dock = QtGui.QDockWidget(self)
+        dock = QtWidgets.QDockWidget(self)
         dock.setObjectName(object_name)
         dock.setWindowTitle(title)
         dock.setWidget(widget)
@@ -201,7 +202,7 @@ class MainWindow(QtGui.QMainWindow):
         return stashes_dock
 
     def create_main_menu(self):
-        self._menu_bar = QtGui.QMenuBar(self)
+        self._menu_bar = QtWidgets.QMenuBar(self)
         self.setMenuBar(self._menu_bar)
         self._menu_bar.addMenu(self._stashes_widget.menu())
         self._menu_bar.addMenu(self.make_states_menu())
@@ -212,8 +213,8 @@ class MainWindow(QtGui.QMainWindow):
         self._menu_bar.addMenu(self._git_flow)
 
     def create_exit_action(self):
-        exit_action = QtGui.QAction(self)
-        exit_action.setShortcut(QtCore.Qt.CTRL | QtCore.Qt.Key_Q)
+        exit_action = QtWidgets.QAction(self)
+        exit_action.setShortcut(Qt.CTRL | Qt.Key_Q)
         exit_action.triggered.connect(self.close)
         self.addAction(exit_action)
 
@@ -221,14 +222,16 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle("Branch: " + Git().current_branch())
 
     def save_state(self):
-        state_name = QtGui.QInputDialog.getText(self,
-                                                "Save state",
-                                                "StateName")[0]
+        state_name = QtWidgets.QInputDialog.getText(
+            self, "Save state", "StateName"
+        )[0]
+
         if state_name:
             self._current_state = self._states.append_state(
                 state_name,
                 self.saveState()
             )
+
             self.update_states_menu()
 
     def select_state(self):
@@ -239,12 +242,10 @@ class MainWindow(QtGui.QMainWindow):
         if len(states) == 0:
             return
 
-        state_name = QtGui.QInputDialog.getItem(self,
-                                                "Save state",
-                                                "State name",
-                                                states,
-                                                0,
-                                                False)[0]
+        state_name = QtWidgets.QInputDialog.getItem(
+            self, "Save state", "State name", states, 0, False
+        )[0]
+
         return self._states.state_for_name(state_name)
 
     def remove_state(self):
@@ -256,9 +257,10 @@ class MainWindow(QtGui.QMainWindow):
     def rename_state(self):
         state = self.select_state()
         if state.name():
-            state_name = QtGui.QInputDialog.getText(self,
-                                                    "Rename state",
-                                                    "State name")[0]
+            state_name = QtWidgets.QInputDialog.getText(
+                self, "Rename state", "State name"
+            )[0]
+
             if state_name:
                 self._states.rename_state(state.name(), state_name)
                 self.update_states_menu()
@@ -303,24 +305,24 @@ class MainWindow(QtGui.QMainWindow):
         event.accept()
 
     def _load_settings(self):
-        settings = QtCore.QSettings()
+        settings = QSettings()
 
         settings.beginGroup("GUI")
         settings.beginGroup("MainWindow")
 
-        self.restoreState(settings.value("State", QtCore.QByteArray()))
+        self.restoreState(settings.value("State", QByteArray()))
 
         if settings.contains("pos"):
             self.move(settings.value("pos"))
 
-        size = settings.value("size", QtCore.QSize(1024, 768))
+        size = settings.value("size", QSize(1024, 768))
 
         self.resize(size)
 
         isMaximized = settings.value("IsMaximized", False) == "true"
 
         if isMaximized:
-            self.setWindowState(QtCore.Qt.WindowMaximized)
+            self.setWindowState(Qt.WindowMaximized)
 
         settings.endGroup()
 
@@ -340,12 +342,12 @@ class MainWindow(QtGui.QMainWindow):
         settings.endGroup()
 
     def _save_settings(self):
-        settings = QtCore.QSettings()
+        settings = QSettings()
 
         settings.beginGroup("GUI")
         settings.beginGroup("MainWindow")
 
-        if self.windowState() != QtCore.Qt.WindowMaximized:
+        if self.windowState() != Qt.WindowMaximized:
             settings.setValue("pos", self.pos())
             settings.setValue("size", self.size())
             settings.setValue("IsMaximized", False)
@@ -375,13 +377,14 @@ class MainWindow(QtGui.QMainWindow):
         d.exec_()
 
     def abort_merge(self):
-        result = QtGui.QMessageBox.question(
+        result = QtWidgets.QMessageBox.question(
             self,
             "Are you sure?",
             "Abort merge",
-            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
+            QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel
+        )
 
-        if result == QtGui.QMessageBox.Ok:
+        if result == QtWidgets.QMessageBox.Ok:
             self._git.abort_merge()
 
     def add_remote(self):
@@ -401,13 +404,13 @@ class MainWindow(QtGui.QMainWindow):
         d.exec_()
 
     def _make_action(self, caption, slot):
-        action = QtGui.QAction(self)
+        action = QtWidgets.QAction(self)
         action.setText(caption)
         action.triggered.connect(slot)
         return action
 
     def _make_menu(self, title, actions):
-        menu = QtGui.QMenu(self)
+        menu = QtWidgets.QMenu(self)
         menu.setTitle(title)
 
         for action in actions:
@@ -439,7 +442,7 @@ class MainWindow(QtGui.QMainWindow):
         self._remove_state_action = self._make_action("Remove state",
                                                       self.remove_state)
 
-        self._states_menu = QtGui.QMenu(self)
+        self._states_menu = QtWidgets.QMenu(self)
         self._states_menu.setTitle("States")
         self.update_states_menu()
 

@@ -1,35 +1,35 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QDialogButtonBox
 
 from git import Remote, Git
 
 
-class AddRemoteDialog(QtGui.QDialog):
+class AddRemoteDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self._name_label = QtGui.QLabel(self)
+        self._name_label = QtWidgets.QLabel(self)
         self._name_label.setText("Name")
 
-        self._name_edit = QtGui.QLineEdit(self)
+        self._name_edit = QtWidgets.QLineEdit(self)
 
-        self._url_label = QtGui.QLabel(self)
+        self._url_label = QtWidgets.QLabel(self)
         self._url_label.setText("Url")
 
-        self._url_edit = QtGui.QLineEdit(self)
+        self._url_edit = QtWidgets.QLineEdit(self)
 
-        buttons = QtGui.QDialogButtonBox(
-            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel,
-            QtCore.Qt.Horizontal,
-            self
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self
         )
 
         buttons.accepted.connect(self._add_remote)
         buttons.rejected.connect(self.reject)
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self._name_label)
         layout.addWidget(self._name_edit)
         layout.addWidget(self._url_label)
@@ -41,13 +41,13 @@ class AddRemoteDialog(QtGui.QDialog):
         name = self._name_edit.text()
 
         if not name:
-            QtGui.QMessageBox.critical(self, "Error", "Name is empty")
+            QtWidgets.QMessageBox.critical(self, "Error", "Name is empty")
             return
 
         url = self._url_edit.text()
 
         if not url:
-            QtGui.QMessageBox.critical(self, "Error", "Url is empty")
+            QtWidgets.QMessageBox.critical(self, "Error", "Url is empty")
             return
 
         remote = Remote(Git())

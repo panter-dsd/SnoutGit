@@ -1,35 +1,37 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import pyqtSignal
+
 import git
 
 
-class StashesWidget(QtGui.QWidget):
+class StashesWidget(QtWidgets.QWidget):
     _git = git.Git()
-    state_changed = QtCore.pyqtSignal()
+    state_changed = pyqtSignal()
 
     def __init__(self, parent=None):
         super(StashesWidget, self).__init__(parent)
 
-        self._stashes_list = QtGui.QTableWidget(self)
+        self._stashes_list = QtWidgets.QTableWidget(self)
         self._stashes_list.setSelectionBehavior(
-            QtGui.QAbstractItemView.SelectRows
+            QtWidgets.QAbstractItemView.SelectRows
         )
 
-        self._save_action = QtGui.QAction(self)
+        self._save_action = QtWidgets.QAction(self)
         self._save_action.setText("Save")
         self._save_action.triggered.connect(self.save)
 
-        self._apply_action = QtGui.QAction(self)
+        self._apply_action = QtWidgets.QAction(self)
         self._apply_action.setText("Apply stash")
         self._apply_action.triggered.connect(self.apply)
 
-        self._pop_action = QtGui.QAction(self)
+        self._pop_action = QtWidgets.QAction(self)
         self._pop_action.setText("Pop stash")
         self._pop_action.triggered.connect(self.pop)
 
-        self._drop_action = QtGui.QAction(self)
+        self._drop_action = QtWidgets.QAction(self)
         self._drop_action.setText("Drop stash")
         self._drop_action.triggered.connect(self.drop)
 
@@ -37,7 +39,7 @@ class StashesWidget(QtGui.QWidget):
             self._update_actions_enabled
         )
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self._stashes_list)
         super(StashesWidget, self).setLayout(layout)
 
@@ -54,16 +56,15 @@ class StashesWidget(QtGui.QWidget):
 
         self._stashes_list.setRowCount(len(stashes))
         self._stashes_list.setColumnCount(2)
-        self._stashes_list.setHorizontalHeaderLabels(["Name",
-                                                      "Description"])
+        self._stashes_list.setHorizontalHeaderLabels(["Name", "Description"])
 
         row = 0
         for stash in stashes:
-            item = QtGui.QTableWidgetItem(stash.name)
+            item = QtWidgets.QTableWidgetItem(stash.name)
             item.setToolTip(item.text())
             self._stashes_list.setItem(row, 0, item)
 
-            item = QtGui.QTableWidgetItem(stash.description)
+            item = QtWidgets.QTableWidgetItem(stash.description)
             item.setToolTip(item.text())
             self._stashes_list.setItem(row, 1, item)
             row += 1
@@ -77,7 +78,7 @@ class StashesWidget(QtGui.QWidget):
         self.state_changed.emit()
 
     def menu(self):
-        result = QtGui.QMenu(self)
+        result = QtWidgets.QMenu(self)
         result.setTitle("Stashes")
 
         result.addAction(self._save_action)

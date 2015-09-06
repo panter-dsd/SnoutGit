@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QDialogButtonBox
 
 import git
 
 
-class RemotesWidget(QtGui.QWidget):
+class RemotesWidget(QtWidgets.QWidget):
     def __init__(self, git_control: git.Git, parent=None):
         super().__init__(parent)
 
@@ -17,17 +19,17 @@ class RemotesWidget(QtGui.QWidget):
 
         remotes = self._git_control.remote_list()
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
 
         if len(remotes) > 1:
-            self._remote_list = QtGui.QListWidget(self)
+            self._remote_list = QtWidgets.QListWidget(self)
             self._remote_list.addItems(remotes)
 
             self._set_list_check_state()
 
             layout.addWidget(self._remote_list)
         elif remotes:
-            self._remote_label = QtGui.QLabel(remotes[0], self)
+            self._remote_label = QtWidgets.QLabel(remotes[0], self)
             layout.addWidget(self._remote_label)
 
         self.setLayout(layout)
@@ -40,66 +42,66 @@ class RemotesWidget(QtGui.QWidget):
         elif self._remote_list:
             for i in range(0, self._remote_list.count()):
                 item = self._remote_list.item(i)
-                if item.checkState() == QtCore.Qt.Checked:
+                if item.checkState() == Qt.Checked:
                     result.append(item.text())
 
         return result
 
     def _set_list_check_state(self):
         for i in range(0, self._remote_list.count()):
-            self._remote_list.item(i).setCheckState(QtCore.Qt.Checked if i == 0 else QtCore.Qt.Unchecked)
+            self._remote_list.item(i).setCheckState(
+                Qt.Checked if i == 0 else Qt.Unchecked
+            )
 
 
-class PushDialog(QtGui.QDialog):
+class PushDialog(QtWidgets.QDialog):
     _git = git.Git()
 
     def __init__(self, parent=None):
         super(PushDialog, self).__init__(parent)
 
-        self._branch_label = QtGui.QLabel("Branch", self)
+        self._branch_label = QtWidgets.QLabel("Branch", self)
 
-        self._branch = QtGui.QComboBox(self)
+        self._branch = QtWidgets.QComboBox(self)
         self._branch.setEditable(False)
 
-        self._remote_label = QtGui.QLabel("Remote", self)
+        self._remote_label = QtWidgets.QLabel("Remote", self)
 
         self._remote = RemotesWidget(self._git)
 
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         grid.addWidget(self._branch_label, 0, 0)
         grid.addWidget(self._branch, 0, 1)
         grid.addWidget(self._remote_label, 1, 0)
         grid.addWidget(self._remote, 1, 1)
 
-        self._options_group = QtGui.QGroupBox(self)
+        self._options_group = QtWidgets.QGroupBox(self)
         self._options_group.setTitle("Options")
 
-        self._force_option = QtGui.QCheckBox(self)
+        self._force_option = QtWidgets.QCheckBox(self)
         self._force_option.setText("Force overwrite existing branch")
         self._force_option.setChecked(False)
 
-        self._push_tags_option = QtGui.QCheckBox(self)
+        self._push_tags_option = QtWidgets.QCheckBox(self)
         self._push_tags_option.setText("Push tags")
         self._push_tags_option.setChecked(True)
 
-        options_layout = QtGui.QVBoxLayout()
+        options_layout = QtWidgets.QVBoxLayout()
         options_layout.addWidget(self._force_option)
         options_layout.addWidget(self._push_tags_option)
         self._options_group.setLayout(options_layout)
 
-        buttons = QtGui.QDialogButtonBox(QtCore.Qt.Horizontal,
-                                         self)
-        self._push_button = QtGui.QPushButton(self)
+        buttons = QtWidgets.QDialogButtonBox(Qt.Horizontal, self)
+        self._push_button = QtWidgets.QPushButton(self)
         self._push_button.setText("Push")
 
-        buttons.addButton(self._push_button,
-                          QtGui.QDialogButtonBox.AcceptRole)
-        buttons.addButton(QtGui.QDialogButtonBox.Cancel)
+        buttons.addButton(self._push_button, QDialogButtonBox.AcceptRole)
+        buttons.addButton(QDialogButtonBox.Cancel)
 
         buttons.accepted.connect(self._push)
         buttons.rejected.connect(super(PushDialog, self).reject)
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addLayout(grid)
         layout.addWidget(self._options_group)
         layout.addWidget(buttons)
@@ -132,17 +134,17 @@ class PushDialog(QtGui.QDialog):
         text = [self._git.last_error(),
                 self._git.last_output()]
 
-        dialog = QtGui.QMessageBox(self)
+        dialog = QtWidgets.QMessageBox(self)
         dialog.setWindowTitle("Push")
 
         if text[0]:
             dialog.setText("Failure")
             dialog.setDetailedText("\n".join(text[0]))
-            dialog.setIcon(QtGui.QMessageBox.Critical)
+            dialog.setIcon(QtWidgets.QMessageBox.Critical)
         else:
             dialog.setText("Success")
             dialog.setDetailedText("\n".join(text[1]))
-            dialog.setIcon(QtGui.QMessageBox.Information)
+            dialog.setIcon(QtWidgets.QMessageBox.Information)
 
         dialog.exec_()
 

@@ -3,14 +3,16 @@ __author__ = 'panter.dsd@gmail.com'
 
 import os
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import pyqtSignal, Qt, QFile, QTimer
+from PyQt5.QtGui import QIcon
 
 import git
 
 
-class StatusWidget(QtGui.QWidget):
-    current_file_changed = QtCore.pyqtSignal(str, bool)
-    status_changed = QtCore.pyqtSignal()
+class StatusWidget(QtWidgets.QWidget):
+    current_file_changed = pyqtSignal(str, bool)
+    status_changed = pyqtSignal()
 
     _git = git.Git()
     _path = str()
@@ -19,7 +21,7 @@ class StatusWidget(QtGui.QWidget):
     def __init__(self, parent):
         super(StatusWidget, self).__init__(parent)
 
-        self._files_view = QtGui.QTreeWidget(self)
+        self._files_view = QtWidgets.QTreeWidget(self)
         self._files_view.setHeaderHidden(True)
         self._files_view.itemDoubleClicked.connect(
             self._change_item_status
@@ -27,49 +29,49 @@ class StatusWidget(QtGui.QWidget):
         self._files_view.currentItemChanged.connect(
             self._current_item_changed
         )
-        self._files_view.setContextMenuPolicy(
-            QtCore.Qt.CustomContextMenu
-        )
+
+        self._files_view.setContextMenuPolicy(Qt.CustomContextMenu)
+
         self._files_view.customContextMenuRequested.connect(
             self._show_menu
         )
         self._files_view.setSelectionMode(
-            QtGui.QAbstractItemView.ExtendedSelection
+            QtWidgets.QAbstractItemView.ExtendedSelection
         )
 
-        self._unstaged = QtGui.QTreeWidgetItem(self._files_view)
+        self._unstaged = QtWidgets.QTreeWidgetItem(self._files_view)
         self._unstaged.setText(0, "Unstaged")
 
-        self._staged = QtGui.QTreeWidgetItem(self._files_view)
+        self._staged = QtWidgets.QTreeWidgetItem(self._files_view)
         self._staged.setText(0, "Staged")
 
-        self._untracked = QtGui.QTreeWidgetItem(self._files_view)
+        self._untracked = QtWidgets.QTreeWidgetItem(self._files_view)
         self._untracked.setText(0, "Untracked")
 
-        layout = QtGui.QHBoxLayout()
+        layout = QtWidgets.QHBoxLayout()
         layout.addWidget(self._files_view)
         super(StatusWidget, self).setLayout(layout)
 
-        self.update_timer = QtCore.QTimer(self)
+        self.update_timer = QTimer(self)
         self.update_timer.timeout.connect(self._update_file_list)
         self.update_timer.start(1000)
 
     def _save_status_in_item(self, item, status):
-        item.setData(0, QtCore.Qt.UserRole, status)
+        item.setData(0, Qt.UserRole, status)
 
     def _extract_status_from_item(self, item):
-        return item.data(0, QtCore.Qt.UserRole)
+        return item.data(0, Qt.UserRole)
 
     def _update_file_list(self):
         images_path = os.path.dirname(__file__) + "/../share/images/"
 
-        new_icon = QtGui.QIcon(images_path + "add.png")
-        changed_icon = QtGui.QIcon(images_path + "edit.png")
-        updated_but_unmerged = QtGui.QIcon(
+        new_icon = QIcon(images_path + "add.png")
+        changed_icon = QIcon(images_path + "edit.png")
+        updated_but_unmerged = QIcon(
             super(StatusWidget, self).style().standardIcon(
-                QtGui.QStyle.SP_DialogSaveButton
+                QtWidgets.QStyle.SP_DialogSaveButton
             ))
-        deleted_icon = QtGui.QIcon(images_path + "remove.png")
+        deleted_icon = QIcon(images_path + "remove.png")
 
         icons = {
             'A': new_icon,
@@ -93,7 +95,7 @@ class StatusWidget(QtGui.QWidget):
             status = status_line[:2]
             file_name = status_line[3:]
 
-            item = QtGui.QTreeWidgetItem()
+            item = QtWidgets.QTreeWidgetItem()
             self._save_status_in_item(item, status)
             item.setText(0, file_name)
 
@@ -108,17 +110,17 @@ class StatusWidget(QtGui.QWidget):
                     parent = self._unstaged
                 else:
                     parent = self._staged
-                item_ = QtGui.QTreeWidgetItem(parent)
+                item_ = QtWidgets.QTreeWidgetItem(parent)
                 item_.setText(0, names[1])
             else:
                 if not status[0] in [' ', 'U']:
-                    item = QtGui.QTreeWidgetItem(self._staged)
+                    item = QtWidgets.QTreeWidgetItem(self._staged)
                     self._save_status_in_item(item, status)
                     item.setText(0, file_name)
                     item.setIcon(0, icons[status[0]])
 
                 if status[1] != ' ':
-                    item = QtGui.QTreeWidgetItem(self._unstaged)
+                    item = QtWidgets.QTreeWidgetItem(self._unstaged)
                     self._save_status_in_item(item, status)
                     item.setText(0, file_name)
                     item.setIcon(0, icons[status[1]])
@@ -152,45 +154,45 @@ class StatusWidget(QtGui.QWidget):
     def _show_menu(self, point):
         items = self._files_view.selectedItems()
 
-        menu = QtGui.QMenu(self)
+        menu = QtWidgets.QMenu(self)
 
-        self._stage_all_action = QtGui.QAction(self)
+        self._stage_all_action = QtWidgets.QAction(self)
         self._stage_all_action.setText("Stage all")
         self._stage_all_action.triggered.connect(self._stage_all)
 
-        self._unstage_all_action = QtGui.QAction(self)
+        self._unstage_all_action = QtWidgets.QAction(self)
         self._unstage_all_action.setText("Unstage all")
         self._unstage_all_action.triggered.connect(self._unstage_all)
 
-        self._add_all_action = QtGui.QAction(self)
+        self._add_all_action = QtWidgets.QAction(self)
         self._add_all_action.setText("Add all")
         self._add_all_action.triggered.connect(self._add_all)
 
-        self._stage_selected_action = QtGui.QAction(self)
+        self._stage_selected_action = QtWidgets.QAction(self)
         self._stage_selected_action.setText("Stage selected")
         self._stage_selected_action.triggered.connect(
             self._stage_selected
         )
 
-        self._unstage_selected_action = QtGui.QAction(self)
+        self._unstage_selected_action = QtWidgets.QAction(self)
         self._unstage_selected_action.setText("Unstage selected")
         self._unstage_selected_action.triggered.connect(
             self._unstage_selected
         )
 
-        self._add_selected_action = QtGui.QAction(self)
+        self._add_selected_action = QtWidgets.QAction(self)
         self._add_selected_action.setText("Add selected")
         self._add_selected_action.triggered.connect(
             self._add_selected
         )
 
-        self._revert_selected_action = QtGui.QAction(self)
+        self._revert_selected_action = QtWidgets.QAction(self)
         self._revert_selected_action.setText("Revert selected")
         self._revert_selected_action.triggered.connect(
             self._revert_selected
         )
 
-        self._remove_selected_action = QtGui.QAction(self)
+        self._remove_selected_action = QtWidgets.QAction(self)
         self._remove_selected_action.setText("Remove selected")
         self._remove_selected_action.triggered.connect(
             self._remove_selected
@@ -310,6 +312,6 @@ class StatusWidget(QtGui.QWidget):
     def _remove_items(self, items):
         for item in items:
             if item.parent():
-                QtCore.QFile.remove(item.text(0))
+                QFile.remove(item.text(0))
 
         self._update_file_list()

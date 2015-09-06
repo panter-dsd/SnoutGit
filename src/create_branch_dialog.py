@@ -1,39 +1,42 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QDialogButtonBox
+
 import git
 
 
-class CreateBranchDialog(QtGui.QDialog):
+class CreateBranchDialog(QtWidgets.QDialog):
     _git = git.Git()
 
     def __init__(self, parent=None):
         super(CreateBranchDialog, self).__init__(parent)
 
-        self._branch_name_label = QtGui.QLabel("Branch name", self)
+        self._branch_name_label = QtWidgets.QLabel("Branch name", self)
 
-        self._branch_name = QtGui.QLineEdit(self)
+        self._branch_name = QtWidgets.QLineEdit(self)
 
-        self._parent_branch_label = QtGui.QLabel("Parent branch", self)
+        self._parent_branch_label = QtWidgets.QLabel("Parent branch", self)
 
-        self._parent_branch = QtGui.QComboBox(self)
+        self._parent_branch = QtWidgets.QComboBox(self)
         self._parent_branch.setEditable(False)
         self._parent_branch.currentIndexChanged.connect(
             self._parent_branch_changed
         )
 
-        self._can_checkout = QtGui.QCheckBox("Checkout into branch", self)
+        self._can_checkout = QtWidgets.QCheckBox("Checkout into branch", self)
         self._can_checkout.setChecked(True)
 
-        self._buttons = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok
-                                               | QtGui.QDialogButtonBox.Cancel,
-                                               QtCore.Qt.Horizontal,
-                                               self)
+        self._buttons = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self
+        )
+
         self._buttons.accepted.connect(self.accept)
         self._buttons.rejected.connect(self.reject)
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self._branch_name_label)
         layout.addWidget(self._branch_name)
         layout.addWidget(self._parent_branch_label)

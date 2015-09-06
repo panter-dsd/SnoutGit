@@ -9,5 +9,5 @@ setup(
     author='PanteR',
     author_email='panter.dsd@gmail.com',
     description='Git gui client.',
-    requires=['PyQt4']
+    requires=['PyQt5']
 )

@@ -4,9 +4,12 @@ __author__ = 'panter.dsd@gmail.com'
 
 import sys
 import os
-from PyQt4 import QtGui
+
+from PyQt5.QtWidgets import QApplication
+
 import main_window
 import git
+
 from submodule_dialog import SubmoduleDialog
 
 
@@ -78,7 +81,7 @@ def main():
 
     git.Git.repo_path = path
 
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     app.setApplicationName("SnoutGit")
     app.setApplicationVersion("0.0.0.0")
     app.setOrganizationName("PanteR")

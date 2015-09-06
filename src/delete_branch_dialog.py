@@ -1,19 +1,22 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QDialogButtonBox
+
 import git
 
 
-class DeleteBranchDialog(QtGui.QDialog):
+class DeleteBranchDialog(QtWidgets.QDialog):
     _git = git.Git()
 
     def __init__(self, branch, parent=None):
         super(DeleteBranchDialog, self).__init__(parent)
 
-        self._branch_label = QtGui.QLabel("Branch for delete", self)
+        self._branch_label = QtWidgets.QLabel("Branch for delete", self)
 
-        self._branch = QtGui.QComboBox(self)
+        self._branch = QtWidgets.QComboBox(self)
         self._branch.setEditable(False)
         self._branch.currentIndexChanged.connect(
             lambda: self._update_check_merge_model(
@@ -21,29 +24,29 @@ class DeleteBranchDialog(QtGui.QDialog):
             )
         )
 
-        self._check_merge_group = QtGui.QGroupBox(self)
+        self._check_merge_group = QtWidgets.QGroupBox(self)
         self._check_merge_group.setTitle("Check for merge")
         self._check_merge_group.setCheckable(True)
         self._check_merge_group.setChecked(True)
 
-        self._check_merge_tabs = QtGui.QTabBar(self)
+        self._check_merge_tabs = QtWidgets.QTabBar(self)
         self._check_merge_tabs.addTab("Local branch")
         self._check_merge_tabs.addTab("Remote branch")
         self._check_merge_tabs.currentChanged.connect(
             self._update_check_merge_model
         )
 
-        self._check_merge_model = QtGui.QStringListModel(self)
+        self._check_merge_model = QtWidgets.QStringListModel(self)
 
-        self._check_merge_view = QtGui.QListView(self)
+        self._check_merge_view = QtWidgets.QListView(self)
         self._check_merge_view.setModel(self._check_merge_model)
 
-        check_merge_layout = QtGui.QVBoxLayout()
+        check_merge_layout = QtWidgets.QVBoxLayout()
         check_merge_layout.addWidget(self._check_merge_tabs)
         check_merge_layout.addWidget(self._check_merge_view)
         self._check_merge_group.setLayout(check_merge_layout)
 
-        self._delete_force = QtGui.QCheckBox(self)
+        self._delete_force = QtWidgets.QCheckBox(self)
         self._delete_force.setText("Delete force")
         self._delete_force.setChecked(False)
 
@@ -55,19 +58,17 @@ class DeleteBranchDialog(QtGui.QDialog):
             lambda checked: self._check_merge_group.setChecked(not checked)
         )
 
-        buttons = QtGui.QDialogButtonBox(QtCore.Qt.Horizontal,
-                                         self)
-        self._delete_button = QtGui.QPushButton(self)
+        buttons = QDialogButtonBox(Qt.Horizontal, self)
+        self._delete_button = QtWidgets.QPushButton(self)
         self._delete_button.setText("Delete")
 
-        buttons.addButton(self._delete_button,
-                          QtGui.QDialogButtonBox.AcceptRole)
-        buttons.addButton(QtGui.QDialogButtonBox.Cancel)
+        buttons.addButton(self._delete_button, QDialogButtonBox.AcceptRole)
+        buttons.addButton(QDialogButtonBox.Cancel)
 
         buttons.accepted.connect(self._delete)
         buttons.rejected.connect(super(DeleteBranchDialog, self).reject)
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self._branch_label)
         layout.addWidget(self._branch)
         layout.addWidget(self._check_merge_group)
@@ -114,13 +115,14 @@ class DeleteBranchDialog(QtGui.QDialog):
 
         if self._check_merge_group.isChecked():
             check_branch = self._check_merge_view.currentIndex().data(
-                QtCore.Qt.DisplayRole)
+                Qt.DisplayRole
+            )
 
             if len(check_branch) == 0:
                 check_branch = self._git.current_branch()
 
             if self._git.merged(check_branch).count(branch) == 0:
-                QtGui.QMessageBox.critical(
+                QtWidgets.QMessageBox.critical(
                     self,
                     "Delete branch",
                     "Branch " + branch + " not merged to " + check_branch

@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PyQt4 import QtCore, QtGui
+from PyQt5.QtWidgets import QAction, QMenu
+
 import git
 from create_branch_dialog import CreateBranchDialog
 
 
-class GitFlowMenu(QtGui.QMenu):
+class GitFlowMenu(QMenu):
     _git = git.Git()
 
     def __init__(self, parent=None):
@@ -14,12 +15,12 @@ class GitFlowMenu(QtGui.QMenu):
 
         self.setTitle("Git flow")
 
-        self._add_fix_action = QtGui.QAction(self)
+        self._add_fix_action = QAction(self)
         self._add_fix_action.setText("Add fix branch (fix/....)")
         self._add_fix_action.triggered.connect(self.add_fix_branch)
         self.addAction(self._add_fix_action)
 
-        self._add_feature_action = QtGui.QAction(self)
+        self._add_feature_action = QAction(self)
         self._add_feature_action.setText("Add feature branch (feature/....)")
         self._add_feature_action.triggered.connect(self.add_feature_branch)
         self.addAction(self._add_feature_action)

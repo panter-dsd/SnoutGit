@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PyQt4 import QtCore
+from PyQt5.QtCore import Qt, QAbstractItemModel, QDateTime, QModelIndex
 
 
 def commit_date(commit):
@@ -12,9 +12,7 @@ def commit_date(commit):
               " timestamp - " + commit.timestamp())
         timestamp = 0
 
-    return QtCore.QDateTime.fromTime_t(timestamp).toString(
-        "yyyy-MM-dd hh:mm:ss"
-    )
+    return QDateTime.fromTime_t(timestamp).toString("yyyy-MM-dd hh:mm:ss")
 
 
 class AbstractField(object):
@@ -33,11 +31,11 @@ class AbstractField(object):
         return str()
 
     def data(self, role):
-        if role == QtCore.Qt.DisplayRole:
+        if role == Qt.DisplayRole:
             return self._display_role_data()
-        elif role == QtCore.Qt.ToolTipRole:
+        elif role == Qt.ToolTipRole:
             return self._tool_tip_role_data()
-        elif role == QtCore.Qt.EditRole:
+        elif role == Qt.EditRole:
             return self._edit_role_data()
         else:
             return None
@@ -122,7 +120,7 @@ class TimestampField(AbstractField):
         return self._display_role_data()
 
 
-class CommitesModel(QtCore.QAbstractItemModel):
+class CommitesModel(QAbstractItemModel):
     _fields = [AbbreviatedIdField(),
                CommentField(),
                AuthorField(),
@@ -147,19 +145,23 @@ class CommitesModel(QtCore.QAbstractItemModel):
 
         if old_size != new_size:
             if old_size < new_size:
-                QtCore.QAbstractItemModel.beginInsertRows(
+                QAbstractItemModel.beginInsertRows(
                     self,
-                    QtCore.QModelIndex(),
+                    QModelIndex(),
                     0,
-                    new_size - old_size - 1)
-                QtCore.QAbstractItemModel.endInsertRows(self)
+                    new_size - old_size - 1
+                )
+
+                QAbstractItemModel.endInsertRows(self)
             else:
-                QtCore.QAbstractItemModel.beginRemoveRows(
+                QAbstractItemModel.beginRemoveRows(
                     self,
-                    QtCore.QModelIndex(),
+                    QModelIndex(),
                     new_size,
-                    old_size - 1)
-                QtCore.QAbstractItemModel.endRemoveRows(self)
+                    old_size - 1
+                )
+
+                QAbstractItemModel.endRemoveRows(self)
 
                 for i in range(min(old_size, new_size)):
                     if old_commits_list[i] != new_commits_list[i]:
@@ -168,18 +170,18 @@ class CommitesModel(QtCore.QAbstractItemModel):
                             self.index(i, self.columnCount())
                         )
 
-    def index(self, row, column, parent=QtCore.QModelIndex()):
+    def index(self, row, column, parent=QModelIndex()):
         if parent.isValid():
-            return QtCore.QModelIndex()
+            return QModelIndex()
 
         return self.createIndex(row, column)
 
-    def rowCount(self, parent=QtCore.QModelIndex()):
+    def rowCount(self, parent=QModelIndex()):
         if parent.isValid():
             return 0
         return len(self._commits_list)
 
-    def columnCount(self, parent=QtCore.QModelIndex()):
+    def columnCount(self, parent=QModelIndex()):
         if parent.isValid():
             return 0
         return len(self._fields)
@@ -187,7 +189,7 @@ class CommitesModel(QtCore.QAbstractItemModel):
     def _is_index_correct(self, index):
         return index.row() in range(0, len(self._commits_list))
 
-    def data(self, index, role=QtCore.Qt.DisplayRole):
+    def data(self, index, role=Qt.DisplayRole):
         if not self._is_index_correct(index):
             return None
 
@@ -196,14 +198,11 @@ class CommitesModel(QtCore.QAbstractItemModel):
         return field.data(role)
 
     def parent(self, index):
-        return QtCore.QModelIndex()
+        return QModelIndex()
 
-    def headerData(self,
-                   section,
-                   orientation,
-                   role=QtCore.Qt.DisplayRole):
-        if orientation == QtCore.Qt.Horizontal:
-            if role == QtCore.Qt.DisplayRole:
+    def headerData(self, section, orientation, role=Qt.DisplayRole):
+        if orientation == Qt.Horizontal:
+            if role == Qt.DisplayRole:
                 return self._fields[section].title()
 
         return super(CommitesModel, self).headerData(section,

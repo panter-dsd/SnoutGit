@@ -3,13 +3,14 @@ __author__ = 'panter.dsd@gmail.com'
 
 import unittest
 import sys
-from PyQt4 import QtGui
+
+from PyQt5.QtWidgets import QApplication
 
 from main_window import MainWindow, State
 
 class TestMainWindow(unittest.TestCase):
     def setUp(self):
-        self._app = QtGui.QApplication(sys.argv)
+        self._app = QApplication(sys.argv)
 
     def tearDown(self):
         del self._app

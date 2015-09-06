@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PyQt4 import QtCore, QtGui
+from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtGui import QTextOption
+from PyQt5.QtWidgets import QPlainTextEdit, QVBoxLayout, QWidget
+
 import diff_highlighter
 import git
 
 
-class DiffFileWidget(QtGui.QWidget):
+class DiffFileWidget(QWidget):
     _file_name = str()
 
     def __init__(self, path, parent=None):
@@ -14,23 +17,23 @@ class DiffFileWidget(QtGui.QWidget):
 
         self._path = path
 
-        self._diff_veiw = QtGui.QPlainTextEdit(self)
+        self._diff_veiw = QPlainTextEdit(self)
         self._diff_veiw.setReadOnly(True)
-        self._diff_veiw.setWordWrapMode(QtGui.QTextOption.NoWrap)
+        self._diff_veiw.setWordWrapMode(QTextOption.NoWrap)
         self._diff_veiw.setUndoRedoEnabled(False)
         self._highlighter = diff_highlighter.DiffHighlighter(
             self._diff_veiw.document())
 
-        layout = QtGui.QVBoxLayout()
+        layout = QVBoxLayout()
         layout.addWidget(self._diff_veiw)
         super(DiffFileWidget, self).setLayout(layout)
 
-    @QtCore.pyqtSlot(str, bool)
+    @pyqtSlot(str, bool)
     def set_file(self, file_name, diff_with_index=False):
         self._file_name = file_name
         self._update_diff(diff_with_index)
 
-    @QtCore.pyqtSlot()
+    @pyqtSlot()
     def clear(self):
         self._diff_veiw.clear()
 
