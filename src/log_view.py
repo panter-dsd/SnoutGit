@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 __author__ = 'panter.dsd@gmail.com'
 
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
 
 
-class LogView(QtGui.QWidget):
+class LogView(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(LogView, self).__init__(parent)
 
-        self._text_view = QtGui.QTextEdit(self)
+        self._text_view = QtWidgets.QTextEdit(self)
 
-        layout = QtGui.QHBoxLayout()
+        layout = QtWidgets.QHBoxLayout()
         layout.addWidget(self._text_view)
         super(LogView, self).setLayout(layout)
 

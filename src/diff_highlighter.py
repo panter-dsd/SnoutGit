@@ -3,22 +3,19 @@ __author__ = 'panter.dsd@gmail.com'
 
 import re
 
-from PyQt4 import QtCore, QtGui
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QSyntaxHighlighter
 
 
-class DiffHighlighter(QtGui.QSyntaxHighlighter):
+class DiffHighlighter(QSyntaxHighlighter):
     def __init__(self, parent=None):
         super(DiffHighlighter, self).__init__(parent)
 
     def highlightBlock(self, text):
         added = re.match("^\+.*$", text)
         if added:
-            self.setFormat(added.pos,
-                           added.endpos,
-                           QtCore.Qt.darkGreen)
+            self.setFormat(added.pos, added.endpos, Qt.darkGreen)
 
         removed = re.match("^\-.*$", text)
         if removed:
-            self.setFormat(removed.pos,
-                           removed.endpos,
-                           QtCore.Qt.darkRed)
+            self.setFormat(removed.pos, removed.endpos, Qt.darkRed)

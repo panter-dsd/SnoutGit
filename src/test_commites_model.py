@@ -4,7 +4,8 @@ __author__ = 'panter.dsd@gmail.com'
 import tempfile
 import os
 import unittest
-from PyQt4 import QtCore
+
+from PyQt5.QtCore import Qt
 
 from git import Git
 from commites_model import CommitesModel
@@ -29,9 +30,11 @@ class TestCommitesModel(unittest.TestCase):
         model = CommitesModel(self._git, None)
         self.assertEqual(model.rowCount(), 0)
         self.assertEqual(model.columnCount(), 4)
+
         for column in range(model.columnCount()):
-            self.assertFalse(model.data(model.index(0, column),
-                                        QtCore.Qt.DisplayRole))
+            self.assertFalse(
+                model.data(model.index(0, column), Qt.DisplayRole)
+            )
 
     def _commit_file(self, commit_name):
         file = tempfile.mkstemp(dir=self.temp_dir.name)
@@ -52,9 +55,12 @@ class TestCommitesModel(unittest.TestCase):
         model = CommitesModel(self._git, None)
         self.assertEqual(model.rowCount(), len(commites))
         i = len(commites) - 1
+
         for commit in commites:
-            self.assertEqual(model.data(model.index(i, 1), QtCore.Qt.EditRole),
-                             commit)
+            self.assertEqual(
+                model.data(model.index(i, 1), Qt.EditRole), commit
+            )
+
             i -= 1
 
     def test_roles_data(self):
@@ -63,40 +69,48 @@ class TestCommitesModel(unittest.TestCase):
 
         commit = commites[-1]
 
-        self.assertEqual(model.data(model.index(0, 1), QtCore.Qt.DisplayRole),
-                         "[master]" + commit)
-        self.assertEqual(model.data(model.index(0, 1), QtCore.Qt.ToolTipRole),
-                         commit)
-        self.assertEqual(model.data(model.index(0, 1), QtCore.Qt.EditRole),
-                         commit)
+        self.assertEqual(
+            model.data(model.index(0, 1), Qt.DisplayRole), "[master]" + commit
+        )
+
+        self.assertEqual(model.data(model.index(0, 1), Qt.ToolTipRole), commit)
+        self.assertEqual(model.data(model.index(0, 1), Qt.EditRole),commit)
         self.assertTrue(
-            model.data(model.index(0, 0), QtCore.Qt.EditRole).startswith(
-                model.data(model.index(0, 0), QtCore.Qt.DisplayRole)
+            model.data(model.index(0, 0), Qt.EditRole).startswith(
+                model.data(model.index(0, 0), Qt.DisplayRole)
             )
         )
         self.assertNotEqual(
-            model.data(model.index(0, 0), QtCore.Qt.EditRole),
-            model.data(model.index(0, 0), QtCore.Qt.DisplayRole)
+            model.data(model.index(0, 0), Qt.EditRole),
+            model.data(model.index(0, 0), Qt.DisplayRole)
         )
 
     def test_data_with_tag(self):
         commites = self._generate_repo()
         tag_name = "some_tag"
         tag_message = "some_tag_message"
-        self._git.create_tag(self._git.commites()[0].id(), tag_name,
-                             tag_message)
+
+        self._git.create_tag(
+            self._git.commites()[0].id(), tag_name, tag_message
+        )
 
         model = CommitesModel(self._git, None)
         commit = commites[-1]
 
-        self.assertEqual(model.data(model.index(0, 1), QtCore.Qt.DisplayRole),
-                         "<" + tag_name + ">[master]" + commit)
-        self.assertTrue(tag_name in model.data(model.index(0, 1),
-                                               QtCore.Qt.ToolTipRole))
-        self.assertTrue(tag_message in model.data(model.index(0, 1),
-                                                  QtCore.Qt.ToolTipRole))
-        self.assertEqual(model.data(model.index(0, 1), QtCore.Qt.EditRole),
-                         commit)
+        self.assertEqual(
+            model.data(model.index(0, 1), Qt.DisplayRole),
+            "<" + tag_name + ">[master]" + commit
+        )
+
+        self.assertTrue(
+            tag_name in model.data(model.index(0, 1), Qt.ToolTipRole)
+        )
+
+        self.assertTrue(
+            tag_message in model.data(model.index(0, 1), Qt.ToolTipRole)
+        )
+
+        self.assertEqual(model.data(model.index(0, 1), Qt.EditRole), commit)
 
 
 def suite():
