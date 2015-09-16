@@ -2,7 +2,7 @@
 __author__ = 'panter.dsd@gmail.com'
 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QStringListModel
 from PyQt5.QtWidgets import QDialogButtonBox
 
 import git
@@ -36,7 +36,7 @@ class DeleteBranchDialog(QtWidgets.QDialog):
             self._update_check_merge_model
         )
 
-        self._check_merge_model = QtWidgets.QStringListModel(self)
+        self._check_merge_model = QStringListModel(self)
 
         self._check_merge_view = QtWidgets.QListView(self)
         self._check_merge_view.setModel(self._check_merge_model)
