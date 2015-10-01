@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-__author__ = 'panter.dsd@gmail.com'
 
-import sys
 import os
+import sys
 
+from PyQt5.QtCore import QCommandLineParser, QCommandLineOption
 from PyQt5.QtWidgets import QApplication
 
 import main_window
@@ -12,104 +12,108 @@ import git
 
 from submodule_dialog import SubmoduleDialog
 
-
-def is_git_root(path):
-    return os.path.exists(path + "/.git")
+__author__ = 'panter.dsd@gmail.com'
 
 
-def get_git_root_path(path):
-    result = path
+def is_git_root(repository_path):
+    return os.path.exists(os.path.join(repository_path, ".git"))
+
+
+def get_git_root_path(repository_path):
+    result = repository_path
+
     while not is_git_root(result):
         parent_dir = os.path.dirname(result)
+
         if result == parent_dir:
             break
+
         result = parent_dir
 
-    return is_git_root(result) and result or path
+    return is_git_root(result) and result or repository_path
 
 
-def load_current_state():
-    result = str()
-    try:
-        state_name_index = sys.argv.index("--state") + 1
-        if state_name_index < len(sys.argv):
-            result = sys.argv[state_name_index]
-    except ValueError:
-        pass
+def command_line_arguments_parser():
+    parser = QCommandLineParser()
 
-    return result
+    parser.setApplicationDescription(
+        "Qt-based graphical user interface to Git."
+    )
 
-def get_font():
-    result = str()
-    try:
-        font_name_index = sys.argv.index("--font") + 1
-        if font_name_index < len(sys.argv):
-            result = sys.argv[font_name_index]
-    except ValueError:
-        pass
+    parser.addHelpOption()
+    parser.addVersionOption()
+    parser.addPositionalArgument("path", "The path to the repository.")
 
-    return result
+    submodule_option = QCommandLineOption(
+        "submodule", "Runs the application with submodule selection dialog."
+    )
 
-def get_git_executable_path():
-    result = "git"
-    try:
-        git_executable_path_index = sys.argv.index("--git-executable") + 1
-        if git_executable_path_index < len(sys.argv):
-            result = sys.argv[git_executable_path_index]
-    except ValueError:
-        pass
+    font_option = QCommandLineOption(
+        "font", "Sets the font of the application.", "font name"
+    )
 
-    return result
+    git_executable_option = QCommandLineOption(
+        "git-executable",
+        "Sets the path to git executable file.",
+        "path",
+        "git"
+    )
+
+    state_option = QCommandLineOption(
+        "state", "Loads the state of main window.", "state"
+    )
+
+    parser.addOption(submodule_option)
+    parser.addOption(font_option)
+    parser.addOption(git_executable_option)
+    parser.addOption(state_option)
+
+    return parser
 
 
-def main():
-    if len(sys.argv) < 2:
-        path = os.path.abspath(os.curdir)
-    else:
-        path = os.path.abspath(sys.argv[-1])
-
-    git.Git.git_executable_path = get_git_executable_path()
-
-    path = get_git_root_path(path)
-    print("Use git repository:", path)
-
-    try:
-        os.chdir(path)
-    except OSError as error:
-        print(error)
-        return
-
-    git.Git.repo_path = path
+if __name__ == '__main__':
+    args_parser = command_line_arguments_parser()
 
     app = QApplication(sys.argv)
     app.setApplicationName("SnoutGit")
     app.setApplicationVersion("0.0.0.0")
     app.setOrganizationName("PanteR")
 
-    font_name = get_font()
-    if font_name:
+    args_parser.process(app)
+
+    args = args_parser.positionalArguments()
+    path = get_git_root_path(os.path.abspath(args[0] if args else os.curdir))
+    print("Use git repository:", path)
+
+    git.Git.git_executable_path = args_parser.value("git-executable")
+
+    try:
+        os.chdir(path)
+    except OSError as error:
+        print(error)
+        sys.exit(1)
+
+    git.Git.repo_path = path
+
+    if args_parser.isSet("font"):
         font = app.font()
-        font.setFamily(font_name)
+        font.setFamily(args_parser.value("font"))
         app.setFont(font)
 
-    if "--submodule" in sys.argv:
+    if args_parser.isSet("submodule"):
         submodules = git.Git().submodules()
 
         if submodules:
-            submodule_dialog = SubmoduleDialog(submodules)
-            if submodule_dialog.exec():
-                git.Git.repo_path = path + "/" + submodule_dialog.submodule()
+            dialog = SubmoduleDialog(submodules)
+
+            if dialog.exec():
+                git.Git.repo_path = os.path.join(path, dialog.submodule())
 
     window = main_window.MainWindow()
 
-    state = load_current_state()
-    if state:
-        window.set_current_state(state)
+    if args_parser.isSet("state"):
+        window.set_current_state(args_parser.value("state"))
 
     window.show()
 
     sys.exit(app.exec_())
-
-
-if __name__ == '__main__':
-    main()
