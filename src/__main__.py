@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-__author__ = 'panter.dsd@gmail.com'
 
 import sys
 import os
@@ -11,6 +10,8 @@ import main_window
 import git
 
 from submodule_dialog import SubmoduleDialog
+
+__author__ = 'panter.dsd@gmail.com'
 
 
 def is_git_root(path):
@@ -39,6 +40,7 @@ def load_current_state():
 
     return result
 
+
 def get_font():
     result = str()
     try:
@@ -49,6 +51,7 @@ def get_font():
         pass
 
     return result
+
 
 def get_git_executable_path():
     result = "git"
