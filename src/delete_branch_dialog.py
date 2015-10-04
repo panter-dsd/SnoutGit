@@ -118,7 +118,7 @@ class DeleteBranchDialog(QtWidgets.QDialog):
                 Qt.DisplayRole
             )
 
-            if len(check_branch) == 0:
+            if not check_branch:
                 check_branch = self._git.current_branch()
 
             if self._git.merged(check_branch).count(branch) == 0:
