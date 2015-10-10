@@ -7,7 +7,6 @@ import tempfile
 
 from xml.dom.minidom import parseString
 
-from ApplicationSettings import application_settings
 from commit import Commit
 
 __author__ = 'panter.dsd@gmail.com'
@@ -96,10 +95,19 @@ class Remote(object):
 
 
 class Git(object):
+    _git_executable_path = str()
     repo_path = str()
     log_view = None
     _last_output = []
     _last_error = []
+
+    @classmethod
+    def git_executable_path(cls):
+        return cls._git_executable_path
+
+    @classmethod
+    def set_git_executable_path(cls, path):
+        cls._git_executable_path = path
 
     def __init__(self):
         self._last_result = None
@@ -115,14 +123,14 @@ class Git(object):
 
         try:
             process = subprocess.Popen(
-                [application_settings.git_executable_path] + command,
+                [self.git_executable_path()] + command,
                 shell=False,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 cwd=Git.repo_path
             )
         except subprocess.CalledProcessError as error:
-            print(application_settings.git_executable_path, command, error)
+            print(self.git_executable_path(), command, error)
             return []
 
         output, error = process.communicate()

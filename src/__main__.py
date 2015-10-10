@@ -7,9 +7,9 @@ import sys
 from PyQt5.QtCore import QCommandLineParser, QCommandLineOption
 from PyQt5.QtWidgets import QApplication
 
-import main_window
-import git
-
+from ApplicationSettings import application_settings
+from git import Git
+from main_window import MainWindow
 from submodule_dialog import SubmoduleDialog
 
 __author__ = 'panter.dsd@gmail.com'
@@ -56,7 +56,7 @@ def command_line_arguments_parser():
         "git-executable",
         "Sets the path to git executable file.",
         "path",
-        "git"
+        application_settings.git_executable_path
     )
 
     state_option = QCommandLineOption(
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     path = get_git_root_path(os.path.abspath(args[0] if args else os.curdir))
     print("Use git repository:", path)
 
-    git.Git.git_executable_path = args_parser.value("git-executable")
+    Git.set_git_executable_path(args_parser.value("git-executable"))
 
     try:
         os.chdir(path)
@@ -93,7 +93,7 @@ if __name__ == '__main__':
         print(error)
         sys.exit(1)
 
-    git.Git.repo_path = path
+    Git.repo_path = path
 
     if args_parser.isSet("font"):
         font = app.font()
@@ -101,15 +101,15 @@ if __name__ == '__main__':
         app.setFont(font)
 
     if args_parser.isSet("submodule"):
-        submodules = git.Git().submodules()
+        submodules = Git().submodules()
 
         if submodules:
             dialog = SubmoduleDialog(submodules)
 
             if dialog.exec():
-                git.Git.repo_path = os.path.join(path, dialog.submodule())
+                Git.repo_path = os.path.join(path, dialog.submodule())
 
-    window = main_window.MainWindow()
+    window = MainWindow()
 
     if args_parser.isSet("state"):
         window.set_current_state(args_parser.value("state"))
