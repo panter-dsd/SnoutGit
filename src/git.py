@@ -1,16 +1,39 @@
 # -*- coding: utf-8 -*-
-__author__ = 'panter.dsd@gmail.com'
 
-import subprocess
-import re
-import tempfile
 import fileinput
+import re
+import subprocess
+import tempfile
+
 from xml.dom.minidom import parseString
 
 from commit import Commit
 
+__author__ = 'panter.dsd@gmail.com'
 
-class Stash():
+
+def _convert_output(text):
+    lines = [_decode_text(x.rstrip()) for x in text.split(b'\n')]
+    return [line for line in filter(bool, lines)]
+
+
+def _decode_text(text):
+    try:
+        result = text.decode()
+    except UnicodeDecodeError:
+        result = text.decode("cp1251")
+
+    return result
+
+
+def _get_node_data(node, name):
+    element = node.getElementsByTagName(name)[0]
+    nodes = element.childNodes
+
+    return nodes[0].wholeText if nodes else str()
+
+
+class Stash(object):
     name = str()
     description = str()
 
@@ -19,7 +42,7 @@ class Stash():
         self.description = description
 
 
-class MergeOptions():
+class MergeOptions(object):
     source_target = str()
     commit = True
     fast_forward = False
@@ -29,7 +52,7 @@ class MergeOptions():
         self.source_target = source_target
 
 
-class PushOptions():
+class PushOptions(object):
     branch = str()
     remotes = str()
     force = False
@@ -40,7 +63,7 @@ class PushOptions():
         self.remotes = remotes
 
 
-class PullOptions():
+class PullOptions(object):
     remote = str()
     force = False
     no_tags = False
@@ -52,8 +75,6 @@ class PullOptions():
 
 class Remote(object):
     def __init__(self, git):
-        super(Remote, self).__init__()
-
         self._git = git
 
     def remotes_list(self):
@@ -81,22 +102,9 @@ class Git(object):
     _last_error = []
 
     def __init__(self):
-        pass
-
-    def _decode_text(self, text):
-        result = str()
-        try:
-            result = text.decode()
-        except UnicodeDecodeError:
-            result = text.decode("CP1251")
-        return result
-
-    def _convert_output(self, text):
-        lines = [
-            self._decode_text(x.rstrip()) for x in text.split(b'\n')
-        ]
-
-        return [line for line in filter(bool, lines)]
+        self._last_result = None
+        self._last_output = []
+        self._last_error = []
 
     def execute_command(self, command, show_log=True):
         self._last_output = []
@@ -106,28 +114,27 @@ class Git(object):
             command = command.split()
 
         try:
-            process = subprocess.Popen([self.git_executable_path] + command,
-                                       shell=False,
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE,
-                                       cwd=Git.repo_path)
+            process = subprocess.Popen(
+                [self.git_executable_path] + command,
+                shell=False,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                cwd=Git.repo_path
+            )
         except subprocess.CalledProcessError as error:
             print(self.git_executable_path, command, error)
             return []
 
-        self._last_output, self._last_error = process.communicate()
-        self._last_output = self._convert_output(self._last_output)
-        self._last_error = self._convert_output(self._last_error)
+        output, error = process.communicate()
+
+        self._last_output = _convert_output(output)
+        self._last_error = _convert_output(error)
 
         if show_log:
             if self.log_view:
                 self.log_view.append_command(" ".join(command))
-                self.log_view.append_output(
-                    "\n".join(self._last_output)
-                )
-                self.log_view.append_error(
-                    "\n".join(self._last_error)
-                )
+                self.log_view.append_output("\n".join(self._last_output))
+                self.log_view.append_error("\n".join(self._last_error))
             else:
                 print(command)
                 print(self._last_output)
@@ -139,6 +146,7 @@ class Git(object):
         process.stderr.close()
 
         del process
+
         return self._last_output
 
     def last_result(self):
@@ -162,16 +170,19 @@ class Git(object):
 
     def pull(self, pull_options):
         command = ["pull"]
+
         if pull_options.force:
             command.append("-f")
+
         if pull_options.no_tags:
             command.append("--no-tags")
+
         if pull_options.prune:
             command.append("--prune")
 
         command.append(pull_options.remote)
-        self.execute_command(command, True)
 
+        self.execute_command(command, True)
 
     def svn_rebase(self):
         self.execute_command("svn rebase")
@@ -203,19 +214,23 @@ class Git(object):
 
     def current_branch(self):
         command = ["branch"]
+
         for branch in self.execute_command(command, True):
             if branch.startswith('* '):
                 return branch[2:]
-        return "Unknow"
+
+        return "Unknown"
 
     def local_branches(self):
         command = ["branch"]
 
         result = []
 
-        branch_re = re.compile(r"^[\*, ]? (\S*)$")
+        pattern = re.compile(r"^[\*, ]? (\S*)$")
+
         for line in self.execute_command(command, True):
-            match = branch_re.match(line)
+            match = pattern.match(line)
+
             if match:
                 result.append(match.group(1))
 
@@ -226,9 +241,11 @@ class Git(object):
 
         result = []
 
-        branch_re = re.compile(r"^  (\w*)/(\S*)$")
+        pattern = re.compile(r"^  (\w*)/(\S*)$")
+
         for line in self.execute_command(command, True):
-            match = branch_re.match(line)
+            match = pattern.match(line)
+
             if match:
                 result.append(match.group(1) + "/" + match.group(2))
 
@@ -237,9 +254,11 @@ class Git(object):
     def tag_info(self, tag):
         command = ["show", "-s", "--pretty=%b", tag]
         result = self.execute_command(command, False)
+
         for line in result:
-            if len(line.strip()) == 0:
+            if not line.strip():
                 result.remove(line)
+
         return result
 
     def commites(self):
@@ -260,25 +279,20 @@ class Git(object):
 
         commites_data.append("</commites>")
 
-        def node_data(node, name):
-            element = node.getElementsByTagName(name)[0]
-            nodes = element.childNodes
-            if nodes:
-                return nodes[0].wholeText
-            else:
-                return str()
-
         dom = parseString("".join(commites_data))
         top_element = dom.childNodes[0]
 
         result = []
+
         for node in top_element.childNodes:
             result.append(
-                Commit(self,
-                       node_data(node, "id"),
-                       node_data(node, "full_name"),
-                       node_data(node, "author"),
-                       node_data(node, "timestamp"))
+                Commit(
+                    self,
+                    _get_node_data(node, "id"),
+                    _get_node_data(node, "full_name"),
+                    _get_node_data(node, "author"),
+                    _get_node_data(node, "timestamp")
+                )
             )
 
         return result
@@ -294,19 +308,20 @@ class Git(object):
     def create_branch(self, branch_name, parent_branch):
         command = ["branch", branch_name, parent_branch]
         self.execute_command(command, True)
+
         return not self._last_error
 
     def stashes(self):
         command = ["stash", "list"]
         result = []
 
-        stash_re = re.compile(r"(stash@{\d*}): (.*)")
+        pattern = re.compile(r"(stash@{\d*}): (.*)")
 
         for line in self.execute_command(command, True):
-            match = stash_re.match(line)
-            assert match
-            result.append(Stash(match.group(1),
-                                match.group(2)))
+            match = pattern.match(line)
+
+            if match:
+                result.append(Stash(match.group(1), match.group(2)))
 
         return result
 
@@ -338,6 +353,7 @@ class Git(object):
             ["--no-squash", "--squash"][merge_options.squash],
             merge_options.source_target
         ]
+
         self.execute_command(command, True)
 
     def abort_merge(self):
@@ -349,17 +365,17 @@ class Git(object):
         self.execute_command(command, True)
 
     def _merged_or_no_merged(self, branch, merged=True):
-        command = ["branch",
-                   "--all",
-                   merged and "--merged" or "--no-merged",
-                   branch]
-
-        branch_re = re.compile(r"^[\*, ]? (\S*)$")
+        command = [
+            "branch", "--all", merged and "--merged" or "--no-merged", branch
+        ]
 
         result = []
 
+        pattern = re.compile(r"^[\*, ]? (\S*)$")
+
         for line in self.execute_command(command, True):
-            match = branch_re.match(line)
+            match = pattern.match(line)
+
             if match:
                 result.append(match.group(1).replace("remotes/", str()))
 
@@ -372,10 +388,7 @@ class Git(object):
         return self._merged_or_no_merged(branch, False)
 
     def delete_branch(self, branch, force=False):
-        command = ["branch",
-                   force and "-D" or "-d",
-                   branch]
-
+        command = ["branch", force and "-D" or "-d", branch]
         self.execute_command(command, True)
 
     def last_output(self):
@@ -419,13 +432,12 @@ class Git(object):
 
     def submodules(self):
         command = ["submodule", "status"]
-
         submodules = []
 
-        for submodule_status in self.execute_command(command, True):
-            name_re = re.compile(" ?\S+ (.*) .*")
+        pattern = re.compile(" ?\S+ (.*) .*")
 
-            match = name_re.match(submodule_status)
+        for submodule_status in self.execute_command(command, True):
+            match = pattern.match(submodule_status)
 
             if match:
                 submodules.append(match.group(1))
