@@ -21,7 +21,7 @@ class ApplicationSettings(object):
 
     @property
     def git_executable_path(self):
-        return self.value('git_executable_path', 'git')
+        return self.value('GitExecutable', 'git')
 
     def _settings(self, scope):
         return QSettings(scope, self._organization, self._application)
