@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import qApp
 
 
 class ApplicationSettings(object):
-    _application = qApp.applicationName()
-    _organization = qApp.organizationName()
+    _application = 'SnoutGit'
+    _organization = 'PanteR'
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
