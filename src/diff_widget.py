@@ -3,7 +3,7 @@ __author__ = 'panter.dsd@gmail.com'
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSlot, QRegExp
-from PyQt5.QtGui import QTextOption
+from PyQt5.QtGui import QTextCursor, QTextOption
 from PyQt5.QtWidgets import QSizePolicy
 
 import commit
@@ -75,6 +75,6 @@ class DiffWidget(QtWidgets.QWidget):
     def _select_file(self, item):
         doc = self._diff_view.document()
         cursor = doc.find(QRegExp("a/" + item.text()))
-        cursor.movePosition(QtWidgets.QTextCursor.StartOfLine)
+        cursor.movePosition(QTextCursor.StartOfLine)
         self._diff_view.setTextCursor(cursor)
         self._diff_view.centerCursor()
