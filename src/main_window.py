@@ -372,6 +372,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         settings.endGroup()
 
+        self._diff_widget.save_settings()
+
     def merge(self):
         d = MergeDialog(self)
         d.exec_()

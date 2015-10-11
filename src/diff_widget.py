@@ -9,6 +9,8 @@ import commit
 import diff_highlighter
 import git
 
+from ApplicationSettings import application_settings
+
 __author__ = 'panter.dsd@gmail.com'
 
 
@@ -37,7 +39,10 @@ class DiffWidget(QtWidgets.QWidget):
 
         self._diff_lines_count_edit = QtWidgets.QSpinBox(self)
         self._diff_lines_count_edit.valueChanged.connect(self._update_diff)
-        self._diff_lines_count_edit.setValue(3)
+
+        self._diff_lines_count_edit.setValue(
+            application_settings.commit_info_context_line_count
+        )
 
         panel_layout = QtWidgets.QHBoxLayout()
         panel_layout.addWidget(QtWidgets.QLabel("Context strings count"))
@@ -59,6 +64,10 @@ class DiffWidget(QtWidgets.QWidget):
         layout.addWidget(horizontal_split)
 
         self.setLayout(layout)
+
+    def save_settings(self):
+        application_settings.commit_info_context_line_count = \
+            self._diff_lines_count_edit.value()
 
     @pyqtSlot(str)
     def set_commit(self, commit_id):
