@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-__author__ = 'panter.dsd@gmail.com'
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSlot, QRegExp
@@ -7,8 +6,10 @@ from PyQt5.QtGui import QTextCursor, QTextOption
 from PyQt5.QtWidgets import QSizePolicy
 
 import commit
-import git
 import diff_highlighter
+import git
+
+__author__ = 'panter.dsd@gmail.com'
 
 
 class DiffWidget(QtWidgets.QWidget):
@@ -16,16 +17,17 @@ class DiffWidget(QtWidgets.QWidget):
     _git = git.Git()
 
     def __init__(self, path, parent=None):
-        super(DiffWidget, self).__init__(parent)
-
+        super().__init__(parent)
         self._path = path
 
         self._diff_view = QtWidgets.QPlainTextEdit(self)
         self._diff_view.setReadOnly(True)
         self._diff_view.setWordWrapMode(QTextOption.NoWrap)
         self._diff_view.setUndoRedoEnabled(False)
+
         self._highlighter = diff_highlighter.DiffHighlighter(
-            self._diff_view.document())
+            self._diff_view.document()
+        )
 
         self._files_list = QtWidgets.QListWidget(self)
         self._files_list.itemPressed.connect(self._select_file)
@@ -37,17 +39,16 @@ class DiffWidget(QtWidgets.QWidget):
         self._diff_lines_count_edit.valueChanged.connect(self._update_diff)
         self._diff_lines_count_edit.setValue(3)
 
-        panelLayout = QtWidgets.QHBoxLayout()
-        panelLayout.addWidget(QtWidgets.QLabel("Context strings count"))
-        panelLayout.addWidget(self._diff_lines_count_edit)
+        panel_layout = QtWidgets.QHBoxLayout()
+        panel_layout.addWidget(QtWidgets.QLabel("Context strings count"))
+        panel_layout.addWidget(self._diff_lines_count_edit)
 
         spacer = QtWidgets.QSpacerItem(
             0, 0, QSizePolicy.Expanding, QSizePolicy.Preferred
         )
 
-        panelLayout.addSpacerItem(spacer)
-
-        panel.setLayout(panelLayout)
+        panel_layout.addSpacerItem(spacer)
+        panel.setLayout(panel_layout)
 
         horizontal_split = QtWidgets.QSplitter(self)
         horizontal_split.addWidget(self._diff_view)
@@ -56,11 +57,12 @@ class DiffWidget(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(panel)
         layout.addWidget(horizontal_split)
-        super(DiffWidget, self).setLayout(layout)
+
+        self.setLayout(layout)
 
     @pyqtSlot(str)
-    def set_commit(self, id):
-        self._id = id
+    def set_commit(self, commit_id):
+        self._id = commit_id
         self._update_diff()
 
     def _update_diff(self):
@@ -69,6 +71,7 @@ class DiffWidget(QtWidgets.QWidget):
         self._diff_view.setPlainText(diff_text)
 
         self._files_list.clear()
+
         for file_name in current_commit.changed_files():
             self._files_list.addItem(QtWidgets.QListWidgetItem(file_name))
 
