@@ -41,7 +41,7 @@ class DiffWidget(QtWidgets.QWidget):
         self._diff_lines_count_edit.valueChanged.connect(self._update_diff)
 
         self._diff_lines_count_edit.setValue(
-            application_settings.commit_info_context_line_count
+            application_settings.commit_info_context_line_count()
         )
 
         panel_layout = QtWidgets.QHBoxLayout()
@@ -66,8 +66,9 @@ class DiffWidget(QtWidgets.QWidget):
         self.setLayout(layout)
 
     def save_settings(self):
-        application_settings.commit_info_context_line_count = \
+        application_settings.set_commit_info_context_line_count(
             self._diff_lines_count_edit.value()
+        )
 
     @pyqtSlot(str)
     def set_commit(self, commit_id):

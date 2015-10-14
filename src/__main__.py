@@ -56,7 +56,7 @@ def command_line_arguments_parser():
         "git-executable",
         "Sets the path to git executable file.",
         "path",
-        application_settings.git_executable_path
+        application_settings.git_executable_path()
     )
 
     state_option = QCommandLineOption(

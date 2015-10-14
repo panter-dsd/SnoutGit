@@ -19,16 +19,13 @@ class ApplicationSettings(object):
     def set_value(self, key, value, scope=QSettings.UserScope):
         self._settings(scope).setValue(key, value)
 
-    @property
     def git_executable_path(self):
         return self.value('GitExecutable', 'git')
 
-    @property
     def commit_info_context_line_count(self):
         return int(self.value('GUI/CommitInfoContextLineCount', 3))
 
-    @commit_info_context_line_count.setter
-    def commit_info_context_line_count(self, value):
+    def set_commit_info_context_line_count(self, value):
         self.set_value('GUI/CommitInfoContextLineCount', value)
 
     def _settings(self, scope=QSettings.UserScope):
