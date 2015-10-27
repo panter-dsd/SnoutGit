@@ -48,10 +48,6 @@ def command_line_arguments_parser():
         "submodule", "Runs the application with submodule selection dialog."
     )
 
-    font_option = QCommandLineOption(
-        "font", "Sets the font of the application.", "font name"
-    )
-
     git_executable_option = QCommandLineOption(
         "git-executable",
         "Sets the path to git executable file.",
@@ -64,7 +60,6 @@ def command_line_arguments_parser():
     )
 
     parser.addOption(submodule_option)
-    parser.addOption(font_option)
     parser.addOption(git_executable_option)
     parser.addOption(state_option)
 
@@ -95,11 +90,7 @@ if __name__ == '__main__':
 
     Git.repo_path = path
 
-    if args_parser.isSet("font"):
-        font = app.font()
-        font.setFamily(args_parser.value("font"))
-        app.setFont(font)
-    elif application_settings.application_font():
+    if application_settings.application_font():
         app.setFont(application_settings.application_font())
 
     if args_parser.isSet("submodule"):
