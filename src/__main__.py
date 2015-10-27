@@ -99,6 +99,8 @@ if __name__ == '__main__':
         font = app.font()
         font.setFamily(args_parser.value("font"))
         app.setFont(font)
+    elif application_settings.application_font():
+        app.setFont(application_settings.application_font())
 
     if args_parser.isSet("submodule"):
         submodules = Git().submodules()

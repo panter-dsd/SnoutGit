@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5.QtCore import QSettings
+from PyQt5.QtGui import QFont
 
 
 class ApplicationSettings(object):
@@ -22,6 +23,9 @@ class ApplicationSettings(object):
     def git_executable_path(self):
         return self.value('GitExecutable', 'git')
 
+    def application_font(self):
+        return self._font_value('ApplicationFont')
+
     def commit_info_context_line_count(self):
         return int(self.value('GUI/CommitInfoContextLineCount', 3))
 
@@ -30,6 +34,22 @@ class ApplicationSettings(object):
 
     def _settings(self, scope=QSettings.UserScope):
         return QSettings(scope, self._organization, self._application)
+
+    def _font_value(self, key, scope=QSettings.UserScope):
+        value = self.value(key, None, scope)
+        font = None
+
+        if type(value) is str:
+            font = self._font_from_string(value)
+        elif type(value) is list:
+            font = self._font_from_string(','.join(value))
+
+        return font
+
+    @staticmethod
+    def _font_from_string(value):
+        font = QFont()
+        return font if font.fromString(value) else None
 
 
 application_settings = ApplicationSettings()
