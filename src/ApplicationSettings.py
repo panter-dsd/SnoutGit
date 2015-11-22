@@ -68,7 +68,7 @@ class ApplicationSettings(object):
         elif type(value) is list and (len(value) > 2):
             color = QColor(*[int(item) for item in value])
 
-        return color if color else default_value
+        return color if color else QColor(default_value)
 
     def _set_color_value(self, key, value, scope=QSettings.UserScope):
         color_value = [value.red(), value.green(), value.blue(), value.alpha()]
