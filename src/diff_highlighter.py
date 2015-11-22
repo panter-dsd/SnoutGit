@@ -5,6 +5,8 @@ import re
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QSyntaxHighlighter
 
+from ApplicationSettings import application_settings
+
 __author__ = 'panter.dsd@gmail.com'
 
 
@@ -15,9 +17,9 @@ class DiffHighlighter(QSyntaxHighlighter):
         self._highlighted_line_pattern = re.compile(r'^(@@|\+|-).*$')
 
         self._line_colors = {
-            '@@': Qt.blue,
-            '+': Qt.darkGreen,
-            '-': Qt.darkRed,
+            '@@': application_settings.diff_viewer_range_line_color(),
+            '+': application_settings.diff_viewer_added_line_color(),
+            '-': application_settings.diff_viewer_removed_line_color(),
         }
 
     def highlightBlock(self, text):

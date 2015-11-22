@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from PyQt5.QtCore import QSettings
-from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtGui import QColor, QFont
 
 
 class ApplicationSettings(object):
@@ -29,6 +29,15 @@ class ApplicationSettings(object):
     def diff_viewer_font(self):
         return self._font_value('DiffViewer/Font')
 
+    def diff_viewer_range_line_color(self):
+        return self._color_value('DiffViewer/RangeLineColor', Qt.blue)
+
+    def diff_viewer_added_line_color(self):
+        return self._color_value('DiffViewer/AddedLineColor', Qt.darkGreen)
+
+    def diff_viewer_removed_line_color(self):
+        return self._color_value('DiffViewer/RemovedLineColor', Qt.darkRed)
+
     def commit_info_context_line_count(self):
         return int(self.value('GUI/CommitInfoContextLineCount', 3))
 
@@ -37,6 +46,17 @@ class ApplicationSettings(object):
 
     def _settings(self, scope=QSettings.UserScope):
         return QSettings(scope, self._organization, self._application)
+
+    def _color_value(self, key, default_value, scope=QSettings.UserScope):
+        value = self._settings(scope).value(key, default_value)
+        color = None
+
+        if type(value) is str:
+            color = QColor(value)
+        elif type(value) is list and (len(value) > 2):
+            color = QColor(*[int(item) for item in value])
+
+        return color if color else default_value
 
     def _font_value(self, key, scope=QSettings.UserScope):
         value = self.value(key, None, scope)
@@ -53,6 +73,5 @@ class ApplicationSettings(object):
     def _font_from_string(value):
         font = QFont()
         return font if font.fromString(value) else None
-
 
 application_settings = ApplicationSettings()
