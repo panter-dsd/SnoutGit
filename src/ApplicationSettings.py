@@ -27,7 +27,7 @@ class ApplicationSettings(object):
         return self._font_value('ApplicationFont')
 
     def diff_viewer_font(self):
-        return self._font_value('DiffViewerFont')
+        return self._font_value('DiffViewer/Font')
 
     def commit_info_context_line_count(self):
         return int(self.value('GUI/CommitInfoContextLineCount', 3))
