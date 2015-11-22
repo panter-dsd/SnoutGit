@@ -48,7 +48,7 @@ class ApplicationSettings(object):
         return QSettings(scope, self._organization, self._application)
 
     def _color_value(self, key, default_value, scope=QSettings.UserScope):
-        value = self._settings(scope).value(key, default_value)
+        value = self.value(key, None, scope)
         color = None
 
         if type(value) is str:
