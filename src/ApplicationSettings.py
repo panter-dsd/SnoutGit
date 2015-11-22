@@ -35,11 +35,20 @@ class ApplicationSettings(object):
     def diff_viewer_range_line_color(self):
         return self._color_value('DiffViewer/RangeLineColor', Qt.blue)
 
+    def set_diff_viewer_range_line_color(self, color):
+        return self._set_color_value('DiffViewer/RangeLineColor', color)
+
     def diff_viewer_added_line_color(self):
         return self._color_value('DiffViewer/AddedLineColor', Qt.darkGreen)
 
+    def set_diff_viewer_added_line_color(self, color):
+        return self._set_color_value('DiffViewer/AddedLineColor', color)
+
     def diff_viewer_removed_line_color(self):
         return self._color_value('DiffViewer/RemovedLineColor', Qt.darkRed)
+
+    def set_diff_viewer_removed_line_color(self, color):
+        return self._set_color_value('DiffViewer/RemovedLineColor', color)
 
     def commit_info_context_line_count(self):
         return int(self.value('GUI/CommitInfoContextLineCount', 3))
@@ -60,6 +69,10 @@ class ApplicationSettings(object):
             color = QColor(*[int(item) for item in value])
 
         return color if color else default_value
+
+    def _set_color_value(self, key, value, scope=QSettings.UserScope):
+        color_value = [value.red(), value.green(), value.blue(), value.alpha()]
+        self.set_value(key, color_value, scope)
 
     def _font_value(self, key, scope=QSettings.UserScope):
         value = self.value(key, None, scope)
