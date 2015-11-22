@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-__author__ = 'panter.dsd@gmail.com'
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt, QByteArray, QSettings, QSize
@@ -21,6 +20,8 @@ from pull_dialog import PullDialog
 from push_dialog import PushDialog
 from commites_model import CommitesModel
 from git_flow_menu import GitFlowMenu
+
+__author__ = 'panter.dsd@gmail.com'
 
 
 class State(object):
@@ -59,6 +60,7 @@ class States(object):
         for state in self._states:
             if state.name() == name:
                 return state
+
         return State()
 
     def append_state(self, name, data):
@@ -95,7 +97,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._git = Git()
         self._commites_model = CommitesModel(self._git, self)
 
-        self.create_docks()
+        self._create_docks()
 
         self._commites_widget.current_commit_changed.connect(
             self._diff_widget.set_commit
@@ -119,26 +121,26 @@ class MainWindow(QtWidgets.QMainWindow):
         self._load_settings()
         if self._states.states_count() == 0:
             self._init_default_state()
-        self.create_main_menu()
-        self.create_exit_action()
-        self.update_title()
+        self._create_main_menu()
+        self._create_exit_action()
+        self._update_title()
 
     def _init_default_state(self):
         self._states.append_state("Default", bytes())
         self._current_state = self._states.state(0)
 
-    def create_docks(self):
+    def _create_docks(self):
         top_area = Qt.TopDockWidgetArea
         bottom_area = Qt.BottomDockWidgetArea
-        self.addDockWidget(bottom_area, self.create_log_view_dock())
-        self.addDockWidget(top_area, self.create_commites_dock())
-        self.addDockWidget(bottom_area, self.create_diff_dock())
-        self.addDockWidget(top_area, self.create_status_dock())
-        self.addDockWidget(top_area, self.create_diff_file_widget_dock())
-        self.addDockWidget(bottom_area, self.create_commit_widget_dock())
-        self.addDockWidget(bottom_area, self.create_actions_widget_dock())
-        self.addDockWidget(bottom_area, self.create_branches_widget_dock())
-        self.addDockWidget(bottom_area, self.create_stashes_widget_dock())
+        self.addDockWidget(bottom_area, self._create_log_view_dock())
+        self.addDockWidget(top_area, self._create_commites_dock())
+        self.addDockWidget(bottom_area, self._create_diff_dock())
+        self.addDockWidget(top_area, self._create_status_dock())
+        self.addDockWidget(top_area, self._create_diff_file_widget_dock())
+        self.addDockWidget(bottom_area, self._create_commit_widget_dock())
+        self.addDockWidget(bottom_area, self._create_actions_widget_dock())
+        self.addDockWidget(bottom_area, self._create_branches_widget_dock())
+        self.addDockWidget(bottom_area, self._create_stashes_widget_dock())
 
     def _create_dock(self, widget, object_name, title=str()):
         dock = QtWidgets.QDockWidget(self)
@@ -147,48 +149,61 @@ class MainWindow(QtWidgets.QMainWindow):
         dock.setWidget(widget)
         return dock
 
-    def create_commites_dock(self):
+    def _create_commites_dock(self):
         self._commites_widget = CommitesWidget(self._commites_model, self)
-        return self._create_dock(self._commites_widget,
-                                 "CommitesDock",
-                                 "Commites tree")
 
-    def create_diff_dock(self):
+        return self._create_dock(
+            self._commites_widget, "CommitesDock", "Commites tree"
+        )
+
+    def _create_diff_dock(self):
         self._diff_widget = DiffWidget(self)
-        return self._create_dock(self._diff_widget, "DiffDock", "Commit info")
 
-    def create_status_dock(self):
+        return self._create_dock(
+            self._diff_widget, "DiffDock", "Commit info"
+        )
+
+    def _create_status_dock(self):
         self._status_widget = StatusWidget(self)
-        return self._create_dock(self._status_widget, "StatusDock", "Status")
 
-    def create_diff_file_widget_dock(self):
+        return self._create_dock(
+            self._status_widget, "StatusDock", "Status"
+        )
+
+    def _create_diff_file_widget_dock(self):
         self._diff_file_widget = DiffFileWidget(self)
-        return self._create_dock(self._diff_file_widget,
-                                 "DiffFileDock",
-                                 "Diff")
 
-    def create_commit_widget_dock(self):
-        self._commit_widget = CommitWidget(self._commites_model, parent=self)
-        return self._create_dock(self._commit_widget, "CommitDock", "Commit")
+        return self._create_dock(
+            self._diff_file_widget, "DiffFileDock", "Diff"
+        )
 
-    def create_actions_widget_dock(self):
+    def _create_commit_widget_dock(self):
+        self._commit_widget = CommitWidget(self._commites_model)
+
+        return self._create_dock(
+            self._commit_widget, "CommitDock", "Commit"
+        )
+
+    def _create_actions_widget_dock(self):
         self._actions_widget = ActionsWidget(self)
-        return self._create_dock(self._actions_widget,
-                                 "ActionsDock",
-                                 "Actions")
 
-    def create_log_view_dock(self):
+        return self._create_dock(
+            self._actions_widget, "ActionsDock", "Actions"
+        )
+
+    def _create_log_view_dock(self):
         self._log_view = LogView(self)
         Git.log_view = self._log_view
+
         return self._create_dock(self._log_view, "LogView", "Log")
 
-    def create_branches_widget_dock(self):
+    def _create_branches_widget_dock(self):
         self._branches_widget = BranchesWidget(self)
-        return self._create_dock(self._branches_widget,
-                                 "BranchesWidget",
-                                 "Branches")
+        return self._create_dock(
+            self._branches_widget, "BranchesWidget", "Branches"
+        )
 
-    def create_stashes_widget_dock(self):
+    def _create_stashes_widget_dock(self):
         self._stashes_widget = StashesWidget(self)
 
         stashes_dock = self._create_dock(self._stashes_widget, "StashesWidget")
@@ -201,61 +216,58 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return stashes_dock
 
-    def create_main_menu(self):
+    def _create_main_menu(self):
         self._menu_bar = QtWidgets.QMenuBar(self)
         self.setMenuBar(self._menu_bar)
         self._menu_bar.addMenu(self._stashes_widget.menu())
-        self._menu_bar.addMenu(self.make_states_menu())
-        self._menu_bar.addMenu(self.make_actions_menu())
-        self._menu_bar.addMenu(self.make_remote_menu())
+        self._menu_bar.addMenu(self._make_states_menu())
+        self._menu_bar.addMenu(self._make_actions_menu())
+        self._menu_bar.addMenu(self._make_remote_menu())
 
         self._git_flow = GitFlowMenu(self)
         self._menu_bar.addMenu(self._git_flow)
 
-    def create_exit_action(self):
+    def _create_exit_action(self):
         exit_action = QtWidgets.QAction(self)
         exit_action.setShortcut(Qt.CTRL | Qt.Key_Q)
         exit_action.triggered.connect(self.close)
         self.addAction(exit_action)
 
-    def update_title(self):
+    def _update_title(self):
         self.setWindowTitle("Branch: " + Git().current_branch())
 
-    def save_state(self):
+    def _save_state(self):
         state_name = QtWidgets.QInputDialog.getText(
             self, "Save state", "StateName"
         )[0]
 
         if state_name:
-            self._current_state = self._states.append_state(
-                state_name,
-                self.saveState()
-            )
+            self._states.append_state(state_name, self.saveState())
+            self._current_state = self._states.state_for_name(state_name)
+            self._update_states_menu()
 
-            self.update_states_menu()
-
-    def select_state(self):
+    def _select_state(self):
         states = []
+
         for i in range(self._states.states_count()):
             states.append(self._states.state(i).name())
 
-        if len(states) == 0:
-            return
+        if states:
+            state_name = QtWidgets.QInputDialog.getItem(
+                self, "Save state", "State name", states, 0, False
+            )[0]
 
-        state_name = QtWidgets.QInputDialog.getItem(
-            self, "Save state", "State name", states, 0, False
-        )[0]
+            return self._states.state_for_name(state_name)
 
-        return self._states.state_for_name(state_name)
+    def _remove_state(self):
+        state = self._select_state()
 
-    def remove_state(self):
-        state = self.select_state()
         if state.name():
             self._states.remove_state(state)
-            self.update_states_menu()
+            self._update_states_menu()
 
-    def rename_state(self):
-        state = self.select_state()
+    def _rename_state(self):
+        state = self._select_state()
         if state.name():
             state_name = QtWidgets.QInputDialog.getText(
                 self, "Rename state", "State name"
@@ -263,16 +275,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
             if state_name:
                 self._states.rename_state(state.name(), state_name)
-                self.update_states_menu()
+                self._update_states_menu()
 
-    def update_state(self):
-        state = self.select_state()
+    def _update_state(self):
+        state = self._select_state()
 
         if state.name():
             self._states.update_state(state.name(), self.saveState())
-            self.update_states_menu()
+            self._update_states_menu()
 
-    def update_states_menu(self):
+    def _update_states_menu(self):
         self._states_menu.clear()
         self._states_menu.addAction(self._save_state_action)
         self._states_menu.addAction(self._update_state_action)
@@ -287,18 +299,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
         for i in range(self._states.states_count()):
             state = self._states.state(i)
-            action = self._make_action(state.name(), self.restore_state)
+            action = self._make_action(state.name(), self._restore_state)
             action.setCheckable(True)
             self._states_menu.addAction(action)
+
             if state.name() == self._current_state.name():
                 action.setChecked(True)
 
-    def restore_state(self):
+    def _restore_state(self):
         state_name = self.sender().text()
         print(state_name)
         self._current_state = self._states.state_for_name(state_name)
         self.restoreState(self._current_state.data())
-        self.update_states_menu()
+        self._update_states_menu()
 
     def closeEvent(self, event):
         self._save_settings()
@@ -319,22 +332,25 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.resize(size)
 
-        isMaximized = settings.value("IsMaximized", False) == "true"
+        is_maximized = settings.value("IsMaximized", False) == "true"
 
-        if isMaximized:
+        if is_maximized:
             self.setWindowState(Qt.WindowMaximized)
 
         settings.endGroup()
 
         states_count = settings.beginReadArray("States")
+
         for i in range(states_count):
             settings.setArrayIndex(i)
             self._states.append_state(
                 settings.value("Name"),
                 settings.value("Data"))
+
         settings.endArray()
 
         state_name = settings.value("CurrentState", str())
+
         if state_name:
             self._current_state = self._states.state_for_name(state_name)
             self.restoreState(self._current_state.data())
@@ -357,16 +373,17 @@ class MainWindow(QtWidgets.QMainWindow):
         settings.endGroup()
 
         settings.beginWriteArray("States")
+
         for i in range(self._states.states_count()):
             settings.setArrayIndex(i)
             state = self._states.state(i)
             settings.setValue("Name", state.name())
             settings.setValue("Data", state.data())
+
         settings.endArray()
 
         if not self._current_state.empty():
-            settings.setValue("CurrentState",
-                              self._current_state.name())
+            settings.setValue("CurrentState", self._current_state.name())
         else:
             settings.remove("CurrentState")
 
@@ -374,11 +391,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self._diff_widget.save_settings()
 
-    def merge(self):
-        d = MergeDialog(self)
-        d.exec_()
+    def _merge(self):
+        dialog = MergeDialog(self)
+        dialog.exec_()
 
-    def abort_merge(self):
+    def _abort_merge(self):
         result = QtWidgets.QMessageBox.question(
             self,
             "Are you sure?",
@@ -389,21 +406,21 @@ class MainWindow(QtWidgets.QMainWindow):
         if result == QtWidgets.QMessageBox.Ok:
             self._git.abort_merge()
 
-    def add_remote(self):
-        d = AddRemoteDialog(self)
-        d.exec_()
+    def _add_remote(self):
+        dialog = AddRemoteDialog(self)
+        dialog.exec_()
 
-    def remove_remote(self):
-        d = RemoveRemoteDialog(self)
-        d.exec_()
+    def _remove_remote(self):
+        dialog = RemoveRemoteDialog(self)
+        dialog.exec_()
 
-    def pull_remote(self):
-        d = PullDialog(self)
-        d.exec_()
+    def _pull_remote(self):
+        dialog = PullDialog(self)
+        dialog.exec_()
 
-    def push_remote(self):
-        d = PushDialog(self)
-        d.exec_()
+    def _push_remote(self):
+        dialog = PushDialog(self)
+        dialog.exec_()
 
     def _make_action(self, caption, slot):
         action = QtWidgets.QAction(self)
@@ -420,47 +437,53 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return menu
 
-    def make_remote_menu(self):
+    def _make_remote_menu(self):
         return self._make_menu(
             "Remote",
             [
-                ("Add remote", self.add_remote),
-                ("Pull remote", self.pull_remote),
-                ("Push to remote", self.push_remote),
-                ("Remove remote", self.remove_remote)
+                ("Add remote", self._add_remote),
+                ("Pull remote", self._pull_remote),
+                ("Push to remote", self._push_remote),
+                ("Remove remote", self._remove_remote)
             ]
         )
 
-    def make_states_menu(self):
-        self._save_state_action = self._make_action("Save state",
-                                                    self.save_state)
+    def _make_states_menu(self):
+        self._save_state_action = self._make_action(
+            "Save state", self._save_state
+        )
 
-        self._update_state_action = self._make_action("Update state",
-                                                      self.update_state)
+        self._update_state_action = self._make_action(
+            "Update state", self._update_state
+        )
 
-        self._rename_state_action = self._make_action("Rename state",
-                                                      self.rename_state)
+        self._rename_state_action = self._make_action(
+            "Rename state", self._rename_state
+        )
 
-        self._remove_state_action = self._make_action("Remove state",
-                                                      self.remove_state)
+        self._remove_state_action = self._make_action(
+            "Remove state", self._remove_state
+        )
 
         self._states_menu = QtWidgets.QMenu(self)
         self._states_menu.setTitle("States")
-        self.update_states_menu()
+        self._update_states_menu()
 
         return self._states_menu
 
-    def make_actions_menu(self):
+    def _make_actions_menu(self):
         return self._make_menu(
             "Actions",
             [
-                ("Merge...", self.merge),
-                ("Abort merge", self.abort_merge)
+                ("Merge...", self._merge),
+                ("Abort merge", self._abort_merge)
             ]
         )
 
     def set_current_state(self, state_name):
         self._current_state = self._states.state_for_name(state_name)
+
         if not self._current_state.empty():
             self.restoreState(self._current_state.data())
-        self.update_states_menu()
+
+        self._update_states_menu()
