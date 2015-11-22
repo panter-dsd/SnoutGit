@@ -23,6 +23,9 @@ class ApplicationSettings(object):
     def git_executable_path(self):
         return self.value('GitExecutable', 'git')
 
+    def set_git_executable_path(self, path):
+        self.set_value('GitExecutable', path)
+
     def application_font(self):
         return self._font_value('ApplicationFont')
 
