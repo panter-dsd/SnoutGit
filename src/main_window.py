@@ -20,6 +20,7 @@ from pull_dialog import PullDialog
 from push_dialog import PushDialog
 from commites_model import CommitesModel
 from git_flow_menu import GitFlowMenu
+from SettingsDialog import SettingsDialog
 
 __author__ = 'panter.dsd@gmail.com'
 
@@ -220,7 +221,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._menu_bar = QtWidgets.QMenuBar(self)
         self.setMenuBar(self._menu_bar)
         self._menu_bar.addMenu(self._stashes_widget.menu())
-        self._menu_bar.addMenu(self._make_states_menu())
+        self._menu_bar.addMenu(self._make_settings_menu())
         self._menu_bar.addMenu(self._make_actions_menu())
         self._menu_bar.addMenu(self._make_remote_menu())
 
@@ -448,6 +449,20 @@ class MainWindow(QtWidgets.QMainWindow):
             ]
         )
 
+    def _make_settings_menu(self):
+        settings_menu = QtWidgets.QMenu(self)
+        settings_menu.setTitle("Settings")
+        settings_menu.addMenu(self._make_states_menu())
+        settings_menu.addSeparator()
+
+        application_settings_action = self._make_action(
+            "Application settings", self._show_settings_dialog
+        )
+
+        settings_menu.addAction(application_settings_action)
+
+        return settings_menu
+
     def _make_states_menu(self):
         self._save_state_action = self._make_action(
             "Save state", self._save_state
@@ -479,6 +494,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 ("Abort merge", self._abort_merge)
             ]
         )
+
+    def _show_settings_dialog(self):
+        dialog = SettingsDialog(self)
+        dialog.show()
 
     def set_current_state(self, state_name):
         self._current_state = self._states.state_for_name(state_name)
