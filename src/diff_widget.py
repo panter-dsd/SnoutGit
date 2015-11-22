@@ -4,11 +4,11 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSlot, QRegExp
 from PyQt5.QtGui import QTextCursor, QTextOption
 from PyQt5.QtWidgets import QSizePolicy
+from diff_highlighter import DiffHighlighter
 
 from ApplicationSettings import application_settings
 
 import commit
-import diff_highlighter
 import git
 
 __author__ = 'panter.dsd@gmail.com'
@@ -26,13 +26,9 @@ class DiffWidget(QtWidgets.QWidget):
         self._diff_viewer.setReadOnly(True)
         self._diff_viewer.setWordWrapMode(QTextOption.NoWrap)
         self._diff_viewer.setUndoRedoEnabled(False)
+        self._highlighter = DiffHighlighter(self._diff_viewer.document())
 
-        if application_settings.diff_viewer_font():
-            self._diff_viewer.setFont(application_settings.diff_viewer_font())
-
-        self._highlighter = diff_highlighter.DiffHighlighter(
-            self._diff_viewer.document()
-        )
+        self.apply_settings()
 
         self._files_list = QtWidgets.QListWidget(self)
         self._files_list.itemPressed.connect(self._select_file)
@@ -67,6 +63,12 @@ class DiffWidget(QtWidgets.QWidget):
         layout.addWidget(horizontal_split)
 
         self.setLayout(layout)
+
+    def apply_settings(self):
+        if application_settings.diff_viewer_font():
+            self._diff_viewer.setFont(application_settings.diff_viewer_font())
+
+        self._highlighter.update_settings()
 
     def save_settings(self):
         application_settings.set_commit_info_context_line_count(

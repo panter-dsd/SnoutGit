@@ -40,6 +40,12 @@ class SettingsDialog(QDialog):
         self._save_general_settings()
         self._save_diff_viewer_settings()
 
+    def _load_general_settings(self):
+        self._ui.gitCommandLineEdit_.setText(settings.git_executable_path())
+
+    def _save_general_settings(self):
+        settings.set_git_executable_path(self._ui.gitCommandLineEdit_.text())
+
     def _load_diff_viewer_settings(self):
         self._range_line_color_selection_button.set_color(
             settings.diff_viewer_range_line_color()
@@ -52,12 +58,6 @@ class SettingsDialog(QDialog):
         self._removed_line_color_selection_button.set_color(
             settings.diff_viewer_removed_line_color()
         )
-
-    def _load_general_settings(self):
-        self._ui.gitCommandLineEdit_.setText(settings.git_executable_path())
-
-    def _save_general_settings(self):
-        settings.set_git_executable_path(self._ui.gitCommandLineEdit_.text())
 
     def _save_diff_viewer_settings(self):
         settings.set_diff_viewer_range_line_color(

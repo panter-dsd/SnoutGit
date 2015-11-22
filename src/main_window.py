@@ -497,7 +497,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _show_settings_dialog(self):
         dialog = SettingsDialog(self)
-        dialog.show()
+
+        if dialog.exec_() == QtWidgets.QDialog.Accepted:
+            self._diff_file_widget.apply_settings()
+            self._diff_widget.apply_settings()
 
     def set_current_state(self, state_name):
         self._current_state = self._states.state_for_name(state_name)

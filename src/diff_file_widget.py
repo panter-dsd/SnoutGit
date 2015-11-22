@@ -3,10 +3,10 @@
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QTextOption
 from PyQt5.QtWidgets import QPlainTextEdit, QVBoxLayout, QWidget
+from diff_highlighter import DiffHighlighter
 
 from ApplicationSettings import application_settings
 
-import diff_highlighter
 import git
 
 __author__ = 'panter.dsd@gmail.com'
@@ -23,17 +23,19 @@ class DiffFileWidget(QWidget):
         self._diff_viewer.setReadOnly(True)
         self._diff_viewer.setWordWrapMode(QTextOption.NoWrap)
         self._diff_viewer.setUndoRedoEnabled(False)
+        self._highlighter = DiffHighlighter(self._diff_viewer.document())
 
-        if application_settings.diff_viewer_font():
-            self._diff_viewer.setFont(application_settings.diff_viewer_font())
-
-        self._highlighter = diff_highlighter.DiffHighlighter(
-            self._diff_viewer.document()
-        )
+        self.apply_settings()
 
         layout = QVBoxLayout()
         layout.addWidget(self._diff_viewer)
         self.setLayout(layout)
+
+    def apply_settings(self):
+        if application_settings.diff_viewer_font():
+            self._diff_viewer.setFont(application_settings.diff_viewer_font())
+
+        self._highlighter.update_settings()
 
     @pyqtSlot(str, bool)
     def set_file(self, file_name, diff_with_index=False):
