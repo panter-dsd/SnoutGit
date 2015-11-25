@@ -13,11 +13,7 @@ class SettingsDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent, Qt.Dialog | Qt.WindowCloseButtonHint)
         self._ui = Uic.load_ui_from_file('SettingsDialog.ui', self)
-        self._range_line_color_selection_button = ColorSelectionButton(self)
-        self._added_line_color_selection_button = ColorSelectionButton(self)
-        self._removed_line_color_selection_button = ColorSelectionButton(self)
         self._insert_color_selection_buttons()
-
         self._load_settings()
 
         self._ui.gitCommandLineEdit_.textChanged.connect(
@@ -81,6 +77,12 @@ class SettingsDialog(QDialog):
 
     def _insert_color_selection_buttons(self):
         layout = self._ui.diffViewerSettingsTab_.layout()
+
+        self._range_line_color_selection_button = ColorSelectionButton(self)
         layout.addWidget(self._range_line_color_selection_button, 0, 1)
+
+        self._added_line_color_selection_button = ColorSelectionButton(self)
         layout.addWidget(self._added_line_color_selection_button, 1, 1)
+
+        self._removed_line_color_selection_button = ColorSelectionButton(self)
         layout.addWidget(self._removed_line_color_selection_button, 2, 1)
