@@ -48,7 +48,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="gitBinaryEdit_"/>
+         <widget class="QLineEdit" name="gitBinaryEdit_">
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

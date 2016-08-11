@@ -2,12 +2,12 @@
 
 import Uic
 
-from AbstractSetingsPage import AbstractSetingsPage
+from AbstractSettingsPage import AbstractSettingsPage
 
 from ApplicationSettings import application_settings as settings
 
 
-class GeneralSettingsPage(AbstractSetingsPage):
+class GeneralSettingsPage(AbstractSettingsPage):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._ui = Uic.load_ui_from_file('GeneralSettingsPage.ui', self)
@@ -18,4 +18,4 @@ class GeneralSettingsPage(AbstractSetingsPage):
         self._ui.gitBinaryEdit_.setText(settings.git_executable_path())
 
     def _save_settings(self):
-        settings.set_git_executable_path(self._ui.gitCommandLineEdit_.text())
+        settings.set_git_executable_path(self._ui.gitBinaryEdit_.text())

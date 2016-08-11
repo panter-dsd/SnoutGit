@@ -4,96 +4,70 @@ import Uic
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox
-from ColorSelectionButton import ColorSelectionButton
-from FontSelectionButton import FontSelectionButton
 
-from ApplicationSettings import application_settings as settings
+from GeneralSettingsPage import GeneralSettingsPage
+from DiffViewerSettingsPage import DiffViewerSettingsPage
+from SettingsPageModel import SettingsPageModel
 
 
 class SettingsDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent, Qt.Dialog | Qt.WindowCloseButtonHint)
         self._ui = Uic.load_ui_from_file('SettingsDialog.ui', self)
-        self._insert_selection_buttons()
-        self._load_settings()
+        self._page_model = SettingsPageModel(self)
 
-        self._ui.gitCommandLineEdit_.textChanged.connect(
-            self._update_buttons_state
+        self._add_page(self.tr('General'), GeneralSettingsPage(self))
+        self._add_page(self.tr('Diff viewer'), DiffViewerSettingsPage(self))
+
+        self._ui.pageListView_.setModel(self._page_model)
+
+        self._ui.pageListView_.selectionModel().currentChanged.connect(
+            self._set_current_page
         )
 
-        for button in self.findChildren(ColorSelectionButton):
-            button.color_changed.connect(self._update_buttons_state)
+        self._ui.buttonBox_.clicked.connect(self._on_buttonbox_clicked)
 
-        for button in self.findChildren(FontSelectionButton):
-            button.font_changed.connect(self._update_buttons_state)
+        self._apply_button().setDisabled(True)
 
     def accept(self):
         self._save_settings()
         super().accept()
 
-    def _load_settings(self):
-        self._load_general_settings()
-        self._load_diff_viewer_settings()
-        self._ok_button().setEnabled(False)
+    def _apply_button(self):
+        return self._ui.buttonBox_.button(QDialogButtonBox.Apply)
+
+    def _add_page(self, title, page):
+        self._page_model.add_page(title, page)
+        self._ui.stackedWidget_.addWidget(page)
+
+        page.settings_changed.connect(
+            lambda: self._apply_button().setEnabled(True)
+        )
+
+    def _current_page(self):
+        return self._ui.stackedWidget_.currentWidget()
+
+    def _set_current_page(self, index):
+        page = self._page_model.page(index)
+        page_index = self._ui.stackedWidget_.indexOf(page)
+
+        self._ui.pageTitle_.setText(str(index.data()))
+        self._ui.stackedWidget_.setCurrentIndex(page_index)
+        self._current_page().load_settings()
 
     def _save_settings(self):
-        self._save_general_settings()
-        self._save_diff_viewer_settings()
+        for i in range(self._ui.stackedWidget_.count()):
+            self._ui.stackedWidget_.widget(i).save_settings()
 
-    def _load_general_settings(self):
-        self._ui.gitCommandLineEdit_.setText(settings.git_executable_path())
+        self._apply_button().setDisabled(True)
 
-    def _save_general_settings(self):
-        settings.set_git_executable_path(self._ui.gitCommandLineEdit_.text())
+    def _on_buttonbox_clicked(self, button):
+        standard_button = self._ui.buttonBox_.standardButton(button)
 
-    def _load_diff_viewer_settings(self):
-        self._font_selection_button.set_font(settings.diff_viewer_font())
-
-        self._range_line_color_selection_button.set_color(
-            settings.diff_viewer_range_line_color()
-        )
-
-        self._added_line_color_selection_button.set_color(
-            settings.diff_viewer_added_line_color()
-        )
-
-        self._removed_line_color_selection_button.set_color(
-            settings.diff_viewer_removed_line_color()
-        )
-
-    def _save_diff_viewer_settings(self):
-        settings.set_diff_viewer_font(self._font_selection_button.font())
-
-        settings.set_diff_viewer_range_line_color(
-            self._range_line_color_selection_button.color()
-        )
-
-        settings.set_diff_viewer_added_line_color(
-            self._added_line_color_selection_button.color()
-        )
-
-        settings.set_diff_viewer_removed_line_color(
-            self._removed_line_color_selection_button.color()
-        )
-
-    def _ok_button(self):
-        return self._ui.buttonBox_.button(QDialogButtonBox.Ok)
-
-    def _update_buttons_state(self):
-        can_save_settings = len(self._ui.gitCommandLineEdit_.text()) > 0
-        self._ok_button().setEnabled(can_save_settings)
-
-    def _insert_selection_buttons(self):
-        layout = self._ui.diffViewerSettingsTab_.layout()
-
-        self._font_selection_button = FontSelectionButton(self)
-        layout.addWidget(self._font_selection_button, 0, 1)
-
-        self._range_line_color_selection_button = ColorSelectionButton(self)
-        layout.addWidget(self._range_line_color_selection_button, 1, 1)
-
-        self._added_line_color_selection_button = ColorSelectionButton(self)
-        layout.addWidget(self._added_line_color_selection_button, 2, 1)
-
-        self._removed_line_color_selection_button = ColorSelectionButton(self)
-        layout.addWidget(self._removed_line_color_selection_button, 3, 1)
+        if standard_button == QDialogButtonBox.Ok:
+            self.accept()
+        elif standard_button == QDialogButtonBox.Apply:
+            self._save_settings()
+            self.accepted.emit()
+        elif standard_button == QDialogButtonBox.Cancel:
+            self.reject()

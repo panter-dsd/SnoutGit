@@ -2,14 +2,14 @@
 
 import Uic
 
-from AbstractSetingsPage import AbstractSetingsPage
+from AbstractSettingsPage import AbstractSettingsPage
 from ColorSelectionButton import ColorSelectionButton
 from FontSelectionButton import FontSelectionButton
 
 from ApplicationSettings import application_settings as settings
 
 
-class DiffViewerSettingsPage(AbstractSetingsPage):
+class DiffViewerSettingsPage(AbstractSettingsPage):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._ui = Uic.load_ui_from_file('DiffViewerSettingsPage.ui', self)
@@ -52,7 +52,7 @@ class DiffViewerSettingsPage(AbstractSetingsPage):
         )
 
     def _insert_selection_buttons(self):
-        layout = self._ui.diffViewerSettingsTab_.layout()
+        layout = self._ui.frame_.layout()
 
         self._font_selection_button = FontSelectionButton(self)
         layout.addWidget(self._font_selection_button, 0, 1)
