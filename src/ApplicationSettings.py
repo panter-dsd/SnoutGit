@@ -33,7 +33,7 @@ class ApplicationSettings(object):
         return self._font_value('DiffViewer/Font')
 
     def set_diff_viewer_font(self, font):
-        self.set_value('DiffViewer/Font', font.toString())
+        self.set_value('DiffViewer/Font', font.toString() if font else None)
 
     def diff_viewer_range_line_color(self):
         return self._color_value('DiffViewer/RangeLineColor', Qt.blue)
