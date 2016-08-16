@@ -71,3 +71,5 @@ class SettingsDialog(QDialog):
             self.accepted.emit()
         elif standard_button == QDialogButtonBox.Cancel:
             self.reject()
+        elif standard_button == QDialogButtonBox.RestoreDefaults:
+            self._current_page().restore_defaults()

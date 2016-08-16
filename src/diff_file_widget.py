@@ -2,10 +2,10 @@
 
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QTextOption
-from PyQt5.QtWidgets import QPlainTextEdit, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QPlainTextEdit, QVBoxLayout, QWidget
 from diff_highlighter import DiffHighlighter
 
-from ApplicationSettings import application_settings
+from ApplicationSettings import application_settings as settings
 
 import git
 
@@ -32,9 +32,8 @@ class DiffFileWidget(QWidget):
         self.setLayout(layout)
 
     def apply_settings(self):
-        if application_settings.diff_viewer_font():
-            self._diff_viewer.setFont(application_settings.diff_viewer_font())
-
+        font = settings.diff_viewer_font()
+        self._diff_viewer.setFont(font if font else QApplication.font())
         self._highlighter.update_settings()
 
     @pyqtSlot(str, bool)

@@ -14,6 +14,11 @@ class GeneralSettingsPage(AbstractSettingsPage):
 
         self._ui.gitBinaryEdit_.textChanged.connect(self.settings_changed)
 
+    def restore_defaults(self):
+        self._ui.gitBinaryEdit_.setText(
+            settings.default_value('GitExecutable')
+        )
+
     def _load_settings(self):
         self._ui.gitBinaryEdit_.setText(settings.git_executable_path())
 

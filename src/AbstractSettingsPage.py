@@ -29,6 +29,10 @@ class AbstractSettingsPage(QWidget):
             self._save_settings()
             self._has_changes = False
 
+    @abc.abstractmethod
+    def restore_defaults(self):
+        pass
+
     def _on_settings_changed(self):
         self._has_changes = True
 

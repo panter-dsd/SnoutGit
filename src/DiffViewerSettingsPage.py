@@ -21,6 +21,23 @@ class DiffViewerSettingsPage(AbstractSettingsPage):
         for button in self.findChildren(FontSelectionButton):
             button.font_changed.connect(self.settings_changed)
 
+    def restore_defaults(self):
+        self._font_selection_button.set_font(
+            settings.default_value('DiffViewer/Font')
+        )
+
+        self._range_line_color_selection_button.set_color(
+            settings.default_value('DiffViewer/RangeLineColor')
+        )
+
+        self._added_line_color_selection_button.set_color(
+            settings.default_value('DiffViewer/AddedLineColor')
+        )
+
+        self._removed_line_color_selection_button.set_color(
+            settings.default_value('DiffViewer/RemovedLineColor')
+        )
+
     def _load_settings(self):
         self._font_selection_button.set_font(settings.diff_viewer_font())
 

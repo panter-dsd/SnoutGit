@@ -3,10 +3,10 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSlot, QRegExp
 from PyQt5.QtGui import QTextCursor, QTextOption
-from PyQt5.QtWidgets import QSizePolicy
+from PyQt5.QtWidgets import QApplication, QSizePolicy
 from diff_highlighter import DiffHighlighter
 
-from ApplicationSettings import application_settings
+from ApplicationSettings import application_settings as settings
 
 import commit
 import git
@@ -40,7 +40,7 @@ class DiffWidget(QtWidgets.QWidget):
         self._diff_lines_count_edit.valueChanged.connect(self._update_diff)
 
         self._diff_lines_count_edit.setValue(
-            application_settings.commit_info_context_line_count()
+            settings.commit_info_context_line_count()
         )
 
         panel_layout = QtWidgets.QHBoxLayout()
@@ -65,13 +65,12 @@ class DiffWidget(QtWidgets.QWidget):
         self.setLayout(layout)
 
     def apply_settings(self):
-        if application_settings.diff_viewer_font():
-            self._diff_viewer.setFont(application_settings.diff_viewer_font())
-
+        font = settings.diff_viewer_font()
+        self._diff_viewer.setFont(font if font else QApplication.font())
         self._highlighter.update_settings()
 
     def save_settings(self):
-        application_settings.set_commit_info_context_line_count(
+        settings.set_commit_info_context_line_count(
             self._diff_lines_count_edit.value()
         )
 
