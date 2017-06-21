@@ -77,7 +77,7 @@ class StatusWidget(QtWidgets.QWidget):
             'A': new_icon,
             'M': changed_icon,
             'U': updated_but_unmerged,
-            'D': deleted_icon
+            'D': deleted_icon,
         }
 
         current_status = self._git.get_status()
@@ -105,6 +105,7 @@ class StatusWidget(QtWidgets.QWidget):
             elif status[0] == 'R':
                 names = file_name.split(" -> ")
                 item.setText(0, names[0])
+                item.setIcon(0, deleted_icon)
                 self._staged.addChild(item)
                 if status[1] == "M":
                     parent = self._unstaged
@@ -112,6 +113,8 @@ class StatusWidget(QtWidgets.QWidget):
                     parent = self._staged
                 item_ = QtWidgets.QTreeWidgetItem(parent)
                 item_.setText(0, names[1])
+                item_.setIcon(0, new_icon)
+                self._save_status_in_item(item_, status)
             else:
                 if not status[0] in [' ', 'U']:
                     item = QtWidgets.QTreeWidgetItem(self._staged)
