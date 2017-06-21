@@ -10,3 +10,6 @@ Git gui client.
 python3 /mnt/work/install/SnoutGit/src /path/to/your/git/repo
 
 Для запуска нужен python3 и PyQt4.
+
+![Screenshot1](share/images/snapshot1.png)
+![Screenshot2](share/images/snapshot2.png)
